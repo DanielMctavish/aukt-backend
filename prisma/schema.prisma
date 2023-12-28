@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id           String       @id @default(cuid())
+  name         String
+  email        String       @unique
+  password     String
+  address      String
+  credit_cards CreditCard[]
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+}
+
+model Advertiser {
+  id           String       @id @default(cuid())
+  name         String
+  email        String
+  password     String
+  address      String
+  credit_cards CreditCard[]
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+}
+
+model Client {
+  id           String       @id @default(cuid())
+  cpf          String
+  name         String
+  email        String
+  password     String
+  address      String
+  credit_cards CreditCard[]
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+}
+
+model Auct {
+  id                        String        @id @default(cuid())
+  creator_id                String
+  title                     String
+  tags                      String[]
+  auct_cover_img            String
+  csv_list                  String[]
+  product_list              Product[]
+  descriptions_informations String
+  terms_conditions          String
+  auct_date                 DateTime[]
+  limit_client              Boolean
+  limit_date                Boolean
+  accept_payment_methods    PaymentMethod
+  value                     String
+  created_at                DateTime      @default(now())
+  updated_at                DateTime      @updatedAt
+}
+
+model CreditCard {
+  id             String      @id @default(cuid())
+  cardNumber     String
+  cardHolderName String
+  expirationDate String
+  cvv            String
+  cardType       CardType
+  Admin          Admin?      @relation(fields: [adminId], references: [id])
+  adminId        String?
+  Advertiser     Advertiser? @relation(fields: [advertiserId], references: [id])
+  advertiserId   String?
+  Client         Client?     @relation(fields: [clientId], references: [id])
+  clientId       String?
+  created_at     DateTime    @default(now())
+  updated_at     DateTime    @updatedAt
+}
+
+model Product {
+  id                String   @id @default(cuid())
+  owner_id          String
+  title             String
+  description       String
+  categorie         String
+  initial_value     Int
+  final_value       Int
+  color             String
+  width             String
+  height            String
+  weight            String
+  cover_img_url     String
+  img01_url         String
+  img02_url         String
+  img03_url         String
+  img04_url         String
+  img05_url         String
+  img06_url         String
+  highlight_product Boolean
+  Auct              Auct[]
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+}
+
+enum CardType {
+  Visa
+  MasterCard
+  AmericanExpress
+  Discover
+  Elo
+  DEFAULT
+}
+
+enum PaymentMethod {
+  Credit
+  Debit
+  Pix
+  Ticket
+}
