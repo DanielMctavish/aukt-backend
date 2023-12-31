@@ -14,7 +14,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
             data: {
                 ...restdata,
                 Auct: {
-                    create: Auct | []
+                    create: Auct
                 }
             }
         })
@@ -35,8 +35,28 @@ class PrismaProductRepositorie implements IProductRepositorie {
     }
 
     async update(data: Partial<IProduct>, id: string): Promise<IProduct> {
-
+        const { Auct, ...restdata } = data;
+    
+        const auctUpdateManyInput = Auct
+            ? {
+                  updateMany: Auct.map((auct) => ({
+                      where: { id: auct.id }, // ou a condição adequada para identificar o auct específico
+                      data: auct,
+                  })),
+              }
+            : {};
+    
+        return await prisma.product.update({
+            where: {
+                id,
+            },
+            data: {
+                ...restdata,
+                Auct: auctUpdateManyInput,
+            },
+        });
     }
+    
 
     async delete(id: string): Promise<IProduct | null> {
         return await prisma.product.delete({

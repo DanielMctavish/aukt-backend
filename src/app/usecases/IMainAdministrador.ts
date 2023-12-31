@@ -6,15 +6,15 @@ export interface AdministratorResponse {
     body: Object
 }
 
-export interface params {
+interface params {
     id: string
 }
 
 interface IMainAdministrador {
     CreateAdministrator(data: IAdmin): Promise<AdministratorResponse>
     FindAdministrator(adm_id: string): Promise<AdministratorResponse>
+    FindAdministratorByEmail(email:string): Promise<AdministratorResponse>
     UpdateAdministrator(data: IAdmin, params: params): Promise<AdministratorResponse>
-
 
     // FirebaseUploadPhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
     // FirebaseDeletePhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>

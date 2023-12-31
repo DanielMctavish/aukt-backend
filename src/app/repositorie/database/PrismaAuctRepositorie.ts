@@ -30,9 +30,15 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
         return foundAuct;
     }
 
-    async list(): Promise<IAuct[]> {
-        const aucts = await prisma.auct.findMany();
+    async list(creator_id:string): Promise<IAuct[]> {
+
+        const aucts = await prisma.auct.findMany({
+            where:{
+                creator_id
+            }
+        });
         return aucts;
+        
     }
 
     async update(data: Partial<IAuct>, id: string): Promise<IAuct | null> {

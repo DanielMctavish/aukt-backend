@@ -5,23 +5,40 @@ import { ICreditCard } from "../../entities/ICreditCard"
 const prisma = new PrismaClient()
 
 class PrismaCreditCardRepositorie implements ICreditCardRepositorie{
-    create(data: ICreditCard): Promise<ICreditCard> {
-        
+    async create(data: ICreditCard): Promise<ICreditCard> {
+        return await prisma.creditCard.create({data})
     }
-    find(id: string): Promise<ICreditCard | null> {
-        
+
+    async find(id: string): Promise<ICreditCard | null> {
+        return await prisma.creditCard.findFirst({where:{id}})
     }
-    listByAdminID(id: string): Promise<ICreditCard | null> {
-        
+
+    async listByAdminID(id: string): Promise<ICreditCard[]> {
+        return await prisma.creditCard.findMany({
+            where:{
+                adminId:id
+            }
+        })
     }
-    listByAdvertiserID(id: string): Promise<ICreditCard | null> {
-        
+
+    async listByAdvertiserID(id: string): Promise<ICreditCard[]> {
+        return await prisma.creditCard.findMany({
+            where:{
+                advertiserId:id
+            }
+        })
     }
-    listByClientID(id: string): Promise<ICreditCard | null> {
-        
+
+    async listByClientID(id: string): Promise<ICreditCard[]> {
+        return await prisma.creditCard.findMany({
+            where:{
+                clientId:id
+            }
+        })
     }
-    delete(id: string): Promise<ICreditCard | null> {
-        
+
+    async delete(id: string): Promise<ICreditCard | null> {
+        return await prisma.creditCard.delete({where:{id}})
     }
 }
 
