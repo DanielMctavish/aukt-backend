@@ -7,15 +7,16 @@ export interface AuctResponse {
 }
 
 interface params {
-    id: string
+    auct_id: string
+    creator_id: string
 }
 
 interface IMainAuct {
     CreateAuct(data: IAuct): Promise<AuctResponse>
-    FindAuct(auct: Partial<IAuct>): Promise<AuctResponse>
-    ListAuct(auct: Partial<IAuct>): Promise<AuctResponse>
+    FindAuct(data: any, params: params): Promise<AuctResponse>
+    ListAuct(data: any, params: params): Promise<AuctResponse>
     UpdateAuct(data: IAuct, params: params): Promise<AuctResponse>
-    DeleteAuct(auct: Partial<IAuct>): Promise<AuctResponse>
+    DeleteAuct(data: any, params: params): Promise<AuctResponse>
 }
 
 export default IMainAuct

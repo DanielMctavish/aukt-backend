@@ -3,7 +3,7 @@ import PrismaAdvertiserRepositorie from "../../../repositorie/database/PrismaAdv
 import { IAdvertiser } from "../../../entities/IAdvertiser";
 const prismaAdvertiser = new PrismaAdvertiserRepositorie()
 
-export const updateAdvertiser = (data: IAdvertiser, advertiser_id:string): Promise<AdvertiserResponse> => {
+export const updateAdvertiser = (data: IAdvertiser, advertiser_id: string): Promise<AdvertiserResponse> => {
 
     return new Promise(async (resolve, reject) => {
 

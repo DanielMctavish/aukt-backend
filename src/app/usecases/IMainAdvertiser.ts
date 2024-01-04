@@ -7,15 +7,16 @@ export interface AdvertiserResponse {
 }
 
 interface params {
-    id: string
+    advertiser_id: string
+    email: string
 }
 
 interface IMainAdvertiser {
     CreateAdvertiser(data: IAdvertiser): Promise<AdvertiserResponse>
-    FindAdvertiser(advertiser_id: string): Promise<AdvertiserResponse>
-    FindAdvertiserByEmail(email:string): Promise<AdvertiserResponse>
+    FindAdvertiser(data: any, params: params): Promise<AdvertiserResponse>
+    FindAdvertiserByEmail(data: any, params: params): Promise<AdvertiserResponse>
     UpdateAdvertiser(data: IAdvertiser, params: params): Promise<AdvertiserResponse>
-    DeleteAdvertiser(advertiser_id: string): Promise<AdvertiserResponse>
+    DeleteAdvertiser(data: any, params: params): Promise<AdvertiserResponse>
 
     // FirebaseUploadPhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
     // FirebaseDeletePhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>

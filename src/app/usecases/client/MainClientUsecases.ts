@@ -17,11 +17,11 @@ class MainClientUsecases implements IMainClient {
         return createClient(data)
     }
 
-    async FindClient(client_id: string): Promise<ClientResponse> {
+    async FindClient(data: any, client_id: string): Promise<ClientResponse> {
         return findClient(client_id)
     }
 
-    async FindClientByEmail(email: string): Promise<ClientResponse> {
+    async FindClientByEmail(data: any, email: string): Promise<ClientResponse> {
         return findClientByEmail(email)
     }
 

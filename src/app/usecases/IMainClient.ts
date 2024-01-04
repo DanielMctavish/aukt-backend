@@ -12,11 +12,16 @@ interface params {
 
 interface IMainClient {
     CreateClient(data: IClient): Promise<ClientResponse>
-    FindClient(client_id: string): Promise<ClientResponse>
-    FindClientByEmail(email: string): Promise<ClientResponse>
+    FindClient(data: any, client_id: string): Promise<ClientResponse>
+    FindClientByEmail(data: any, email: string): Promise<ClientResponse>
     ListClient(): Promise<ClientResponse>
     UpdateClient(data: IClient, params: params): Promise<ClientResponse>
     DeleteClient(client_id: string): Promise<ClientResponse>
+
+    // AUCT OPERATIONS
+    SubscribedAuct(auct_id: string): Promise<ClientResponse>
+    BidAuct(): Promise<ClientResponse>
+
 }
 
 export default IMainClient

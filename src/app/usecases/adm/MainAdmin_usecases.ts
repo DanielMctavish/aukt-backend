@@ -5,8 +5,9 @@ import { findAdmin } from "./functions/FindAdmin";
 import { findAdministratorByEmail } from "./functions/FindByEmail";
 import { updateAdmin } from "./functions/UpdateAdmin";
 
-interface params{
-    id:string
+interface params {
+    admin_id: string
+    email: string
 }
 
 class MainAdministrator_usecases implements IMainAdministrador {
@@ -15,16 +16,16 @@ class MainAdministrator_usecases implements IMainAdministrador {
         return createAdmin(data)
     }
 
-    FindAdministrator(adm_id: string): Promise<AdministratorResponse> {
-        return findAdmin(adm_id)
+    FindAdministrator(data: any, params: params): Promise<AdministratorResponse> {
+        return findAdmin(params.admin_id)
     }
 
-    FindAdministratorByEmail(email: string): Promise<AdministratorResponse> { 
-        return findAdministratorByEmail(email)
+    FindAdministratorByEmail(data: any, params: params): Promise<AdministratorResponse> {
+        return findAdministratorByEmail(params.email)
     }
 
     UpdateAdministrator(data: IAdmin, params: params): Promise<AdministratorResponse> {
-       return updateAdmin(data,params)
+        return updateAdmin(data, params.admin_id)
     }
 }
 

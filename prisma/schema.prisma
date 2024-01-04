@@ -33,24 +33,27 @@ model Advertiser {
 }
 
 model Client {
-  id           String       @id @default(cuid())
-  cpf          String
-  name         String
-  email        String
-  password     String
-  address      String
-  credit_cards CreditCard[]
-  created_at   DateTime     @default(now())
-  updated_at   DateTime     @updatedAt
+  id              String       @id @default(cuid())
+  cpf             String
+  name            String
+  email           String
+  password        String
+  address         String
+  credit_cards    CreditCard[]
+  subscribed_auct Auct[]
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
 }
 
 model Auct {
   id                        String        @id @default(cuid())
   creator_id                String
+  winner_id                 String
+  subscribed_clients        Client[]
+  bids                      Json[]
   title                     String
   tags                      String[]
   auct_cover_img            String
-  csv_list                  String[]
   product_list              Product[]
   descriptions_informations String
   terms_conditions          String
@@ -100,9 +103,19 @@ model Product {
   img05_url         String
   img06_url         String
   highlight_product Boolean
-  Auct              Auct[]
+  Auct              Auct?    @relation(fields: [auct_id], references: [id])
+  auct_id           String?
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
+}
+
+model Bid {
+  id         String   @id @default(cuid())
+  value  Int
+  client_id  String
+  auct_id    String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 enum CardType {

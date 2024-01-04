@@ -4,16 +4,16 @@ import PrismaAuctRepositorie from "../../../repositorie/database/PrismaAuctRepos
 const prismaAuct = new PrismaAuctRepositorie()
 
 
-export const updateAuct = (data: IAuct, auct: Partial<IAuct>): Promise<AuctResponse> => {
+export const updateAuct = (data: IAuct, auct_id:string): Promise<AuctResponse> => {
 
     return new Promise(async (resolve, reject) => {
         try {
 
             !data ? reject({ status_code: 404, body: 'no data sended' }) : ''
-            if (!auct.id || typeof auct.id !== 'string') {
+            if (!auct_id || typeof auct_id !== 'string') {
                 return reject({ status_code: 404, body: 'not auct_id passed' })
             } else {
-                const currentAuct = await prismaAuct.update(data, auct.id)
+                const currentAuct = await prismaAuct.update(data, auct_id)
                 resolve({ status_code: 201, body: !currentAuct ? '' : currentAuct })
             }
 

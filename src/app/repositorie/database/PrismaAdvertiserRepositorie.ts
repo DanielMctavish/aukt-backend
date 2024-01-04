@@ -44,19 +44,16 @@ class PrismaAdvertiserRepositorie implements IAdvertiserRepositorie {
     }
 
     async update(advertiser_id: string, data: Partial<IAdvertiser>): Promise<IAdvertiser> {
-        const { credit_cards, ...restData } = data;
 
-        const updatedAdvertiser = await prisma.admin.update({
+        const updatedAdvertiser = await prisma.advertiser.update({
             where: {
                 id: advertiser_id
             },
             data: {
-                ...restData,
-                credit_cards: {
-                    connect: credit_cards?.map((card: ICreditCard) => ({
-                        id: card.id
-                    })) || []
-                }
+                name: data.name,
+                address: data.address,
+                password: data.password,
+                email: data.email
             }
         });
 
@@ -64,11 +61,20 @@ class PrismaAdvertiserRepositorie implements IAdvertiserRepositorie {
     }
 
     async delete(advertiser_id: string): Promise<IAdvertiser | null> {
-        return await prisma.advertiser.delete({
-            where: {
-                id: advertiser_id
-            }
-        })
+        try {
+            console.log('dentro do prisma delete --> ', advertiser_id);
+            const deletedAdvertiser = await prisma.advertiser.delete({
+                where: {
+                    id: advertiser_id
+                }
+            });
+
+            return deletedAdvertiser;
+        } catch (error) {
+            // Se o registro não for encontrado, você pode lidar com isso aqui
+            console.error(`Erro ao excluir o anunciante com ID ${advertiser_id}:`, error);
+            return null;
+        }
     }
 }
 

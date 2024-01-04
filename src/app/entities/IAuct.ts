@@ -7,7 +7,6 @@ export interface IAuct {
     title: string
     tags: string[]
     auct_cover_img: string
-    csv_list: string[]
     product_list?: IProduct[]
     descriptions_informations: string
     terms_conditions: string

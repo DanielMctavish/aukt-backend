@@ -1,0 +1,36 @@
+import { Request, Response } from 'express'
+
+
+export const ApplyUseCase = (usecase: Function) => {
+
+    const applyResponse = async (req: Request, res: Response) => {
+
+        let data = {
+            // files: req.files,
+            query: req.query,
+            params: req.params,
+            body: req.body
+        }
+
+
+        if (typeof usecase !== 'function') {
+            // Se usecase não for uma função ou não tiver uma função handle, retorne um erro
+            return res.status(500).send({ message: 'Erro interno do servidor' });
+        }
+
+
+        await usecase(data.body, data.query)
+            .then((response: any) => {
+                // console.log('resposta do applyusecase --> ', response);
+                return res.status(response.status_code).send(response.body)
+            }).catch((err: any) => {
+
+                // console.log('erro do applyusecase --> ', err);
+                return res.status(err.status_code).send(err.body)
+
+            })
+
+    }
+
+    return applyResponse
+}

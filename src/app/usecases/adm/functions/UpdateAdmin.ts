@@ -3,17 +3,19 @@ import PrismaAdminRepositorie from "../../../repositorie/database/PrismaAdminRep
 import { IAdmin } from "../../../entities/IAdmin";
 const prismaAdm = new PrismaAdminRepositorie()
 
-interface params{
-    id:string
-}
 
-export const updateAdmin = (data:IAdmin, params:params):Promise<AdministratorResponse>=>{
-    
-    return new Promise((resolve, reject) => {
+export const updateAdmin = (data: IAdmin, admin_id: string): Promise<AdministratorResponse> => {
+
+    return new Promise(async (resolve, reject) => {
+
+        console.log('dentro do usecase -> ', data, admin_id);
+
+
         try {
 
-            const currentAdm = prismaAdm.update(data, params.id)
-            resolve({ status_code: 200, body: currentAdm })
+            const currentAdm = await prismaAdm.update(data, admin_id)
+            if (currentAdm)
+                resolve({ status_code: 200, body: currentAdm })
 
         } catch (error: any) {
             reject({ status_code: 500, body: error.message })

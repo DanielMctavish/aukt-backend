@@ -3,15 +3,19 @@ import { AuctResponse } from "../../IMainAuct";
 import PrismaAuctRepositorie from "../../../repositorie/database/PrismaAuctRepositorie";
 const prismaAuct = new PrismaAuctRepositorie()
 
+interface params {
+    auct_id: string
+    creator_id: string
+}
 
-export const listAuct = (auct: Partial<IAuct>): Promise<AuctResponse> => {
+
+export const listAuct = (creator_id: string): Promise<AuctResponse> => {
 
     return new Promise(async (resolve, reject) => {
         try {
 
             // !data?reject({status_code:404,body:'no data sended'}):''
-            if (!auct.creator_id) return reject({ status_code: 403, body: "not creator_id sended" })
-            const currentAuct = await prismaAuct.list(auct.creator_id)
+            const currentAuct = await prismaAuct.list(creator_id ? creator_id : '')
 
             if (!currentAuct) {
                 reject({ status_code: 404, body: "not auct founded" })

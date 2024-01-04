@@ -2,15 +2,18 @@ import PrismaAdminRepositorie from "../../../repositorie/database/PrismaAdminRep
 import { AdministratorResponse } from "../../IMainAdministrador"
 const prismaAdm = new PrismaAdminRepositorie()
 
-export const findAdmin = (adm_id:string):Promise<AdministratorResponse>=>{
+export const findAdmin = (admin_id: string): Promise<AdministratorResponse> => {
 
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+
         try {
-            const currentAdm = prismaAdm.find(adm_id)
-            resolve({ status_code: 200, body: currentAdm })
+            const currentAdm = await prismaAdm.find(admin_id)
+            if (currentAdm)
+                resolve({ status_code: 200, body: currentAdm })
         } catch (error: any) {
             reject({ status_code: 500, body: error.message })
         }
+
     })
 
 }

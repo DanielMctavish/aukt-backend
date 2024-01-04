@@ -3,7 +3,7 @@ import { IAuct } from "./IAuct"
 
 export interface IProduct {
     id: string
-    owner_id:string
+    owner_id: string
     title: string
     description: string
     categorie: string
@@ -21,7 +21,8 @@ export interface IProduct {
     img05_url: string
     img06_url: string
     highlight_product: boolean
-    Auct?: IAuct[]
+    Auct?: IAuct 
+    auct_id?: string | undefined
     created_at: Date
     updated_at: Date
 }

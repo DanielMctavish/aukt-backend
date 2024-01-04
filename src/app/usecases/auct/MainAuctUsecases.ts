@@ -6,22 +6,26 @@ import { findAuct } from "./functions/FindAuct";
 import { listAuct } from "./functions/ListAucts";
 import { updateAuct } from "./functions/UpdateAuct";
 
+interface params {
+    auct_id: string
+    creator_id: string
+}
 
 class MainAuctUsecases implements IMainAuct {
     CreateAuct(data: IAuct): Promise<AuctResponse> {
         return createAuct(data)
     }
-    FindAuct(auct: Partial<IAuct>): Promise<AuctResponse> {
-        return findAuct(auct)
+    FindAuct(data: any, params: params): Promise<AuctResponse> {
+        return findAuct(params.auct_id)
     }
-    ListAuct(auct: Partial<IAuct>): Promise<AuctResponse> {
-        return listAuct(auct)
+    ListAuct(data: any, params: params): Promise<AuctResponse> {
+        return listAuct(params.creator_id)
     }
-    UpdateAuct(data: IAuct, auct: Partial<IAuct>): Promise<AuctResponse> {
-        return updateAuct(data, auct)
+    UpdateAuct(data: IAuct, params: params): Promise<AuctResponse> {
+        return updateAuct(data, params.auct_id)
     }
-    DeleteAuct(auct: Partial<IAuct>): Promise<AuctResponse> {
-        return deleteAuct(auct)
+    DeleteAuct(data: any, params: params): Promise<AuctResponse> {
+        return deleteAuct(params.auct_id)
     }
 }
 

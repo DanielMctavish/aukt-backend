@@ -7,24 +7,25 @@ import { findAdvertiserByEmail } from "./functions/FindAdvertiserByEmail";
 import { updateAdvertiser } from "./functions/UpdateAdvertiser";
 
 interface params {
-    id: string
+    advertiser_id: string
+    email: string
 }
 
 class MainAdvertiserUsecases implements IMainAdvertiser {
     CreateAdvertiser(data: IAdvertiser): Promise<AdvertiserResponse> {
         return createAdvertiser(data)
     }
-    FindAdvertiser(advertiser_id: string): Promise<AdvertiserResponse> {
-        return findAdvertiser(advertiser_id)
+    FindAdvertiser(data: any, params: params): Promise<AdvertiserResponse> {
+        return findAdvertiser(params.advertiser_id)
     }
-    FindAdvertiserByEmail(email: string): Promise<AdvertiserResponse> {
-        return findAdvertiserByEmail(email)
+    FindAdvertiserByEmail(data: any, params: params): Promise<AdvertiserResponse> {
+        return findAdvertiserByEmail(params.email)
     }
     UpdateAdvertiser(data: IAdvertiser, params: params): Promise<AdvertiserResponse> {
-        return updateAdvertiser(data, params.id)
+        return updateAdvertiser(data, params.advertiser_id)
     }
-    DeleteAdvertiser(advertiser_id: string): Promise<AdvertiserResponse> {
-        return deleteAdvertiser(advertiser_id)
+    DeleteAdvertiser(data: any, params: params): Promise<AdvertiserResponse> {
+        return deleteAdvertiser(params.advertiser_id)
     }
 }
 
