@@ -10,6 +10,8 @@ export const updateClient = (data: IClient, client_id: string): Promise<ClientRe
 
         try {
 
+            if (!client_id) reject({ status_code: 403, body: 'the client_id not passed' })
+
             const currentClient = await prismaClient.update(data, client_id)
             resolve({ status_code: 200, body: currentClient })
 

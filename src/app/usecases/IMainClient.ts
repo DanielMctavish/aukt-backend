@@ -1,3 +1,4 @@
+import IBid from "../entities/IBid"
 import { IClient } from "../entities/IClient"
 
 
@@ -8,19 +9,22 @@ export interface ClientResponse {
 
 interface params {
     id: string
+    auct_id: string
+    client_id: string
+    email: string
 }
 
 interface IMainClient {
     CreateClient(data: IClient): Promise<ClientResponse>
-    FindClient(data: any, client_id: string): Promise<ClientResponse>
-    FindClientByEmail(data: any, email: string): Promise<ClientResponse>
+    FindClient(data: any, params: params): Promise<ClientResponse>
+    FindClientByEmail(data: any, params: params): Promise<ClientResponse>
     ListClient(): Promise<ClientResponse>
     UpdateClient(data: IClient, params: params): Promise<ClientResponse>
-    DeleteClient(client_id: string): Promise<ClientResponse>
+    DeleteClient(data: any, params: params): Promise<ClientResponse>
 
     // AUCT OPERATIONS
-    SubscribedAuct(auct_id: string): Promise<ClientResponse>
-    BidAuct(): Promise<ClientResponse>
+    SubscribedAuct(data: any, params: params): Promise<ClientResponse>
+    BidAuct(bid: IBid): Promise<ClientResponse>
 
 }
 

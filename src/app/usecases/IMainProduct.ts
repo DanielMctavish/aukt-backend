@@ -7,15 +7,16 @@ export interface ProductResponse {
 }
 
 interface params {
-    id: string
+    product_id: string
+    advertiser_id:string
 }
 
 interface IMainProduct{
     create(data: IProduct): Promise<ProductResponse>
-    find(id: string): Promise<ProductResponse>
-    listByAdvertiserId(id: string): Promise<ProductResponse>
+    find(data: any, params: params): Promise<ProductResponse>
+    listByAdvertiserId(data: any, params: params): Promise<ProductResponse>
     update(data: Partial<IProduct>, params: params): Promise<ProductResponse>
-    delete(id: string): Promise<ProductResponse>
+    delete(data: any, params: params): Promise<ProductResponse>
 }
 
 export default IMainProduct

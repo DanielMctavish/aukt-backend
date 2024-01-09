@@ -10,8 +10,11 @@ export const findClientByEmail = (email: string): Promise<ClientResponse> => {
         try {
 
             const currentClient = await prismaClient.findByEmail(email)
-            if (currentClient)
+            if (currentClient) {
                 resolve({ status_code: 200, body: currentClient })
+            } else {
+                reject({ status_code: 404, body: 'not client founded' })
+            }
 
         } catch (error: any) {
             reject({ status_code: 500, body: error.message })

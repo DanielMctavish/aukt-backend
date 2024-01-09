@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 class PrismaProductRepositorie implements IProductRepositorie {
 
     async create(data: IProduct): Promise<IProduct> {
-        const { auct_id, ...restdata } = data;
+        const { auct_id, advertiser_id, ...restdata } = data;
 
         const createdProduct = await prisma.product.create({
             data: {
@@ -16,9 +16,15 @@ class PrismaProductRepositorie implements IProductRepositorie {
                     connect: {
                         id: auct_id
                     }
+                },
+                Advertiser: {
+                    connect: {
+                        id: advertiser_id
+                    }
                 }
             }, include: {
-                Auct: true
+                Auct: true,
+                Advertiser: true
             }
         });
 
@@ -27,18 +33,31 @@ class PrismaProductRepositorie implements IProductRepositorie {
 
 
     async find(id: string): Promise<IProduct | null> {
+
         const result = await prisma.product.findFirst({
-            where: { id }
+            where: { id },
+            include: {
+                Advertiser: true,
+                Auct: true
+            }
         });
 
-        return result ? (result as IProduct) : null;
+        console.log('observando ID PRISMA--> ', id, result);
+
+        return result as IProduct
     }
+
+
 
 
     async listByAdvertiserId(id: string): Promise<IProduct[]> {
         const products = await prisma.product.findMany({
             where: {
                 owner_id: id
+            },
+            include: {
+                Advertiser: true,
+                Auct: true
             }
         });
 
@@ -46,22 +65,51 @@ class PrismaProductRepositorie implements IProductRepositorie {
     }
 
     async update(data: Partial<IProduct>, id: string): Promise<IProduct | null> {
-        const { auct_id, ...restdata } = data;
+        const { categorie,
+            color,
+            cover_img_url,
+            height,
+            width,
+            weight,
+            highlight_product,
+            description,
+            initial_value,
+            final_value,
+            img01_url,
+            img02_url,
+            img03_url,
+            img04_url,
+            img05_url,
+            img06_url,
+            title,
+        } = data;
 
         const updatedProduct = await prisma.product.update({
             where: {
                 id,
             },
             data: {
-                ...restdata,
-                Auct: {
-                    connect: {
-                        id: auct_id
-                    }
-                },
+                color,
+                cover_img_url,
+                height,
+                width,
+                weight,
+                highlight_product,
+                description,
+                initial_value,
+                final_value,
+                img01_url,
+                img02_url,
+                img03_url,
+                img04_url,
+                img05_url,
+                img06_url,
+                title,
+                categorie
             },
             include: {
-                Auct: true
+                Auct: true,
+                Advertiser: true
             }
         });
 

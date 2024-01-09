@@ -1,4 +1,3 @@
-
 import bcrypt from 'bcrypt'
 import PrismaAdminRepositorie from '../../../repositorie/database/PrismaAdminRepositorie'
 import { IAdmin } from '../../../entities/IAdmin'
@@ -6,9 +5,6 @@ import { AdministratorResponse } from '../../IMainAdministrador'
 
 
 export const createAdmin = async (data: IAdmin): Promise<AdministratorResponse> => {
-
-    console.log('dentro do usecase admin --> ', data);
-
 
     return new Promise(async (resolve, reject) => {
 

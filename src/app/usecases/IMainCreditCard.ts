@@ -6,16 +6,19 @@ export interface CreditCardResponse {
 }
 
 interface params {
-    id: string
+    credit_id: string
+    admin_id: string
+    advertiser_id: string
+    client_id: string
 }
 
-interface IMainCreditCard{
+interface IMainCreditCard {
     create(data: ICreditCard): Promise<CreditCardResponse>
-    find(id: string): Promise<CreditCardResponse>
-    listByAdminID(id: string): Promise<CreditCardResponse>
-    listByAdvertiserID(id: string): Promise<CreditCardResponse>
-    listByClientID(id: string): Promise<CreditCardResponse>
-    delete(id: string): Promise<CreditCardResponse>
+    find(data: any, params: params): Promise<CreditCardResponse>
+    listByAdminID(data: any, params: params): Promise<CreditCardResponse>
+    listByAdvertiserID(data: any, params: params): Promise<CreditCardResponse>
+    listByClientID(data: any, params: params): Promise<CreditCardResponse>
+    delete(data: any, params: params): Promise<CreditCardResponse>
 }
 
 export default IMainCreditCard

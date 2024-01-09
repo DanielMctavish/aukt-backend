@@ -4,7 +4,7 @@ import PrismaAuctRepositorie from "../../../repositorie/database/PrismaAuctRepos
 const prismaAuct = new PrismaAuctRepositorie()
 
 
-export const updateAuct = (data: IAuct, auct_id:string): Promise<AuctResponse> => {
+export const updateAuct = (data: IAuct, auct_id: string): Promise<AuctResponse> => {
 
     return new Promise(async (resolve, reject) => {
         try {
@@ -19,7 +19,7 @@ export const updateAuct = (data: IAuct, auct_id:string): Promise<AuctResponse> =
 
 
         } catch (error: any) {
-            reject({ status_code: 500, body: error.message })
+            reject({ status_code: 500, body: error })
         }
     })
 

@@ -8,6 +8,7 @@ export const deleteClient = (client_id: string): Promise<ClientResponse> => {
 
         try {
 
+            if (!client_id) reject({ status_code: 403, body: "not params id passed" })
             const currentClient = await prismaClient.delete(client_id)
 
             if (currentClient)

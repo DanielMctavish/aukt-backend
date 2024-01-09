@@ -1,14 +1,19 @@
+import IBid from "../../entities/IBid";
 import { IClient } from "../../entities/IClient";
 import IMainClient, { ClientResponse } from "../IMainClient";
+import { bidAuct } from "./functions/BidAuct";
 import { createClient } from "./functions/CreateClient";
 import { deleteClient } from "./functions/DeleteClient";
 import { findClient } from "./functions/FindClient";
 import { findClientByEmail } from "./functions/FindClientByEmail";
 import { listClient } from "./functions/ListClient";
+import { subscribedAuct } from "./functions/SubscribedAuct";
 import { updateClient } from "./functions/UpdateClient";
 
 interface params {
-    id: string
+    auct_id: string
+    client_id: string
+    email: string
 }
 
 class MainClientUsecases implements IMainClient {
@@ -17,12 +22,12 @@ class MainClientUsecases implements IMainClient {
         return createClient(data)
     }
 
-    async FindClient(data: any, client_id: string): Promise<ClientResponse> {
-        return findClient(client_id)
+    async FindClient(data: any, params: params): Promise<ClientResponse> {
+        return findClient(params.client_id)
     }
 
-    async FindClientByEmail(data: any, email: string): Promise<ClientResponse> {
-        return findClientByEmail(email)
+    async FindClientByEmail(data: any, params: params): Promise<ClientResponse> {
+        return findClientByEmail(params.email)
     }
 
     async ListClient(): Promise<ClientResponse> {
@@ -30,11 +35,21 @@ class MainClientUsecases implements IMainClient {
     }
 
     async UpdateClient(data: IClient, params: params): Promise<ClientResponse> {
-        return updateClient(data, params.id)
+        return updateClient(data, params.client_id)
     }
 
-    async DeleteClient(client_id: string): Promise<ClientResponse> {
-        return deleteClient(client_id)
+    async DeleteClient(data: any, params: params): Promise<ClientResponse> {
+        return deleteClient(params.client_id)
+    }
+
+    // AUCT OPERATIONS..................................................................
+
+    async BidAuct(data: IBid): Promise<ClientResponse> {
+        return bidAuct(data)
+    }
+
+    async SubscribedAuct(data: any, params: params): Promise<ClientResponse> {
+        return subscribedAuct(params.client_id, params.auct_id)
     }
 
 }

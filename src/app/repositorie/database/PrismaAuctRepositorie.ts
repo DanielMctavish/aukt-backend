@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { IAuctRepositorie } from "../IAuctRepositorie";
 import { IAuct } from "../../entities/IAuct";
-import { error } from "console";
 
 const prisma = new PrismaClient();
 
@@ -15,11 +14,17 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                 ...restData,
                 product_list: {
                     create: !product_list ? [] : product_list
+                },
+                subscribed_clients: {
+                    create: !data.subscribed_clients ? [] : data.subscribed_clients
+                },
+                Bids: {
+                    create: !data.Bid ? [] : data.Bid
                 }
             }
         });
 
-        return createdAuct;
+        return createdAuct as IAuct;
     }
 
     async find(id: string): Promise<IAuct | null> {
@@ -28,7 +33,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                 id,
             },
         });
-        return foundAuct;
+        return foundAuct as IAuct;
     }
 
     async list(creator_id: string): Promise<IAuct[]> {
@@ -47,16 +52,18 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
 
     }
 
-    async update(data: Partial<IAuct>, id: string): Promise<IAuct | null> {
+    async update(data: Partial<IAuct>, auct_id: string): Promise<IAuct | null> {
+        console.log('observando update client--> ', data.client_id);
+
         return new Promise((resolve, reject) => {
             prisma.auct.findUnique({
                 where: {
-                    id: id,
+                    id: auct_id,
                 },
             })
                 .then(existingAuct => {
                     if (!existingAuct) {
-                        reject(new Error(`Leilão com ID ${id} não encontrado.`));
+                        reject(new Error(`Leilão com ID ${auct_id} não encontrado.`));
                         return;
                     }
 
@@ -71,11 +78,12 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                         terms_conditions,
                         title,
                         value,
+                        client_id
                     } = data;
 
                     return prisma.auct.update({
                         where: {
-                            id: id,
+                            id: auct_id,
                         },
                         data: {
                             accept_payment_methods,
@@ -88,16 +96,19 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                             title,
                             value,
                             terms_conditions,
+                            subscribed_clients: {
+                                connect: {
+                                    id: client_id
+                                }
+                            }
                         },
                     });
                 })
                 .then(updatedAuct => {
-                    console.log('Resultado da atualização do leilão:', updatedAuct);
                     resolve(updatedAuct as IAuct);
                 })
                 .catch(error => {
-                    console.error('Erro ao atualizar o leilão:', error);
-                    reject(null);
+                    reject(error.message);
                 });
         });
     }
@@ -122,7 +133,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
             })
                 .then(deletedAuct => {
                     console.log('Leilão deletado com sucesso:', deletedAuct);
-                    resolve(deletedAuct);
+                    resolve(deletedAuct as IAuct);
                 })
                 .catch(error => {
                     reject(`erro ao tentar deletar leilão: ${error.message}`);

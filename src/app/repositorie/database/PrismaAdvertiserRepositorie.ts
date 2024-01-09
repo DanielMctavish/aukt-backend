@@ -10,14 +10,18 @@ class PrismaAdvertiserRepositorie implements IAdvertiserRepositorie {
 
     async create(data: IAdvertiser): Promise<IAdvertiser> {
 
-        const { name, password, address, email, credit_cards } = data
+        const { name,CPF, password, address, email, credit_cards, nickname, url_fake_cover, url_profile_cover } = data
 
         return await prisma.advertiser.create({
             data: {
                 name,
+                CPF,
                 email,
                 password,
                 address,
+                nickname,
+                url_fake_cover,
+                url_profile_cover,
                 credit_cards: {
                     connect: credit_cards?.map((card: ICreditCard) => ({
                         id: card.id
@@ -53,7 +57,10 @@ class PrismaAdvertiserRepositorie implements IAdvertiserRepositorie {
                 name: data.name,
                 address: data.address,
                 password: data.password,
-                email: data.email
+                email: data.email,
+                nickname: data.nickname,
+                url_fake_cover: data.url_fake_cover,
+                url_profile_cover: data.url_profile_cover
             }
         });
 

@@ -2,6 +2,7 @@
 
 export interface ICreditCard {
     id: string;
+    owner_id:string
     cardNumber: string;
     cardHolderName: string;
     expirationDate: string;

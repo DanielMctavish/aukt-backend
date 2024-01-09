@@ -1,9 +1,18 @@
+import { IAdvertiser } from "./IAdvertiser"
+import IBid from "./IBid"
+import { IClient } from "./IClient"
 import { IProduct } from "./IProduct"
 
 
 export interface IAuct {
     id: string
     creator_id: string
+    advertiser_id?: string
+    Advertiser?: IAdvertiser | any
+    winner_id?: string | any
+    client_id?: string | any
+    subscribed_clients?: IClient[]
+    Bid?: IBid[]
     title: string
     tags: string[]
     auct_cover_img: string

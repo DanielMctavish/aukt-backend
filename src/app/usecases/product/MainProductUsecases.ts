@@ -7,23 +7,24 @@ import { listProductByAdvertiser } from "./functions/listProductByAdvertiser";
 import { updateProduct } from "./functions/updateProduct";
 
 interface params {
-    id: string
+    product_id: string
+    advertiser_id:string
 }
 class MainProductUsecases implements IMainProduct {
     create(data: IProduct): Promise<ProductResponse> {
         return createProduct(data)
     }
-    find(id: string): Promise<ProductResponse> {
-        return findProduct(id)
+    find(data: any, params: params): Promise<ProductResponse> {
+        return findProduct(params.product_id)
     }
-    listByAdvertiserId(id: string): Promise<ProductResponse> {
-        return listProductByAdvertiser(id)
+    listByAdvertiserId(data: any, params: params): Promise<ProductResponse> {
+        return listProductByAdvertiser(params.advertiser_id)
     }
     update(data: Partial<IProduct>, params: params): Promise<ProductResponse> {
-        return updateProduct(data, params.id)
+        return updateProduct(data, params.product_id)
     }
-    delete(id: string): Promise<ProductResponse> {
-        return deleteProduct(id)
+    delete(data: any, params: params): Promise<ProductResponse> {
+        return deleteProduct(params.product_id)
     }
 }
 

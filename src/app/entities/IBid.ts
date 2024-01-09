@@ -1,10 +1,14 @@
+import { IAuct } from "./IAuct"
+import { IClient } from "./IClient"
 
 
 interface IBid {
     id: string
     value: number
-    client_id: string
-    auct_id: string
+    Client?: IClient
+    client_id?: string | undefined
+    Auct?: IAuct
+    auct_id?: string | undefined
     created_at: Date
     updated_at: Date
 }

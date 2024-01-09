@@ -7,24 +7,31 @@ import { listCreditCardByAdmin } from "./functions/ListByAdmin";
 import { listCreditCardByAdvertiser } from "./functions/ListByAdvertiser";
 import { listCreditCardByClient } from "./functions/ListByClient";
 
+interface params {
+    credit_id: string
+    admin_id: string
+    advertiser_id: string
+    client_id: string
+}
+
 class MainCreditCardUsecases implements IMainCreditCard {
     create(data: ICreditCard): Promise<CreditCardResponse> {
         return createCreditCard(data)
     }
-    find(id: string): Promise<CreditCardResponse> {
-        return findCreditCard(id)
+    find(data: any, params: params): Promise<CreditCardResponse> {
+        return findCreditCard(params.credit_id)
     }
-    listByAdminID(id: string): Promise<CreditCardResponse> {
-        return listCreditCardByAdmin(id)
+    listByAdminID(data: any, params: params): Promise<CreditCardResponse> {
+        return listCreditCardByAdmin(params.admin_id)
     }
-    listByAdvertiserID(id: string): Promise<CreditCardResponse> {
-        return listCreditCardByAdvertiser(id)
+    listByAdvertiserID(data: any, params: params): Promise<CreditCardResponse> {
+        return listCreditCardByAdvertiser(params.advertiser_id)
     }
-    listByClientID(id: string): Promise<CreditCardResponse> {
-        return listCreditCardByClient(id)
+    listByClientID(data: any, params: params): Promise<CreditCardResponse> {
+        return listCreditCardByClient(params.client_id)
     }
-    delete(id: string): Promise<CreditCardResponse> {
-        return deleteCreditCard(id)
+    delete(data: any, params: params): Promise<CreditCardResponse> {
+        return deleteCreditCard(params.credit_id)
     }
 }
 

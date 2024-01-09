@@ -5,10 +5,10 @@ const router = Router()
 
 const mainProducts = new MainProductUsecases()
 
-router.post('/create', ApplyUseCase(mainProducts.create))
-router.get('/find', ApplyUseCase(mainProducts.find))
-router.get('/list-by-advertiser', ApplyUseCase(mainProducts.listByAdvertiserId))
-router.patch('/update', ApplyUseCase(mainProducts.update))
-router.delete('/delete', ApplyUseCase(mainProducts.delete))
+router.post('/create', ApplyUseCase(mainProducts.create))//testado
+router.get('/find', ApplyUseCase(mainProducts.find))//testado
+router.get('/list-by-advertiser', ApplyUseCase(mainProducts.listByAdvertiserId))//testado
+router.patch('/update', ApplyUseCase(mainProducts.update))//testado
+router.delete('/delete', ApplyUseCase(mainProducts.delete))//testado
 
 export default router;

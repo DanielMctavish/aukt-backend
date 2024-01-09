@@ -22,35 +22,45 @@ model Admin {
 }
 
 model Advertiser {
-  id           String       @id @default(cuid())
-  name         String
-  email        String
-  password     String
-  address      String
-  credit_cards CreditCard[]
-  created_at   DateTime     @default(now())
-  updated_at   DateTime     @updatedAt
+  id                String       @id @default(cuid())
+  name              String
+  CPF               String
+  nickname          String
+  url_fake_cover    String
+  url_profile_cover String
+  email             String       @unique
+  password          String
+  address           String
+  credit_cards      CreditCard[]
+  Aucts             Auct[]
+  Product           Product[]
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
 }
 
 model Client {
   id              String       @id @default(cuid())
   cpf             String
   name            String
-  email           String
+  email           String       @unique
   password        String
   address         String
   credit_cards    CreditCard[]
   subscribed_auct Auct[]
   created_at      DateTime     @default(now())
   updated_at      DateTime     @updatedAt
+  Bid             Bid[]
 }
 
 model Auct {
   id                        String        @id @default(cuid())
+  Advertiser                Advertiser?   @relation(fields: [advertiser_id], references: [id])
+  advertiser_id             String? 
   creator_id                String
-  winner_id                 String
+  winner_id                 String?
+  client_id                 String?
   subscribed_clients        Client[]
-  bids                      Json[]
+  Bids                      Bid[]
   title                     String
   tags                      String[]
   auct_cover_img            String
@@ -84,8 +94,12 @@ model CreditCard {
 }
 
 model Product {
-  id                String   @id @default(cuid())
+  id                String      @id @default(cuid())
   owner_id          String
+  Advertiser        Advertiser? @relation(fields: [advertiser_id], references: [id])
+  advertiser_id     String?
+  Auct              Auct?       @relation(fields: [auct_id], references: [id])
+  auct_id           String?
   title             String
   description       String
   categorie         String
@@ -103,17 +117,17 @@ model Product {
   img05_url         String
   img06_url         String
   highlight_product Boolean
-  Auct              Auct?    @relation(fields: [auct_id], references: [id])
-  auct_id           String?
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @updatedAt
 }
 
 model Bid {
   id         String   @id @default(cuid())
-  value  Int
-  client_id  String
-  auct_id    String
+  value      Int
+  Client     Client?  @relation(fields: [client_id], references: [id])
+  client_id  String?
+  Auct       Auct?    @relation(fields: [auct_id], references: [id])
+  auct_id    String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
