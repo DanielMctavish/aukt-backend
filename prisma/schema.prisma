@@ -83,12 +83,12 @@ model CreditCard {
   expirationDate String
   cvv            String
   cardType       CardType
-  Admin          Admin?      @relation(fields: [adminId], references: [id])
-  adminId        String?
-  Advertiser     Advertiser? @relation(fields: [advertiserId], references: [id])
-  advertiserId   String?
-  Client         Client?     @relation(fields: [clientId], references: [id])
-  clientId       String?
+  Admin          Admin?      @relation(fields: [admin_id], references: [id])
+  admin_id        String?
+  Advertiser     Advertiser? @relation(fields: [advertiser_id], references: [id])
+  advertiser_id   String?
+  Client         Client?     @relation(fields: [client_id], references: [id])
+  client_id       String?
   created_at     DateTime    @default(now())
   updated_at     DateTime    @updatedAt
 }
