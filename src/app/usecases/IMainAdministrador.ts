@@ -19,6 +19,7 @@ interface IMainAdministrador {
 
     // FirebaseUploadPhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
     // FirebaseDeletePhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
+    LoginAdm(data: Partial<IAdmin>): Promise<AdministratorResponse>
 }
 
 export default IMainAdministrador

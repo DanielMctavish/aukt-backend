@@ -55,7 +55,7 @@ model Client {
 model Auct {
   id                        String        @id @default(cuid())
   Advertiser                Advertiser?   @relation(fields: [advertiser_id], references: [id])
-  advertiser_id             String? 
+  advertiser_id             String?
   creator_id                String
   winner_id                 String?
   client_id                 String?
@@ -72,6 +72,8 @@ model Auct {
   limit_date                Boolean
   accept_payment_methods    PaymentMethod
   value                     String
+  status                    AuctStatus
+  product_timer_seconds     Int
   created_at                DateTime      @default(now())
   updated_at                DateTime      @updatedAt
 }
@@ -84,11 +86,11 @@ model CreditCard {
   cvv            String
   cardType       CardType
   Admin          Admin?      @relation(fields: [admin_id], references: [id])
-  admin_id        String?
+  admin_id       String?
   Advertiser     Advertiser? @relation(fields: [advertiser_id], references: [id])
-  advertiser_id   String?
+  advertiser_id  String?
   Client         Client?     @relation(fields: [client_id], references: [id])
-  client_id       String?
+  client_id      String?
   created_at     DateTime    @default(now())
   updated_at     DateTime    @updatedAt
 }
@@ -146,4 +148,10 @@ enum PaymentMethod {
   Debit
   Pix
   Ticket
+}
+
+enum AuctStatus {
+  cataloged
+  live
+  canceld
 }

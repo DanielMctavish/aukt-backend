@@ -24,10 +24,18 @@ export interface IAuct {
     limit_date: boolean
     accept_payment_methods: PaymentMethod
     value: string
+    status: AuctStatus
+    product_timer_seconds: number
     created_at: Date
     updated_at: Date
 }
 
+
+const AuctStatus: { [x: string]: 'cataloged' | 'live' | 'canceld' } = {
+    cataloged: 'cataloged',
+    live: 'live',
+    canceld: 'canceld',
+}
 
 const PaymentMethod: { [x: string]: 'Credit' | 'Debit' | 'Pix' | 'Ticket' } = {
     Credit: 'Credit',
@@ -36,4 +44,5 @@ const PaymentMethod: { [x: string]: 'Credit' | 'Debit' | 'Pix' | 'Ticket' } = {
     Ticket: 'Ticket'
 }
 
+export type AuctStatus = typeof AuctStatus[keyof typeof AuctStatus]
 export type PaymentMethod = typeof PaymentMethod[keyof typeof PaymentMethod]

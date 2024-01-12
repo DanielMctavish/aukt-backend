@@ -20,6 +20,7 @@ interface IMainAdvertiser {
 
     // FirebaseUploadPhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
     // FirebaseDeletePhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
+    LoginAdvertiser(data: Partial<IAdvertiser>): Promise<AdvertiserResponse>
 }
 
 export default IMainAdvertiser
