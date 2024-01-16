@@ -7,9 +7,11 @@ export interface IAdvertiser {
     id: string
     name: string
     CPF: string
-    nickname: string
-    url_fake_cover: string
-    url_profile_cover: string
+    company_name:string
+    CNPJ?:string
+    url_profile_cover?: string
+    url_profile_company_logo_cover?: string
+    company_adress:string
     email: string
     password: string
     address: string

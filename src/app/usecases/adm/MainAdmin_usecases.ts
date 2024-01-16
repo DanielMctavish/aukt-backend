@@ -3,6 +3,7 @@ import IMainAdministrador, { AdministratorResponse } from "../IMainAdministrador
 import { createAdmin } from "./functions/CreateAdmin";
 import { findAdmin } from "./functions/FindAdmin";
 import { findAdministratorByEmail } from "./functions/FindByEmail";
+import { loginAdministator } from "./functions/LoginAdministator";
 import { updateAdmin } from "./functions/UpdateAdmin";
 
 interface params {
@@ -26,6 +27,10 @@ class MainAdministrator_usecases implements IMainAdministrador {
 
     UpdateAdministrator(data: IAdmin, params: params): Promise<AdministratorResponse> {
         return updateAdmin(data, params.admin_id)
+    }
+
+    LoginAdm(data: Partial<IAdmin>): Promise<AdministratorResponse> {
+        return loginAdministator(data)
     }
 }
 

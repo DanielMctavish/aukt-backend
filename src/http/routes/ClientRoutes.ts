@@ -19,4 +19,8 @@ router.post("/bid-auct", ApplyUseCase(mainClient.BidAuct))//testado
 router.post("/subscribed-auct", ApplyUseCase(mainClient.SubscribedAuct))//testado
 
 
+//ACCESS
+
+router.post("/login",ApplyUseCase(mainClient.LoginClient))//testado
+
 export default router;

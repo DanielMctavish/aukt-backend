@@ -1,3 +1,4 @@
+import { FilePhoto } from "../../utils/Firebase/FirebaseOperations"
 import { IAuct } from "../entities/IAuct"
 
 
@@ -17,6 +18,9 @@ interface IMainAuct {
     ListAuct(data: any, params: params): Promise<AuctResponse>
     UpdateAuct(data: IAuct, params: params): Promise<AuctResponse>
     DeleteAuct(data: any, params: params): Promise<AuctResponse>
+
+    FirebaseUploadCoverAuct(body: any, params: any, File: FilePhoto): Promise<AuctResponse>
+    FirebaseDeleteCoverAuct(body: any, params: any, File: FilePhoto): Promise<AuctResponse>
 }
 
 export default IMainAuct

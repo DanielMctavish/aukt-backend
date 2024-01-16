@@ -10,5 +10,6 @@ router.get('/find', ApplyUseCase(mainAdmin.FindAdministrator))//testado
 router.get('/find-by-email', ApplyUseCase(mainAdmin.FindAdministratorByEmail))//testado
 router.patch('/update', ApplyUseCase(mainAdmin.UpdateAdministrator))//testado
 
+router.post("/login",ApplyUseCase(mainAdmin.LoginAdm))//testado
 
 export default router;

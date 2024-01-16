@@ -7,6 +7,7 @@ import { deleteClient } from "./functions/DeleteClient";
 import { findClient } from "./functions/FindClient";
 import { findClientByEmail } from "./functions/FindClientByEmail";
 import { listClient } from "./functions/ListClient";
+import { loginClient } from "./functions/LoginClient";
 import { subscribedAuct } from "./functions/SubscribedAuct";
 import { updateClient } from "./functions/UpdateClient";
 
@@ -50,6 +51,11 @@ class MainClientUsecases implements IMainClient {
 
     async SubscribedAuct(data: any, params: params): Promise<ClientResponse> {
         return subscribedAuct(params.client_id, params.auct_id)
+    }
+
+    //ACCESS
+    async LoginClient(data: Partial<IClient>): Promise<ClientResponse> {
+        return loginClient(data)
     }
 
 }

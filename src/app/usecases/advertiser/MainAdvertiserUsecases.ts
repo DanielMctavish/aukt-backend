@@ -4,6 +4,7 @@ import { createAdvertiser } from "./functions/CreateAdvertiser";
 import { deleteAdvertiser } from "./functions/DeleteAdvertiser";
 import { findAdvertiser } from "./functions/FindAdvertiser";
 import { findAdvertiserByEmail } from "./functions/FindAdvertiserByEmail";
+import { loginAdvertiser } from "./functions/LoginAdvertiser";
 import { updateAdvertiser } from "./functions/UpdateAdvertiser";
 
 interface params {
@@ -26,6 +27,10 @@ class MainAdvertiserUsecases implements IMainAdvertiser {
     }
     DeleteAdvertiser(data: any, params: params): Promise<AdvertiserResponse> {
         return deleteAdvertiser(params.advertiser_id)
+    }
+
+    LoginAdvertiser(data: Partial<IAdvertiser>): Promise<AdvertiserResponse> {
+        return loginAdvertiser(data)
     }
 }
 

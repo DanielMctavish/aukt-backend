@@ -21,21 +21,32 @@ model Admin {
   updated_at   DateTime     @updatedAt
 }
 
+model Moderator {
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
 model Advertiser {
-  id                String       @id @default(cuid())
-  name              String
-  CPF               String
-  nickname          String
-  url_fake_cover    String
-  url_profile_cover String
-  email             String       @unique
-  password          String
-  address           String
-  credit_cards      CreditCard[]
-  Aucts             Auct[]
-  Product           Product[]
-  created_at        DateTime     @default(now())
-  updated_at        DateTime     @updatedAt
+  id                             String       @id @default(cuid())
+  name                           String
+  CPF                            String
+  company_name                   String
+  CNPJ                           String?
+  url_profile_cover              String
+  url_profile_company_logo_cover String?
+  company_adress                 String
+  email                          String       @unique
+  password                       String
+  address                        String
+  credit_cards                   CreditCard[]
+  Aucts                          Auct[]
+  Product                        Product[]
+  created_at                     DateTime     @default(now())
+  updated_at                     DateTime     @updatedAt
 }
 
 model Client {
@@ -107,6 +118,7 @@ model Product {
   categorie         String
   initial_value     Int
   final_value       Int
+  reserve_value     Int
   color             String
   width             String
   height            String

@@ -9,7 +9,6 @@ export const createAdmin = async (data: IAdmin): Promise<AdministratorResponse> 
     return new Promise(async (resolve, reject) => {
 
         try {
-
             const administrador = new PrismaAdminRepositorie()
             const verifyAdmExisted = await administrador.findByEmail(data.email)
             if (verifyAdmExisted) return reject({ status_code: 403, body: { msg: 'este adm já existe' } })

@@ -14,6 +14,7 @@ export interface IProduct {
     categorie: string,
     initial_value: number,
     final_value: number,
+    reserve_value: number,
     color: string,
     width: string,
     height: string,

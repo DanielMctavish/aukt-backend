@@ -1,3 +1,4 @@
+import { FilePhoto } from "../../utils/Firebase/FirebaseOperations"
 import { IAdvertiser } from "../entities/IAdvertiser"
 
 
@@ -18,9 +19,10 @@ interface IMainAdvertiser {
     UpdateAdvertiser(data: IAdvertiser, params: params): Promise<AdvertiserResponse>
     DeleteAdvertiser(data: any, params: params): Promise<AdvertiserResponse>
 
-    // FirebaseUploadPhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
-    // FirebaseDeletePhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
-    LoginAdvertiser(data: Partial<IAdvertiser>): Promise<AdvertiserResponse>
+    FirebaseUploadPhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdvertiserResponse>
+    FirebaseDeletePhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdvertiserResponse>
+    FirebaseUploadLogoCompany(body: any, params: any, File: FilePhoto): Promise<AdvertiserResponse>
+    FirebaseDeleteLogoCompany(body: any, params: any, File: FilePhoto): Promise<AdvertiserResponse>
 }
 
 export default IMainAdvertiser

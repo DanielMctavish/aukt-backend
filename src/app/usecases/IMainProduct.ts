@@ -1,3 +1,4 @@
+import { FilePhoto } from "../../utils/Firebase/FirebaseOperations"
 import { IProduct } from "../entities/IProduct"
 
 
@@ -17,6 +18,9 @@ interface IMainProduct{
     listByAdvertiserId(data: any, params: params): Promise<ProductResponse>
     update(data: Partial<IProduct>, params: params): Promise<ProductResponse>
     delete(data: any, params: params): Promise<ProductResponse>
+
+    FirebaseUploadProductImgs(body: any, params: any, File: FilePhoto): Promise<ProductResponse>
+    FirebaseDeleteProductImg(body: any, params: any, File: FilePhoto): Promise<ProductResponse>
 }
 
 export default IMainProduct
