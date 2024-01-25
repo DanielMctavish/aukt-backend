@@ -1,7 +1,7 @@
-import { IModerator } from "../../entities/IModerator"
+import { IModerator } from "../../../entities/IModerator"
 import bcrypt from "bcrypt"
-import PrismaModeratorRepositorie from "../../repositorie/database/PrismaModeratorRepositorie"
-import { ModeratorResponse } from "../IMainModerator"
+import PrismaModeratorRepositorie from "../../../repositorie/database/PrismaModeratorRepositorie"
+import { ModeratorResponse } from "../../IMainModerator"
 const moderator = new PrismaModeratorRepositorie()
 
 const createModerator = (data: IModerator): Promise<ModeratorResponse> => {

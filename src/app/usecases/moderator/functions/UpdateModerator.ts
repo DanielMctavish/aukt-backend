@@ -1,6 +1,6 @@
-import { IModerator } from "../../entities/IModerator"
-import PrismaModeratorRepositorie from "../../repositorie/database/PrismaModeratorRepositorie"
-import { ModeratorResponse } from "../IMainModerator"
+import { IModerator } from "../../../entities/IModerator"
+import PrismaModeratorRepositorie from "../../../repositorie/database/PrismaModeratorRepositorie"
+import { ModeratorResponse } from "../../IMainModerator"
 const moderator = new PrismaModeratorRepositorie()
 
 

@@ -19,8 +19,8 @@ interface IMainProduct{
     update(data: Partial<IProduct>, params: params): Promise<ProductResponse>
     delete(data: any, params: params): Promise<ProductResponse>
 
-    FirebaseUploadProductImgs(body: any, params: any, File: FilePhoto): Promise<ProductResponse>
-    FirebaseDeleteProductImg(body: any, params: any, File: FilePhoto): Promise<ProductResponse>
+    // FirebaseUploadProductImgs(body: any, params: any, File: FilePhoto): Promise<ProductResponse>
+    // FirebaseDeleteProductImg(body: any, params: any, File: FilePhoto): Promise<ProductResponse>
 }
 
 export default IMainProduct

@@ -17,6 +17,8 @@ interface IMainModerator{
     FindModeratorByEmail(data: any, params: params): Promise<ModeratorResponse>
     UpdateModerator(data: IModerator, params: params): Promise<ModeratorResponse>
     DeleteModerator(params:params):Promise<ModeratorResponse> 
+
+    LoginModerator(data: Partial<IModerator>): Promise<ModeratorResponse>
 }
 
 export default IMainModerator

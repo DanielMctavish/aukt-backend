@@ -1,5 +1,10 @@
+import { FilePhoto } from "../../../utils/Firebase/FirebaseOperations";
 import { IAdvertiser } from "../../entities/IAdvertiser";
 import IMainAdvertiser, { AdvertiserResponse } from "../IMainAdvertiser";
+import firebaseDeleteAdvertiserProfile from "./firebase/FirebaseDeleteAdvertiserProfile";
+import firebaseDeleteLogoCompany from "./firebase/FirebaseDeleteLogoCompany";
+import firebaseUploadAdvertiserProfile from "./firebase/FirebaseUploadAdvertiserProfile";
+import firebaseUploadCompanyLogo from "./firebase/FirebaseUploadCompanyLogo";
 import { createAdvertiser } from "./functions/CreateAdvertiser";
 import { deleteAdvertiser } from "./functions/DeleteAdvertiser";
 import { findAdvertiser } from "./functions/FindAdvertiser";
@@ -8,6 +13,7 @@ import { loginAdvertiser } from "./functions/LoginAdvertiser";
 import { updateAdvertiser } from "./functions/UpdateAdvertiser";
 
 interface params {
+    url: string
     advertiser_id: string
     email: string
 }
@@ -31,6 +37,20 @@ class MainAdvertiserUsecases implements IMainAdvertiser {
 
     LoginAdvertiser(data: Partial<IAdvertiser>): Promise<AdvertiserResponse> {
         return loginAdvertiser(data)
+    }
+
+    //FIREBASE USECASES
+    FirebaseUploadLogoCompany(body: any, params: params, File: FilePhoto): Promise<AdvertiserResponse> {
+        return firebaseUploadCompanyLogo(params.advertiser_id, File)
+    }
+    FirebaseDeleteLogoCompany(body: any, params: params, File: FilePhoto): Promise<AdvertiserResponse> {
+        return firebaseDeleteLogoCompany(params)
+    }
+    FirebaseUploadPhotoProfile(body: any, params: params, File: FilePhoto): Promise<AdvertiserResponse> {
+        return firebaseUploadAdvertiserProfile(params.advertiser_id,File)
+    }
+    FirebaseDeletePhotoProfile(body: any, params: params, File: FilePhoto): Promise<AdvertiserResponse> {
+        return firebaseDeleteAdvertiserProfile(params)
     }
 }
 
