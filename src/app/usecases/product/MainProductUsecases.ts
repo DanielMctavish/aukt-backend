@@ -1,5 +1,9 @@
+import { FilePhoto } from "../../../utils/Firebase/FirebaseOperations";
 import { IProduct } from "../../entities/IProduct";
 import IMainProduct, { ProductResponse } from "../IMainProduct";
+import firebaseDeleteProductImg from "./firebase/FirebaseDeleteProductImg";
+import firebaseUploadProductCover from "./firebase/FirebaseUploadProductCover";
+import firebaseUploadProductsImgs from "./firebase/FirebaseUploadProductImgs";
 import { createProduct } from "./functions/createProduct";
 import { deleteProduct } from "./functions/deleteProduct";
 import { findProduct } from "./functions/findProduct";
@@ -8,7 +12,8 @@ import { updateProduct } from "./functions/updateProduct";
 
 interface params {
     product_id: string
-    advertiser_id:string
+    url_product: string
+    advertiser_id: string
 }
 class MainProductUsecases implements IMainProduct {
     create(data: IProduct): Promise<ProductResponse> {
@@ -25,6 +30,17 @@ class MainProductUsecases implements IMainProduct {
     }
     delete(data: any, params: params): Promise<ProductResponse> {
         return deleteProduct(params.product_id)
+    }
+
+    FirebaseUploadProductCover(body: any, params: params, File: FilePhoto): Promise<ProductResponse> {
+        return firebaseUploadProductCover(params.product_id, File)
+    }
+
+    FirebaseUploadProductImgs(body: any, params: params, File: any, Files: Array<FilePhoto>): Promise<ProductResponse> {
+        return firebaseUploadProductsImgs(params.product_id, Files)
+    }
+    FirebaseDeleteProductImg(body: any, params: any): Promise<ProductResponse> {
+        return firebaseDeleteProductImg(params)
     }
 }
 

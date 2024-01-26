@@ -18,6 +18,7 @@ interface params {
     email: string
 }
 
+//data/query/file/files
 class MainAdvertiserUsecases implements IMainAdvertiser {
     CreateAdvertiser(data: IAdvertiser): Promise<AdvertiserResponse> {
         return createAdvertiser(data)

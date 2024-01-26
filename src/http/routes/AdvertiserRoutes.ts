@@ -1,7 +1,10 @@
 import { Router } from 'express'
 import { ApplyUseCase } from '../middlewares/ApllyUseCases'
 import MainAdvertiserUsecases from '../../app/usecases/advertiser/MainAdvertiserUsecases'
+import multer from "multer"
+
 const router = Router()
+const upload = multer()
 
 const mainAdvertiser = new MainAdvertiserUsecases()
 
@@ -11,24 +14,16 @@ router.get('/find-by-email', ApplyUseCase(mainAdvertiser.FindAdvertiserByEmail))
 router.patch('/update', ApplyUseCase(mainAdvertiser.UpdateAdvertiser))//testado
 router.delete('/delete', ApplyUseCase(mainAdvertiser.DeleteAdvertiser))//testado
 
-router.post("/login",ApplyUseCase(mainAdvertiser.LoginAdvertiser))//testado
+router.post("/login", ApplyUseCase(mainAdvertiser.LoginAdvertiser))//testado
 
+//data/params/file/files
+router.post("/upload-cover-profile", upload.single('cover-blog-post'), ApplyUseCase(mainAdvertiser.FirebaseUploadPhotoProfile))
 
-router.post("/upload-cover-profile", uploadFile.single('cover-blog-post'), (req, res) => { //testado
-    ApplyUseCase(mainAdvertiser.FirebaseUploadPhotoProfile, req.query, undefined, undefined, req.file)
-})
+router.delete("/delete-profile", ApplyUseCase(mainAdvertiser.FirebaseDeletePhotoProfile))
 
-router.delete("/delete-profile", (req, res) => { //testado
-    ApplyUseCase(mainAdvertiser.FirebaseDeletePhotoProfile, req.query)
-})
+router.post("/upload-logo-company", upload.single('cover-blog-post'), ApplyUseCase(mainAdvertiser.FirebaseUploadLogoCompany))
 
-router.post("/upload-logo-company", uploadFile.single('cover-blog-post'), (req, res) => { //testado
-    ApplyUseCase(mainAdvertiser.FirebaseUploadLogoCompany, req.query, undefined, undefined, req.file)
-})
-
-router.delete("/delete-logo-company", (req, res) => { //testado
-    ApplyUseCase(mainAdvertiser.FirebaseDeleteLogoCompany, req.query)
-})
+router.delete("/delete-logo-company",  ApplyUseCase(mainAdvertiser.FirebaseDeleteLogoCompany))
 
 
 export default router;

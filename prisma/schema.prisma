@@ -11,14 +11,15 @@ datasource db {
 }
 
 model Admin {
-  id           String       @id @default(cuid())
-  name         String
-  email        String       @unique
-  password     String
-  address      String
-  credit_cards CreditCard[]
-  created_at   DateTime     @default(now())
-  updated_at   DateTime     @updatedAt
+  id                String       @id @default(cuid())
+  name              String
+  email             String       @unique
+  password          String
+  address           String
+  admin_url_profile String?
+  credit_cards      CreditCard[]
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
 }
 
 model Moderator {
@@ -44,23 +45,24 @@ model Advertiser {
   address                        String
   credit_cards                   CreditCard[]
   Aucts                          Auct[]
-  Products                        Product[]
+  Products                       Product[]
   created_at                     DateTime     @default(now())
   updated_at                     DateTime     @updatedAt
 }
 
 model Client {
-  id              String       @id @default(cuid())
-  cpf             String
-  name            String
-  email           String       @unique
-  password        String
-  address         String
-  credit_cards    CreditCard[]
-  subscribed_auct Auct[]
-  created_at      DateTime     @default(now())
-  updated_at      DateTime     @updatedAt
-  Bid             Bid[]
+  id                 String       @id @default(cuid())
+  cpf                String
+  name               String
+  email              String       @unique
+  password           String
+  address            String
+  credit_cards       CreditCard[]
+  subscribed_auct    Auct[]
+  Bid                Bid[]
+  client_url_profile String?
+  created_at         DateTime     @default(now())
+  updated_at         DateTime     @updatedAt
 }
 
 model Auct {
@@ -124,12 +126,7 @@ model Product {
   height            String
   weight            String
   cover_img_url     String
-  img01_url         String
-  img02_url         String
-  img03_url         String
-  img04_url         String
-  img05_url         String
-  img06_url         String
+  group_imgs_url    String[]
   highlight_product Boolean
   created_at        DateTime    @default(now())
   updated_at        DateTime    @updatedAt

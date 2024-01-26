@@ -3,10 +3,11 @@ import { Request, Response } from 'express'
 
 export const ApplyUseCase = (usecase: Function) => {
 
-    const applyResponse = async (req: Request, res: Response) => {
+    const applyResponse = async (req: Request | any, res: Response) => {
 
         let data = {
-            // files: req.files,
+            file: req.file,
+            files: req.files,
             query: req.query,
             params: req.params,
             body: req.body
@@ -19,7 +20,7 @@ export const ApplyUseCase = (usecase: Function) => {
         }
 
 
-        await usecase(data.body, data.query)
+        await usecase(data.body, data?.query, data?.file, data?.files)
             .then((response: any) => {
                 // console.log('resposta do applyusecase --> ', response);
                 return res.status(response.status_code).send(response.body)

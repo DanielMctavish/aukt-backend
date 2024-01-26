@@ -1,5 +1,5 @@
 import firebase from "firebase-admin"
-import firebaseKey from "./flashprev-files-firebase-adminsdk-m9cih-3f0803c29a.json"
+import firebaseKey from "./auk-plataform-firebase-adminsdk-0a10n-8d927c792a.json"
 import { v4 } from "uuid"
 
 firebase.initializeApp({
@@ -19,7 +19,7 @@ export interface FilePhoto {
     size: number
 }
 
-const bucket = firebase.storage().bucket("gs://aukt-images.appspot.com")
+const bucket = firebase.storage().bucket("gs://auk-plataform.appspot.com")
 
 //upload a single image
 export async function uploadSingleImage(folderType: string, file: FilePhoto): Promise<string> {
@@ -35,25 +35,26 @@ export async function uploadSingleImage(folderType: string, file: FilePhoto): Pr
 
     return currentUrl;
 }
-//upload multiple images
+
 
 export async function uploadMultipleImages(folderType: string, files: Array<FilePhoto>): Promise<Array<string>> {
-    const promises = files.map(async (file) => {
+    const urlFiles: Array<string> = []
+
+    files.forEach(async (file) => {
         const fileRef = bucket.file(`${folderType}/${v4()}_${file.originalname}`)
         await fileRef.save(file.buffer, {
             metadata: {
                 contentType: file.mimetype
             }
+        }).then(() => {
+            return fileRef.makePublic()
+        }).then(() => {
+            urlFiles.push(`https://storage.googleapis.com/${bucket.name}/${fileRef.name}`)
         })
-
-        await fileRef.makePublic()
-        const currentUrl = `https://storage.googleapis.com/${bucket.name}/${fileRef.name}`;
-
-        return currentUrl;
     })
 
-    return Promise.all(promises)
-}   
+    return urlFiles;
+}
 
 
 export async function deleteSingleImage(url: string) {

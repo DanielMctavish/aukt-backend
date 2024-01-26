@@ -1,3 +1,4 @@
+import { FilePhoto } from "../../utils/Firebase/FirebaseOperations"
 import IBid from "../entities/IBid"
 import { IClient } from "../entities/IClient"
 
@@ -27,6 +28,10 @@ interface IMainClient {
     BidAuct(bid: IBid): Promise<ClientResponse>
     //ACCESS
     LoginClient(data: Partial<IClient>): Promise<ClientResponse>
+    //FIREBASE
+    FirebaseUploadClientProfile(body: any, params: any, File: FilePhoto): Promise<ClientResponse>
+    FirebaseDeleteClientProfile(body: any, params: any, File: FilePhoto): Promise<ClientResponse>
+
 }
 
 export default IMainClient

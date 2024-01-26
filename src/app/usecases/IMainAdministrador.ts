@@ -1,3 +1,4 @@
+import { FilePhoto } from "../../utils/Firebase/FirebaseOperations"
 import { IAdmin } from "../entities/IAdmin"
 
 
@@ -17,8 +18,8 @@ interface IMainAdministrador {
     FindAdministratorByEmail(data: any, params: params): Promise<AdministratorResponse>
     UpdateAdministrator(data: IAdmin, params: params): Promise<AdministratorResponse>
 
-    // FirebaseUploadPhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
-    // FirebaseDeletePhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
+    FirebaseUploadPhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
+    FirebaseDeletePhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
     LoginAdm(data: Partial<IAdmin>): Promise<AdministratorResponse>
 }
 

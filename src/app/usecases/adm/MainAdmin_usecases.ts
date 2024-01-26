@@ -1,5 +1,8 @@
+import { FilePhoto } from "../../../utils/Firebase/FirebaseOperations";
 import { IAdmin } from "../../entities/IAdmin";
 import IMainAdministrador, { AdministratorResponse } from "../IMainAdministrador";
+import firebaseDeleteAdmProfile from "./firebase/FirebaseDeleteAdmProfile";
+import firebaseUploadAdmProfile from "./firebase/FirebaseUploadAdmProfile";
 import { createAdmin } from "./functions/CreateAdmin";
 import { findAdmin } from "./functions/FindAdmin";
 import { findAdministratorByEmail } from "./functions/FindByEmail";
@@ -31,6 +34,13 @@ class MainAdministrator_usecases implements IMainAdministrador {
 
     LoginAdm(data: Partial<IAdmin>): Promise<AdministratorResponse> {
         return loginAdministator(data)
+    }
+
+    FirebaseUploadPhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse> {
+        return firebaseUploadAdmProfile(params.admin_id, File)
+    }
+    FirebaseDeletePhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse> {
+        return firebaseDeleteAdmProfile(params)
     }
 }
 

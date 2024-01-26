@@ -1,3 +1,5 @@
+import { IAuct } from "./IAuct"
+import IBid from "./IBid"
 import { ICreditCard } from "./ICreditCard"
 
 
@@ -8,7 +10,10 @@ export interface IClient {
     email: string
     password: string
     address: string
-    credit_card?: ICreditCard
+    credit_card?: ICreditCard[] | any
+    subscribed_auct?: IAuct[] | any
+    Bid?: IBid[] | any
+    client_url_profile?: string
     created_at: Date
     updated_at: Date
 }

@@ -1,6 +1,9 @@
+import { FilePhoto } from "../../../utils/Firebase/FirebaseOperations";
 import IBid from "../../entities/IBid";
 import { IClient } from "../../entities/IClient";
 import IMainClient, { ClientResponse } from "../IMainClient";
+import firebaseDeleteClientProfile from "./firebase/FirebaseDeleteClientProfile";
+import firebaseUploadClientProfile from "./firebase/FirebaseUploadClientProfile";
 import { bidAuct } from "./functions/BidAuct";
 import { createClient } from "./functions/CreateClient";
 import { deleteClient } from "./functions/DeleteClient";
@@ -56,6 +59,15 @@ class MainClientUsecases implements IMainClient {
     //ACCESS
     async LoginClient(data: Partial<IClient>): Promise<ClientResponse> {
         return loginClient(data)
+    }
+
+    // FIREBASE..........................................................................
+
+    FirebaseUploadClientProfile(body: any, params: any, File: FilePhoto): Promise<ClientResponse> {
+        return firebaseUploadClientProfile(params.client_id, File)
+    }
+    FirebaseDeleteClientProfile(body: any, params: any, File: FilePhoto): Promise<ClientResponse> {
+        return firebaseDeleteClientProfile(params)
     }
 
 }

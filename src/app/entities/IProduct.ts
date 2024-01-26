@@ -20,12 +20,7 @@ export interface IProduct {
     height: string,
     weight: string,
     cover_img_url: string,
-    img01_url: string,
-    img02_url: string,
-    img03_url: string,
-    img04_url: string,
-    img05_url: string,
-    img06_url: string,
+    group_imgs_url: Array<string>,
     highlight_product: boolean,
     created_at: Date
     updated_at: Date
