@@ -10,7 +10,7 @@ class PrismaAdminRepositorie implements IAdminRepositorie {
     async create(data: IAdmin): Promise<IAdmin> {
         const { name, email, password, address, credit_cards } = data;
 
-        const createdAdmin = await prisma.admin.create({
+        const currentAdmin = await prisma.admin.create({
             data: {
                 name,
                 email,
@@ -24,33 +24,35 @@ class PrismaAdminRepositorie implements IAdminRepositorie {
             }
         });
 
-        return createdAdmin;
+        return currentAdmin as IAdmin;
     }
 
 
     async find(admin_id: string): Promise<IAdmin | null> {
 
-        return await prisma.admin.findFirst({
+        const currentAdmin = await prisma.admin.findFirst({
             where: {
                 id: admin_id
             }
         })
-
+        return currentAdmin as IAdmin
     }
 
     async findByEmail(email: string): Promise<IAdmin | null> {
-        return await prisma.admin.findFirst({
+        const currentAdmin = await prisma.admin.findFirst({
             where: {
                 email: email
             }
         })
+        return currentAdmin as IAdmin
     }
 
 
     async list(): Promise<IAdmin[]> {
 
-        return await prisma.admin.findMany()
+        const currentAdmin = await prisma.admin.findMany()
 
+        return currentAdmin as IAdmin[]
     }
 
     async update(data: Partial<IAdmin>, admin_id: string): Promise<IAdmin> {
@@ -70,7 +72,7 @@ class PrismaAdminRepositorie implements IAdminRepositorie {
             }
         });
 
-        return updatedAdmin;
+        return updatedAdmin as IAdmin;
     }
 
 }
