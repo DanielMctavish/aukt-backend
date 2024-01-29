@@ -8,7 +8,7 @@ const upload = multer()
 
 const mainAdvertiser = new MainAdvertiserUsecases()
 
-router.post('/create-advertiser', ApplyUseCase(mainAdvertiser.CreateAdvertiser))//testado
+router.post('/create-advertiser', ApplyUseCase(mainAdvertiser.CreateAdvertiser))//testado x2
 router.get('/find', ApplyUseCase(mainAdvertiser.FindAdvertiser))//testado
 router.get('/find-by-email', ApplyUseCase(mainAdvertiser.FindAdvertiserByEmail))//testado
 router.patch('/update', ApplyUseCase(mainAdvertiser.UpdateAdvertiser))//testado

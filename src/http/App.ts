@@ -9,6 +9,7 @@ import auctRoutes from './routes/AuctRoutes'
 import clientRoutes from './routes/ClientRoutes'
 import creditRoutes from './routes/CreditCardRoutes'
 import productRoutes from './routes/ProductRoutes'
+import moderatorRoutes from "./routes/ModeratorRoutes"
 
 const app = express()
 
@@ -24,6 +25,7 @@ app.use('/auct', auctRoutes)
 app.use('/client', clientRoutes)
 app.use('/credit-card', creditRoutes)
 app.use('/products', productRoutes)
+app.use('/moderator', moderatorRoutes)
 
 app.use('/', (req, res) => {
     res.send('AUKT API version 1.0')

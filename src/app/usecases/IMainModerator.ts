@@ -1,3 +1,4 @@
+import { FilePhoto } from "../../utils/Firebase/FirebaseOperations"
 import { IModerator } from "../entities/IModerator"
 
 
@@ -19,6 +20,11 @@ interface IMainModerator{
     DeleteModerator(params:params):Promise<ModeratorResponse> 
 
     LoginModerator(data: Partial<IModerator>): Promise<ModeratorResponse>
+
+    //FIREBASE
+    UploadProfile(body: any, params: params, File: FilePhoto): Promise<ModeratorResponse>
+    DeleteProfile(body: any, params: params, File: FilePhoto): Promise<ModeratorResponse>
+
 }
 
 export default IMainModerator

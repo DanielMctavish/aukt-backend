@@ -1,5 +1,8 @@
+import { FilePhoto } from "../../../utils/Firebase/FirebaseOperations";
 import { IModerator } from "../../entities/IModerator";
 import IMainModerator, { ModeratorResponse } from "../IMainModerator";
+import deleteModeratorProfile from "./firebase/DeleteModeratorProfile";
+import uploadModeratorProfile from "./firebase/UploadModeratorProfile";
 import createModerator from "./functions/CreateModerator";
 import deleteModerator from "./functions/DeleteModerator";
 import findModerator from "./functions/FindModerator";
@@ -32,7 +35,14 @@ class MainModerator implements IMainModerator {
   }
 
   LoginModerator(data: Partial<IModerator>): Promise<ModeratorResponse> {
-      return LoginModerator(data)
+    return LoginModerator(data)
+  }
+
+  UploadProfile(body: any, params: params, File: FilePhoto): Promise<ModeratorResponse> {
+    return uploadModeratorProfile(params.moderator_id, File)
+  }
+  DeleteProfile(body: any, params: params, File: FilePhoto): Promise<ModeratorResponse> {
+    return deleteModeratorProfile(params)
   }
 
 }

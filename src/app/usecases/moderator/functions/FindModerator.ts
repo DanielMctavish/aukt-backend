@@ -8,8 +8,11 @@ const findModerator = (moderator_id: string): Promise<ModeratorResponse> => {
     return new Promise(async (resolve, reject) => {
 
         try {
+            if(!moderator_id){
+                return reject({ status_code: 403, body: { msg:'moderador_id não informado' } })
+            }
             const verifyModeratorExisted = await moderator.find(moderator_id)
-            if (!verifyModeratorExisted) return reject({ status_code: 403, body: { msg:'moderador não existe' } })
+            if (!verifyModeratorExisted) return reject({ status_code: 404, body: { msg:'moderador não existe' } })
 
             resolve({ status_code: 200, body: { msg:'moderador encontrado com sucesso', verifyModeratorExisted } })
         } catch (error: any) {

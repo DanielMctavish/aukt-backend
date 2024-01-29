@@ -16,7 +16,7 @@ const createModerator = (data: IModerator): Promise<ModeratorResponse> => {
             const hash = await bcrypt.hash(data.password, salt)
 
             const currentModerator = await moderator.create({ ...data, password: hash })
-            resolve({ status_code: 200, body: { msg: 'moderador criado com sucesso', currentModerator } })
+            resolve({ status_code: 201, body: { msg: 'moderador criado com sucesso', currentModerator } })
         } catch (error: any) {
 
             reject({ status_code: 500, body: error.message })

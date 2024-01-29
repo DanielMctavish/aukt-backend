@@ -23,12 +23,13 @@ model Admin {
 }
 
 model Moderator {
-  id         String   @id @default(cuid())
-  name       String
-  email      String   @unique
-  password   String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id                    String   @id @default(cuid())
+  name                  String
+  email                 String   @unique
+  moderator_url_profile String
+  password              String
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
 }
 
 model Advertiser {

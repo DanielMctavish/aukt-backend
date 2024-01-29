@@ -13,6 +13,7 @@ const AuctRoutes_1 = __importDefault(require("./routes/AuctRoutes"));
 const ClientRoutes_1 = __importDefault(require("./routes/ClientRoutes"));
 const CreditCardRoutes_1 = __importDefault(require("./routes/CreditCardRoutes"));
 const ProductRoutes_1 = __importDefault(require("./routes/ProductRoutes"));
+const ModeratorRoutes_1 = __importDefault(require("./routes/ModeratorRoutes"));
 const app = (0, express_1.default)();
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use(express_1.default.json());
@@ -24,6 +25,7 @@ app.use('/auct', AuctRoutes_1.default);
 app.use('/client', ClientRoutes_1.default);
 app.use('/credit-card', CreditCardRoutes_1.default);
 app.use('/products', ProductRoutes_1.default);
+app.use('/moderator', ModeratorRoutes_1.default);
 app.use('/', (req, res) => {
     res.send('AUKT API version 1.0');
 });
