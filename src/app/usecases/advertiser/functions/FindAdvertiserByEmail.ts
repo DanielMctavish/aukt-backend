@@ -4,8 +4,6 @@ const prismaAdvertiser = new PrismaAdvertiserRepositorie()
 
 export const findAdvertiserByEmail = (email: string): Promise<AdvertiserResponse> => {
 
-    console.log('dentro do usecases findAdvertiser-> ', email);
-
     return new Promise(async (resolve, reject) => {
 
         try {

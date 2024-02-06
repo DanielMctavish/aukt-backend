@@ -9,6 +9,9 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
     async create(data: IAuct): Promise<IAuct> {
         const { product_list, ...restData } = data;
 
+        console.log('observando datas -> ', data.auct_dates);
+        
+
         const createdAuct = await prisma.auct.create({
             data: {
                 ...restData,
@@ -70,7 +73,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                     const {
                         accept_payment_methods,
                         auct_cover_img,
-                        auct_date,
+                        auct_dates,
                         descriptions_informations,
                         limit_client,
                         limit_date,
@@ -88,7 +91,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                         data: {
                             accept_payment_methods,
                             auct_cover_img,
-                            auct_date,
+                            auct_dates,
                             descriptions_informations,
                             limit_client,
                             limit_date,

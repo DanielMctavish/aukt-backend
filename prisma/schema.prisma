@@ -81,7 +81,7 @@ model Auct {
   product_list              Product[]
   descriptions_informations String
   terms_conditions          String
-  auct_date                 DateTime[]
+  auct_dates                DateTime[]
   limit_client              Boolean
   limit_date                Boolean
   accept_payment_methods    PaymentMethod
@@ -111,7 +111,6 @@ model CreditCard {
 
 model Product {
   id                String      @id @default(cuid())
-  owner_id          String
   Advertiser        Advertiser? @relation(fields: [advertiser_id], references: [id])
   advertiser_id     String?
   Auct              Auct?       @relation(fields: [auct_id], references: [id])
@@ -123,12 +122,12 @@ model Product {
   final_value       Int
   reserve_value     Int
   color             String
-  width             String
-  height            String
-  weight            String
-  cover_img_url     String
+  width             Int
+  height            Int
+  weight            Float
+  cover_img_url     String?
   group_imgs_url    String[]
-  highlight_product Boolean
+  highlight_product Boolean?
   created_at        DateTime    @default(now())
   updated_at        DateTime    @updatedAt
 }

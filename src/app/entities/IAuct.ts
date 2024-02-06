@@ -19,7 +19,7 @@ export interface IAuct {
     product_list?: IProduct[]
     descriptions_informations: string
     terms_conditions: string
-    auct_date: Date[]
+    auct_dates: Date[]
     limit_client: boolean
     limit_date: boolean
     accept_payment_methods: PaymentMethod

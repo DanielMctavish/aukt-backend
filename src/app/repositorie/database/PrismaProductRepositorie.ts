@@ -7,12 +7,11 @@ const prisma = new PrismaClient()
 class PrismaProductRepositorie implements IProductRepositorie {
 
     async create(data: IProduct): Promise<IProduct> {
-        const { auct_id, advertiser_id, owner_id, ...restdata } = data;
+        const { auct_id, advertiser_id, ...restdata } = data;
 
         const createdProduct = await prisma.product.create({
             data: {
                 ...restdata,
-                owner_id,
                 Auct: {
                     connect: {
                         id: auct_id
@@ -54,7 +53,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
     async listByAdvertiserId(id: string): Promise<IProduct[]> {
         const products = await prisma.product.findMany({
             where: {
-                owner_id: id
+                advertiser_id: id
             },
             include: {
                 Advertiser: true,

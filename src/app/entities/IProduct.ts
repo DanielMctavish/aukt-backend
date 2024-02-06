@@ -4,7 +4,6 @@ import { IAuct } from "./IAuct"
 
 export interface IProduct {
     id: string,
-    owner_id: string,
     Advertiser?: IAdvertiser,
     advertiser_id?: string | undefined,
     Auct?: IAuct,
@@ -16,9 +15,9 @@ export interface IProduct {
     final_value: number,
     reserve_value: number,
     color: string,
-    width: string,
-    height: string,
-    weight: string,
+    width: number,
+    height: number,
+    weight: number,
     cover_img_url: string,
     group_imgs_url: Array<string>,
     highlight_product: boolean,
