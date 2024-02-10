@@ -4,6 +4,7 @@ import { IAuct } from "./IAuct"
 
 export interface IProduct {
     id: string,
+    auct_nanoid?:string,
     Advertiser?: IAdvertiser,
     advertiser_id?: string | undefined,
     Auct?: IAuct,

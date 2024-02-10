@@ -6,6 +6,7 @@ import { IProduct } from "./IProduct"
 
 export interface IAuct {
     id: string
+    nano_id: string
     creator_id: string
     advertiser_id?: string
     Advertiser?: IAdvertiser | any

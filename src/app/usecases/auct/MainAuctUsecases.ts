@@ -4,6 +4,7 @@ import IMainAuct, { AuctResponse } from "../IMainAuct";
 import { createAuct } from "./functions/CreateAuct";
 import { deleteAuct } from "./functions/DeleteAuct";
 import { findAuct } from "./functions/FindAuct";
+import findAuctByNanoId from "./functions/FindAuctByNanoId";
 import { listAuct } from "./functions/ListAucts";
 import { updateAuct } from "./functions/UpdateAuct";
 import firebaseDeleteAuctCover from "./functions/firebase/FirebaseDeleteAuctCover";
@@ -13,6 +14,7 @@ interface params {
     auct_id: string
     creator_id: string
     url:string
+    nano_id: string
 }
 
 class MainAuctUsecases implements IMainAuct {
@@ -21,6 +23,9 @@ class MainAuctUsecases implements IMainAuct {
     }
     FindAuct(data: any, params: params): Promise<AuctResponse> {
         return findAuct(params.auct_id)
+    }
+    FindAuctByNanoId(data: any, params: params): Promise<AuctResponse> {
+        return findAuctByNanoId(params.nano_id)
     }
     ListAuct(data: any, params: params): Promise<AuctResponse> {
         return listAuct(params.creator_id)

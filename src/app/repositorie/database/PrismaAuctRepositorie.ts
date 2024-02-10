@@ -10,7 +10,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
         const { product_list, ...restData } = data;
 
         console.log('observando datas -> ', data.auct_dates);
-        
+
 
         const createdAuct = await prisma.auct.create({
             data: {
@@ -31,6 +31,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
     }
 
     async find(id: string): Promise<IAuct | null> {
+
         const foundAuct = await prisma.auct.findFirst({
             where: {
                 id,
@@ -39,10 +40,18 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
         return foundAuct as IAuct;
     }
 
+    async findByNanoId(nano_id: string): Promise<IAuct | null> {
+
+        const foundAuct = await prisma.auct.findUnique({
+            where: {
+                nano_id
+            }
+        });
+        return foundAuct as IAuct;
+
+    }
+
     async list(creator_id: string): Promise<IAuct[]> {
-
-        console.log('dentro do prisma list auct -> ', creator_id);
-
 
         const aucts = await prisma.auct.findMany({
             where: {

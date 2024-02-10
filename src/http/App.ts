@@ -15,7 +15,12 @@ const app = express()
 
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+    origin: 'http://localhost:3002',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 200
+}))
 app.use(json())
 
 

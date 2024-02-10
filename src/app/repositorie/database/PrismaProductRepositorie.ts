@@ -7,14 +7,15 @@ const prisma = new PrismaClient()
 class PrismaProductRepositorie implements IProductRepositorie {
 
     async create(data: IProduct): Promise<IProduct> {
-        const { auct_id, advertiser_id, ...restdata } = data;
+        const { auct_id, auct_nanoid, advertiser_id, ...restdata } = data;
 
         const createdProduct = await prisma.product.create({
             data: {
                 ...restdata,
                 Auct: {
                     connect: {
-                        id: auct_id
+                        id: auct_id,
+                        nano_id: auct_nanoid
                     }
                 },
                 Advertiser: {

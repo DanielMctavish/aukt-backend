@@ -68,6 +68,7 @@ model Client {
 
 model Auct {
   id                        String        @id @default(cuid())
+  nano_id                   String?       @unique
   Advertiser                Advertiser?   @relation(fields: [advertiser_id], references: [id])
   advertiser_id             String?
   creator_id                String
@@ -111,6 +112,7 @@ model CreditCard {
 
 model Product {
   id                String      @id @default(cuid())
+  auct_nanoid       String?
   Advertiser        Advertiser? @relation(fields: [advertiser_id], references: [id])
   advertiser_id     String?
   Auct              Auct?       @relation(fields: [auct_id], references: [id])
