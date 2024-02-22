@@ -35,7 +35,9 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
         const foundAuct = await prisma.auct.findFirst({
             where: {
                 id,
-            },
+            },include:{
+                product_list:true
+            }
         });
         return foundAuct as IAuct;
     }
@@ -57,7 +59,8 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
             where: {
                 creator_id
             }, include: {
-                product_list: true
+                product_list: true,
+                Advertiser:true
             }
         });
         return aucts as IAuct[];
