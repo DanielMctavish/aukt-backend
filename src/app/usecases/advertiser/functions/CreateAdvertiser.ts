@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import { AdvertiserResponse } from "../../IMainAdvertiser";
 import PrismaAdvertiserRepositorie from "../../../repositorie/database/PrismaAdvertiserRepositorie";
 import { IAdvertiser } from "../../../entities/IAdvertiser";
+import generateNanoId from '../../../../utils/GenerateNanoId';
 const prismaAdvertiser = new PrismaAdvertiserRepositorie()
 
 export const createAdvertiser = (data: IAdvertiser): Promise<AdvertiserResponse> => {
@@ -12,7 +13,7 @@ export const createAdvertiser = (data: IAdvertiser): Promise<AdvertiserResponse>
 
             const salt = await bcrypt.genSalt(10);
             const hash = await bcrypt.hash(data.password, salt)
-            const currentAdvertiser = await prismaAdvertiser.create({ ...data, password: hash })
+            const currentAdvertiser = await prismaAdvertiser.create({ ...data, password: hash, nano_id: generateNanoId(6) })
 
             return resolve({ status_code: 201, body: currentAdvertiser })
 

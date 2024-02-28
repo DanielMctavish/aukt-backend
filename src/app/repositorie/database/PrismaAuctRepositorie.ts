@@ -9,12 +9,12 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
     async create(data: IAuct): Promise<IAuct> {
         const { product_list, ...restData } = data;
 
-        console.log('observando datas -> ', data.auct_dates);
-
-
         const createdAuct = await prisma.auct.create({
             data: {
                 ...restData,
+                auct_dates: {
+                    create: data.auct_dates.map(group => group)
+                },
                 product_list: {
                     create: !product_list ? [] : product_list
                 },
@@ -35,8 +35,8 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
         const foundAuct = await prisma.auct.findFirst({
             where: {
                 id,
-            },include:{
-                product_list:true
+            }, include: {
+                product_list: true
             }
         });
         return foundAuct as IAuct;
@@ -60,7 +60,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                 creator_id
             }, include: {
                 product_list: true,
-                Advertiser:true
+                Advertiser: true
             }
         });
         return aucts as IAuct[];
@@ -85,7 +85,6 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                     const {
                         accept_payment_methods,
                         auct_cover_img,
-                        auct_dates,
                         descriptions_informations,
                         limit_client,
                         limit_date,
@@ -93,7 +92,8 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                         terms_conditions,
                         title,
                         value,
-                        client_id
+                        client_id,
+                        auct_dates
                     } = data;
 
                     return prisma.auct.update({
@@ -103,7 +103,9 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                         data: {
                             accept_payment_methods,
                             auct_cover_img,
-                            auct_dates,
+                            auct_dates: {
+                                create: auct_dates?.map(group => group)
+                            },
                             descriptions_informations,
                             limit_client,
                             limit_date,

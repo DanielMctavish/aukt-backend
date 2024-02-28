@@ -3,13 +3,20 @@ import IBid from "./IBid"
 import { IClient } from "./IClient"
 import { IProduct } from "./IProduct"
 
+interface AuctDateGroups {
+    id: string
+    date_auct: Date
+    group: string
+    Auct?: IAuct | any
+    auctId?: string | any
+}
 
 export interface IAuct {
     id: string
-    nano_id: string
-    categorie:string
+    nano_id: string | null
+    categorie: string | null
     creator_id: string
-    advertiser_id?: string
+    advertiser_id?: string | null
     Advertiser?: IAdvertiser | any
     winner_id?: string | any
     client_id?: string | any
@@ -21,10 +28,10 @@ export interface IAuct {
     product_list?: IProduct[]
     descriptions_informations: string
     terms_conditions: string
-    auct_dates: Date[]
+    auct_dates: AuctDateGroups[];
     limit_client: boolean
     limit_date: boolean
-    accept_payment_methods: PaymentMethod
+    accept_payment_methods: PaymentMethod[]
     value: string
     status: AuctStatus
     product_timer_seconds: number

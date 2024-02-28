@@ -24,6 +24,8 @@ export const createProduct = (data: IProduct): Promise<ProductResponse> => {
             resolve({ status_code: 201, body: currentProduct })
 
         } catch (error: any) {
+            //console.log('erro ao criar produto >> ', error);
+            
             reject({ status_code: 500, body: error })
         }
 

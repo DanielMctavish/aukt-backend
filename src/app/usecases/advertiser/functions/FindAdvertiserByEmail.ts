@@ -8,7 +8,9 @@ export const findAdvertiserByEmail = (email: string): Promise<AdvertiserResponse
 
         try {
             const currentAdvertiser = await prismaAdvertiser.findByEmail(email)
-            return resolve({ status_code: !currentAdvertiser ? 404 : 200, body: !currentAdvertiser ? "USER NOT FOUNDED" : currentAdvertiser })
+            return resolve({ 
+                status_code: !currentAdvertiser ? 404 : 200, 
+                body: !currentAdvertiser ? "USER NOT FOUNDED" : currentAdvertiser })
         } catch (error: any) {
             return reject({ status_code: 500, body: error.message })
         }

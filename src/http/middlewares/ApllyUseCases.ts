@@ -13,6 +13,10 @@ export const ApplyUseCase = (usecase: Function) => {
             body: req.body
         }
 
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
 
         if (typeof usecase !== 'function') {
             // Se usecase não for uma função ou não tiver uma função handle, retorne um erro

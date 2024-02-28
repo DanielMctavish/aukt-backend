@@ -5,6 +5,7 @@ import { IProduct } from "./IProduct"
 
 export interface IAdvertiser {
     id: string
+    nano_id:string
     name: string
     CPF: string
     company_name:string

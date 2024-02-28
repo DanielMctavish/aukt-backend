@@ -12,6 +12,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
         const createdProduct = await prisma.product.create({
             data: {
                 ...restdata,
+                auct_nanoid,
                 Auct: {
                     connect: {
                         id: auct_id,
@@ -67,7 +68,6 @@ class PrismaProductRepositorie implements IProductRepositorie {
 
     async update(data: Partial<IProduct>, id: string): Promise<IProduct | null> {
         const { categorie,
-            color,
             cover_img_url,
             height,
             width,
@@ -75,7 +75,6 @@ class PrismaProductRepositorie implements IProductRepositorie {
             highlight_product,
             description,
             initial_value,
-            final_value,
             group_imgs_url,
             title,
         } = data;
@@ -85,7 +84,6 @@ class PrismaProductRepositorie implements IProductRepositorie {
                 id,
             },
             data: {
-                color,
                 cover_img_url,
                 height,
                 width,
@@ -93,7 +91,6 @@ class PrismaProductRepositorie implements IProductRepositorie {
                 highlight_product,
                 description,
                 initial_value,
-                final_value,
                 group_imgs_url,
                 title,
                 categorie

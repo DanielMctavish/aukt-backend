@@ -17,13 +17,13 @@ const ModeratorRoutes_1 = __importDefault(require("./routes/ModeratorRoutes"));
 const app = (0, express_1.default)();
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use(express_1.default.json());
+app.use((0, body_parser_1.json)());
 app.use((0, cors_1.default)({
-    origin: 'http://localhost:3002',
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     optionsSuccessStatus: 200
 }));
-app.use((0, body_parser_1.json)());
 app.use('/admin', AdminRoutes_1.default);
 app.use('/advertiser', AdvertiserRoutes_1.default);
 app.use('/auct', AuctRoutes_1.default);

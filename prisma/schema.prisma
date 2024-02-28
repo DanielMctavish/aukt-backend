@@ -34,6 +34,7 @@ model Moderator {
 
 model Advertiser {
   id                             String       @id @default(cuid())
+  nano_id                        String       @unique
   name                           String
   CPF                            String
   company_name                   String
@@ -66,11 +67,19 @@ model Client {
   updated_at         DateTime     @updatedAt
 }
 
+model AuctDateGroups {
+  id        String   @id @default(cuid())
+  date_auct DateTime
+  group     String
+  Auct      Auct?    @relation(fields: [auctId], references: [id])
+  auctId    String?
+}
+
 model Auct {
-  id                        String        @id @default(cuid())
-  nano_id                   String?       @unique
+  id                        String           @id @default(cuid())
+  nano_id                   String?          @unique
   categorie                 String?
-  Advertiser                Advertiser?   @relation(fields: [advertiser_id], references: [id])
+  Advertiser                Advertiser?      @relation(fields: [advertiser_id], references: [id])
   advertiser_id             String?
   creator_id                String
   winner_id                 String?
@@ -83,15 +92,15 @@ model Auct {
   product_list              Product[]
   descriptions_informations String
   terms_conditions          String
-  auct_dates                DateTime[]
+  auct_dates                AuctDateGroups[]
   limit_client              Boolean
   limit_date                Boolean
-  accept_payment_methods    PaymentMethod
+  accept_payment_methods    PaymentMethod[]
   value                     String
   status                    AuctStatus
   product_timer_seconds     Int
-  created_at                DateTime      @default(now())
-  updated_at                DateTime      @updatedAt
+  created_at                DateTime         @default(now())
+  updated_at                DateTime         @updatedAt
 }
 
 model CreditCard {
@@ -116,15 +125,15 @@ model Product {
   auct_nanoid       String?
   Advertiser        Advertiser? @relation(fields: [advertiser_id], references: [id])
   advertiser_id     String?
+  owner_id          String?
+  group             String?
   Auct              Auct?       @relation(fields: [auct_id], references: [id])
   auct_id           String?
   title             String
   description       String
   categorie         String
   initial_value     Int
-  final_value       Int
   reserve_value     Int
-  color             String
   width             Int
   height            Int
   weight            Float
