@@ -13,9 +13,9 @@ export const ApplyUseCase = (usecase: Function) => {
             body: req.body
         }
 
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Origin');
+        res.header('Access-Control-Allow-Origin', '*');
 
 
         if (typeof usecase !== 'function') {

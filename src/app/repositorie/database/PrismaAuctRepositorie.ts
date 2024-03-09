@@ -36,7 +36,8 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
             where: {
                 id,
             }, include: {
-                product_list: true
+                product_list: true,
+                Advertiser:true
             }
         });
         return foundAuct as IAuct;
