@@ -17,15 +17,12 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 app.use(json())
 
-
 app.use(cors({
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     optionsSuccessStatus: 200
 }))
-
-
 
 app.use('/admin', adminRoutes)
 app.use('/advertiser', advertiserRoutes)

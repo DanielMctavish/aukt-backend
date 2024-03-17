@@ -5,7 +5,7 @@ const router = Router()
 
 const mainCreditCard = new MainCreditCardUsecases()
 
-router.post('/create', ApplyUseCase(mainCreditCard.create))//testado
+router.post('/create-credit-card', ApplyUseCase(mainCreditCard.create))//testado
 router.get('/find', ApplyUseCase(mainCreditCard.find))//testado
 router.get('/list-by-admin', ApplyUseCase(mainCreditCard.listByAdminID))//testado
 router.get('/list-by-advertiser', ApplyUseCase(mainCreditCard.listByAdvertiserID))//testado

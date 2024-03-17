@@ -33,7 +33,9 @@ const firebaseDeleteProductImg = (params: params): Promise<AdvertiserResponse> =
 
             resolve({ status_code: 200, body: { currentImage } })
         } catch (error: any) {
-            reject({ status_code: 500, body: error.message })
+            reject({ status_code: 500, body: {
+                message: error.message
+            } })
         }
 
     })

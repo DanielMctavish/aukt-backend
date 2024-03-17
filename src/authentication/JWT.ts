@@ -36,6 +36,7 @@ export const verifyToken = (
     const privateSecret: string = process.env.TOKEN_SECRET || "";
 
     try {
+        
         const token = req.headers.authorization?.split(" ")[1]
 
         if (!token) {

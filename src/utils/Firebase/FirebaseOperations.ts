@@ -24,6 +24,7 @@ const bucket = firebase.storage().bucket("gs://auk-plataform.appspot.com")
 //upload a single image
 export async function uploadSingleImage(folderType: string, file: FilePhoto): Promise<string> {
     const fileRef = bucket.file(`${folderType}/${v4()}_${file.originalname}`)
+
     await fileRef.save(file.buffer, {
         metadata: {
             contentType: file.mimetype

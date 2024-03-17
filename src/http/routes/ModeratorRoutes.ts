@@ -7,7 +7,7 @@ const upload = multer()
 import MainModerator from '../../app/usecases/moderator/MainModerator'
 const mainModerator = new MainModerator()
 
-router.post('/create', ApplyUseCase(mainModerator.CreateModerator))//
+router.post('/create-moderator', ApplyUseCase(mainModerator.CreateModerator))//
 router.get('/find', ApplyUseCase(mainModerator.FindModerator))
 router.get('/find-by-email', ApplyUseCase(mainModerator.FindModeratorByEmail))
 router.patch('/update', ApplyUseCase(mainModerator.UpdateModerator))
