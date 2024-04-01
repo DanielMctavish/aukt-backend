@@ -70,6 +70,7 @@ model Client {
 model AuctDateGroups {
   id        String   @id @default(cuid())
   date_auct DateTime
+  hour      String
   group     String
   Auct      Auct?    @relation(fields: [auctId], references: [id])
   auctId    String?

@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { IAuctRepositorie } from "../IAuctRepositorie";
 import { IAuct } from "../../entities/IAuct";
+import dayjs from "dayjs";
 
 const prisma = new PrismaClient();
 
@@ -13,22 +14,41 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
             data: {
                 ...restData,
                 auct_dates: {
-                    create: data.auct_dates.map(group => group)
+                    createMany: {
+                        data: data.auct_dates.map(group => {
+                            return {
+                                date_auct: new Date(group.date_auct),
+                                group: group.group,
+                                hour: group.hour
+                            }
+                        })
+                    }
                 },
                 product_list: {
-                    create: !product_list ? [] : product_list
+                    createMany: {
+                        data: product_list?.map(product => {
+                            return product;
+                        }) || []
+                    }
                 },
                 subscribed_clients: {
-                    create: !data.subscribed_clients ? [] : data.subscribed_clients
+                    create: data.subscribed_clients?.map(subs => {
+                        return subs;
+                    }) || []
                 },
                 Bids: {
-                    create: !data.Bid ? [] : data.Bid
+                    createMany: {
+                        data: !data.Bid ? [] : data.Bid
+                    }
                 }
             }
-        });
+        })
+
+
 
         return createdAuct as IAuct;
     }
+
 
     async find(id: string): Promise<IAuct | null> {
 
@@ -37,7 +57,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                 id,
             }, include: {
                 product_list: true,
-                Advertiser:true
+                Advertiser: true
             }
         });
         return foundAuct as IAuct;

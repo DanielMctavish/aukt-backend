@@ -15,8 +15,8 @@ router.get('/list-auct', verifyToken, ApplyUseCase(mainAuct.ListAuct))//testado
 router.patch('/update-auct', verifyToken, ApplyUseCase(mainAuct.UpdateAuct))//testado
 router.delete('/delete-auct', verifyToken, ApplyUseCase(mainAuct.DeleteAuct))//testado
 
-router.post('/upload-cover-auct', verifyToken, upload.single("cover-auct-image"), ApplyUseCase(mainAuct.FirebaseUploadCoverAuct))
-router.delete('/delete-cover-auct', verifyToken, ApplyUseCase(mainAuct.FirebaseDeleteCoverAuct))
+router.post('/upload-cover-auct', upload.single("cover-auct-image"), ApplyUseCase(mainAuct.FirebaseUploadCoverAuct))
+router.delete('/delete-cover-auct', ApplyUseCase(mainAuct.FirebaseDeleteCoverAuct))
 
 
 export default router;

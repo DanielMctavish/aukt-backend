@@ -6,6 +6,7 @@ import { IProduct } from "./IProduct"
 interface AuctDateGroups {
     id: string
     date_auct: Date
+    hour: string
     group: string
     Auct?: IAuct | any
     auctId?: string | any
