@@ -2,6 +2,7 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import { json } from 'body-parser'
+import { AukCronBot } from '../auk-cron-bot/AukCronBot'
 
 import adminRoutes from './routes/AdminRoutes'
 import advertiserRoutes from './routes/AdvertiserRoutes'
@@ -36,8 +37,10 @@ app.use('/', (req, res) => {
     res.send('AUKT API version 1.0')
 })
 
+AukCronBot()
 
 app.listen(process.env.PORT || 3008, () => {
+    console.clear()
     console.log('[DM] Server running on PORT: ', process.env.PORT)
 })
 

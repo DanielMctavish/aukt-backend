@@ -7,6 +7,7 @@ require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = require("body-parser");
+const AukCronBot_1 = require("../auk-cron-bot/AukCronBot");
 const AdminRoutes_1 = __importDefault(require("./routes/AdminRoutes"));
 const AdvertiserRoutes_1 = __importDefault(require("./routes/AdvertiserRoutes"));
 const AuctRoutes_1 = __importDefault(require("./routes/AuctRoutes"));
@@ -34,7 +35,9 @@ app.use('/moderator', ModeratorRoutes_1.default);
 app.use('/', (req, res) => {
     res.send('AUKT API version 1.0');
 });
+(0, AukCronBot_1.AukCronBot)();
 app.listen(process.env.PORT || 3008, () => {
+    console.clear();
     console.log('[DM] Server running on PORT: ', process.env.PORT);
 });
 exports.default = app;

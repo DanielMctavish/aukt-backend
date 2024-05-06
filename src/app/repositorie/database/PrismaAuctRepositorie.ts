@@ -81,7 +81,8 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                 creator_id
             }, include: {
                 product_list: true,
-                Advertiser: true
+                Advertiser: true,
+                auct_dates: true
             }
         });
         return aucts as IAuct[];
@@ -104,17 +105,13 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                     }
 
                     const {
-                        accept_payment_methods,
                         auct_cover_img,
                         descriptions_informations,
-                        limit_client,
-                        limit_date,
                         tags,
                         terms_conditions,
                         title,
-                        value,
-                        client_id,
-                        auct_dates
+                        categorie,
+
                     } = data;
 
                     return prisma.auct.update({
@@ -122,23 +119,12 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                             id: auct_id,
                         },
                         data: {
-                            accept_payment_methods,
                             auct_cover_img,
-                            auct_dates: {
-                                create: auct_dates?.map(group => group)
-                            },
                             descriptions_informations,
-                            limit_client,
-                            limit_date,
                             tags,
                             title,
-                            value,
                             terms_conditions,
-                            subscribed_clients: {
-                                connect: {
-                                    id: client_id
-                                }
-                            }
+                            categorie
                         },
                     });
                 })

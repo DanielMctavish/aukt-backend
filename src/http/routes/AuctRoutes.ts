@@ -3,6 +3,9 @@ import multer from 'multer'
 import { ApplyUseCase } from '../middlewares/ApllyUseCases'
 import MainAuctUsecases from '../../app/usecases/auct/MainAuctUsecases'
 import { verifyToken } from '../../authentication/JWT'
+import { cronmarker } from '../../auk-cron-bot/AukCronBot'
+import { IAuct } from '../../app/entities/IAuct'
+
 const router = Router()
 const upload = multer()
 
@@ -17,6 +20,24 @@ router.delete('/delete-auct', verifyToken, ApplyUseCase(mainAuct.DeleteAuct))//t
 
 router.post('/upload-cover-auct', upload.single("cover-auct-image"), ApplyUseCase(mainAuct.FirebaseUploadCoverAuct))
 router.delete('/delete-cover-auct', ApplyUseCase(mainAuct.FirebaseDeleteCoverAuct))
+
+
+//ControllerAuct.......................................................................
+router.post('/start-auct', (req, res) => {
+
+    if (!req.query.auct_id) {
+        return res.status(400).json({
+            message: 'Aukt Auction ID is required',
+        })
+    }
+
+    cronmarker.startAuction(req.query.auct_id)
+
+    res.status(200).json({
+        message: 'Aukt Auction Started',
+    })
+
+})
 
 
 export default router;

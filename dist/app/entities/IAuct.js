@@ -3,7 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const AuctStatus = {
     cataloged: 'cataloged',
     live: 'live',
-    canceld: 'canceld',
+    canceled: 'canceled',
+    finished: 'finished',
 };
 const PaymentMethod = {
     Credit: 'Credit',

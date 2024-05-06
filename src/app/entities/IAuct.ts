@@ -3,13 +3,13 @@ import IBid from "./IBid"
 import { IClient } from "./IClient"
 import { IProduct } from "./IProduct"
 
-interface AuctDateGroups {
+export interface AuctDateGroups {
     id: string
     date_auct: Date
     hour: string
     group: string
     Auct?: IAuct | any
-    auctId?: string | any
+    auctId: string | any
 }
 
 export interface IAuct {
@@ -41,10 +41,11 @@ export interface IAuct {
 }
 
 
-const AuctStatus: { [x: string]: 'cataloged' | 'live' | 'canceld' } = {
+const AuctStatus: { [x: string]: 'cataloged' | 'live' | 'canceled' | 'finished' } = {
     cataloged: 'cataloged',
     live: 'live',
-    canceld: 'canceld',
+    canceled: 'canceled',
+    finished: 'finished',
 }
 
 const PaymentMethod: { [x: string]: 'Credit' | 'Debit' | 'Pix' | 'Ticket' } = {

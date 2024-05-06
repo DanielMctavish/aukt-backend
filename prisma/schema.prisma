@@ -175,5 +175,6 @@ enum PaymentMethod {
 enum AuctStatus {
   cataloged
   live
-  canceld
+  canceled
+  finished
 }

@@ -17,7 +17,6 @@ export const updateAuct = (data: IAuct, auct_id: string): Promise<AuctResponse> 
                 resolve({ status_code: 201, body: !currentAuct ? '' : currentAuct })
             }
 
-
         } catch (error: any) {
             reject({ status_code: 500, body: error })
         }
