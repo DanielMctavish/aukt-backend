@@ -41,7 +41,7 @@ export interface IAuct {
 }
 
 
-const AuctStatus: { [x: string]: 'cataloged' | 'live' | 'canceled' | 'finished' } = {
+export const AuctStatus: { [x: string]: 'cataloged' | 'live' | 'canceled' | 'finished' } = {
     cataloged: 'cataloged',
     live: 'live',
     canceled: 'canceled',

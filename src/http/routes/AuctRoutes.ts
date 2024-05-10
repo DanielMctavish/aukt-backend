@@ -31,11 +31,33 @@ router.post('/start-auct', (req, res) => {
         })
     }
 
-    cronmarker.startAuction(req.query.auct_id)
+    cronmarker.startAuction(req.query.auct_id).then((response) => {
 
-    res.status(200).json({
-        message: 'Aukt Auction Started',
+        res.status(response.status).json({ message: response.message })
+
+    }).catch((err) => {
+        res.status(err.status).json({ message: err.message })
     })
+
+})
+
+router.post('/pause-product-time', (req, res) => {
+
+    cronmarker.pauseAuction(req.query.auct_id).then(response => {
+        res.status(response.status).json({ message: response.message })
+    })
+
+})
+
+router.post('/resume-floor', (req, res) => {
+
+    cronmarker.resumeAuction(req.query.auct_id).then(response => {
+        res.status(response.status).json({ message: response.message })
+    })
+
+})
+
+router.post('/change-product-time', (req, res) => {
 
 })
 

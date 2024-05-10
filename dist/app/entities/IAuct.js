@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const AuctStatus = {
+exports.AuctStatus = void 0;
+exports.AuctStatus = {
     cataloged: 'cataloged',
     live: 'live',
     canceled: 'canceled',

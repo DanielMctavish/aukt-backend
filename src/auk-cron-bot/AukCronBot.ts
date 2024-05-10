@@ -1,4 +1,4 @@
-import { IAuct } from "../app/entities/IAuct"
+import { AuctStatus, IAuct } from "../app/entities/IAuct"
 import PrismaAuctRepositorie from "../app/repositorie/database/PrismaAuctRepositorie"
 const prismaAuct = new PrismaAuctRepositorie()
 import CronMarker from "./Cron"
@@ -6,7 +6,7 @@ import CronMarker from "./Cron"
 const cronmarker = new CronMarker()
 
 const AukCronBot = async () => {
-    
+
     let databaseAuct: IAuct[] = []
 
     const checkinterval = setInterval(async () => {
@@ -22,5 +22,29 @@ const AukCronBot = async () => {
 
 }
 
+const checkAuctionStatus = async (auct_id: string) => {
 
-export { AukCronBot, cronmarker };
+    try {
+
+        const currentAuction = await prismaAuct.find(auct_id)
+        return currentAuction?.status
+
+    } catch (error) {
+        return 'unknown'
+    }
+}
+
+const changeAuctStatus = async (auct_id: string, status: AuctStatus) => {
+
+    try {
+        await prismaAuct.update({ status }, auct_id)
+    } catch (error: any) {
+
+        console.log(error.message)
+
+    }
+
+}
+
+
+export { AukCronBot, cronmarker, checkAuctionStatus, changeAuctStatus };

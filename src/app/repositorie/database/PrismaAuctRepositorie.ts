@@ -90,7 +90,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
     }
 
     async update(data: Partial<IAuct>, auct_id: string): Promise<IAuct | null> {
-        console.log('observando update client--> ', data.client_id);
+        //console.log('observando update client--> ', data, auct_id);
 
         return new Promise((resolve, reject) => {
             prisma.auct.findUnique({
@@ -111,7 +111,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                         terms_conditions,
                         title,
                         categorie,
-
+                        status
                     } = data;
 
                     return prisma.auct.update({
@@ -124,20 +124,18 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                             tags,
                             title,
                             terms_conditions,
-                            categorie
+                            categorie,
+                            status
                         },
                     });
                 })
                 .then(updatedAuct => {
                     resolve(updatedAuct as IAuct);
-                })
-                .catch(error => {
+                }).catch(error => {
                     reject(error.message);
                 });
         });
     }
-
-
 
 
     async delete(id: string): Promise<IAuct | null> {

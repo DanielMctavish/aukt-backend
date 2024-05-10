@@ -1,24 +1,33 @@
 import { AuctDateGroups, IAuct } from "../app/entities/IAuct";
-import dayjs from "dayjs"
-import { IProduct } from "../app/entities/IProduct";
 import ReceivedAuctions from "./cron-jobs-functions/ReceivedAuctions";
 import MarkAuctions from "./cron-jobs-functions/MarkAuctions";
 import ValidatePlayFloor from "./cron-jobs-functions/ValidatePlayFloor";
 import SlotsStatus from "./cron-jobs-functions/SlotsStatus";
-import RenderFloor from "./cron-jobs-functions/RenderFloor";
-import FalloutCronos from "./cron-jobs-functions/FalloutCronos";
+import { RenderFloor } from "./cron-jobs-functions/RenderFloor";
+import { FalloutCronos } from "./cron-jobs-functions/FalloutCronos";
 import StartAuction from "./cron-jobs-functions/StartAuction";
+import PauseAuction from "./cron-jobs-functions/PauseAuction";
+import { IBotResponses, IFloorAuction } from "./interfaces/IBotResponses";
+import ResumeAuction from "./cron-jobs-functions/ResumeAuction";
 
 class CronMarker {
 
     public auctions: IAuct[] = []
 
-    slotAuct01: IAuct | null = null
-    slotAuct02: IAuct | null = null
-    slotAuct03: IAuct | null = null
-    slotAuct04: IAuct | null = null
-    slotAuct05: IAuct | null = null
-    slotAuct06: IAuct | null = null
+    public allSlots: any[] = [
+        { SLOT: false },
+        { SLOT: false },
+        { SLOT: false },
+        { SLOT: false },
+        { SLOT: false },
+        { SLOT: false },
+        { SLOT: false },
+        { SLOT: false },
+        { SLOT: false },
+        { SLOT: false },
+        { SLOT: false },
+        { SLOT: false }
+    ]
 
     currentTimer: number = 0
 
@@ -31,29 +40,41 @@ class CronMarker {
     }
 
     public slotsStatus() {
-        SlotsStatus()
+        return new SlotsStatus()
     }
 
     public validatePlayFloor(currentTime: Date) {
         ValidatePlayFloor(currentTime)
     }
 
-    public renderFloor(floorAuct: IAuct, auctionDate: AuctDateGroups) {
-        RenderFloor(floorAuct, auctionDate)
+    public renderFloor(floorAuct: IAuct, auctionDate: AuctDateGroups, timer_freezed?: number, current_product_id?: string) {
+
+        return new Promise((resolve, reject) => {
+
+            RenderFloor(floorAuct, auctionDate, timer_freezed, current_product_id).then(result => {
+                resolve('ok')
+            })
+
+        })
+
     }
 
-    public falloutCronos(timerCronos: number) {
-        FalloutCronos(timerCronos)
+    public falloutCronos(timerCronos: number, slotInformations: IFloorAuction, timerDelay: number, firstExecution?: boolean) {
+        FalloutCronos(timerCronos, slotInformations, timerDelay, firstExecution)
     }
 
-    public startAuction(auct_id: string | any) {
-        StartAuction(auct_id)
+    public startAuction(auct_id: string | any): Promise<IBotResponses> {
+        return StartAuction(auct_id)
     }
 
-    public pauseAuction() {
+    public pauseAuction(auct_id: string | any) {
 
+        return PauseAuction(auct_id)
 
+    }
 
+    public resumeAuction(auct_id: string | any): Promise<IBotResponses> {
+        return ResumeAuction(auct_id)
     }
 
     public skipProduct() {

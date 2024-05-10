@@ -1,9 +1,12 @@
+import { IFloorAuction } from "../interfaces/IBotResponses";
+import { cronmarker } from "../AukCronBot";
 
+let falloutInterval: NodeJS.Timeout
 
-const FalloutCronos = (timerCronos: number) => {
+const FalloutCronos = (timerCronos: number, slotInformations: IFloorAuction, timerDelay: number, firstExecution?: boolean) => {
 
     // CONTADOR E BARRA DE PROGRESSO..............................................
-    let count = 1;
+    let count = 1 + (firstExecution ? timerDelay : 0);
     const progressBarLength = timerCronos;
     process.stdout.write('\n');
     const progress = '█'.repeat(count).padEnd(progressBarLength, '░');
@@ -11,8 +14,13 @@ const FalloutCronos = (timerCronos: number) => {
     process.stdout.clearLine(0)
     process.stdout.write(`\x1b[32m${progress}\x1b[0m`);
 
-    const newInterval = setInterval(() => {
+    falloutInterval = setInterval(async () => {
+
         count++;
+
+        const updatedSlot = { ...slotInformations, timer_freezed: count }
+        await cronmarker.slotsStatus().selectSlotAvailable(updatedSlot)
+
         const progress = '█'.repeat(count).padEnd(progressBarLength, '░');
         process.stdout.cursorTo(0);
         process.stdout.clearLine(0)
@@ -26,12 +34,13 @@ const FalloutCronos = (timerCronos: number) => {
         process.stdout.write(` ${timeDisplay}`);
 
         if (count === progressBarLength) {
-            clearInterval(newInterval);
             count = 0
+            firstExecution = false;
+            clearInterval(falloutInterval);
         }
 
     }, 1000);
 
 }
 
-export default FalloutCronos;
+export { FalloutCronos, falloutInterval };
