@@ -3,10 +3,16 @@ import { cronmarker } from "../AukCronBot";
 
 let falloutInterval: NodeJS.Timeout
 
-const FalloutCronos = (timerCronos: number, slotInformations: IFloorAuction, timerDelay: number, firstExecution?: boolean) => {
+const FalloutCronos = (timerCronos: number, slotInformations: IFloorAuction, timerDelay?: number) => {
 
     // CONTADOR E BARRA DE PROGRESSO..............................................
-    let count = 1 + (firstExecution ? timerDelay : 0);
+    let count = 1
+
+    if (timerDelay && timerDelay > 0) {
+        count = timerDelay
+    }
+
+
     const progressBarLength = timerCronos;
     process.stdout.write('\n');
     const progress = '█'.repeat(count).padEnd(progressBarLength, '░');
@@ -35,7 +41,6 @@ const FalloutCronos = (timerCronos: number, slotInformations: IFloorAuction, tim
 
         if (count === progressBarLength) {
             count = 0
-            firstExecution = false;
             clearInterval(falloutInterval);
         }
 

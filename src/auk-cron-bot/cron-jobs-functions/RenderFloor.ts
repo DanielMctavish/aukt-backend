@@ -1,34 +1,38 @@
 import { AuctDateGroups } from "@prisma/client"
 import { IAuct } from "../../app/entities/IAuct"
 import { IProduct } from "../../app/entities/IProduct"
-import { cronmarker } from "../AukCronBot"
+import { checkAuctionStatus, cronmarker } from "../AukCronBot"
 import { falloutInterval } from "./FalloutCronos";
 
-
 let intervalProductFloor: NodeJS.Timeout;
-const RenderFloor = (floorAuct: IAuct, auctionDate: AuctDateGroups, timer_freezed?: number, product_id?: string) => {
+//let intervalTesting: NodeJS.Timeout;
+const RenderFloor = (floorAuct: IAuct, auctionDate: AuctDateGroups) => {
+
+    // let count: number = 0
+    // return new Promise((resolve) => {
+
+    //     //intervalTesting
+    //     intervalTesting = setInterval(() => {
+    //         count++;
+    //         console.log("rodando intervalo -> ", count)
+    //     }, 1000)
+
+
+    // })
+
+    //TESTING AREA -- TESTING AREA -- TESTING AREA -- TESTING AREA -- TESTING AREA -- TESTING AREA -- TESTING AREA -- TESTING AREA -- 
 
     return new Promise(async (resolve, reject) => {
+
+        if(!auctionDate){
+            resolve(true)
+            return false
+        }
+
         let countProduct = 0
-        let timerDelay: number = timer_freezed ? timer_freezed : 0;
-
         let filterProducts = floorAuct.product_list?.filter(product => product.group === auctionDate.group)
-
         let firstProduct: IProduct | null =
             filterProducts ? filterProducts[0] : null
-
-        if (product_id && filterProducts) {
-
-            filterProducts.forEach((product, index) => {
-
-                if (product.id === product_id) {
-                    firstProduct = product
-                    countProduct = index
-                }
-
-            })
-
-        }
 
         //SET SLOT AUCTION .....................................................................
 
@@ -49,26 +53,35 @@ const RenderFloor = (floorAuct: IAuct, auctionDate: AuctDateGroups, timer_freeze
         process.stdout.clearLine(0)
         process.stdout.write('PRODUTO: ' + firstProduct?.title)
 
-
         clearInterval(falloutInterval)
         cronmarker.currentTimer = floorAuct.product_timer_seconds
-        cronmarker.falloutCronos(cronmarker.currentTimer, slotInformations, timerDelay, true)
+        cronmarker.falloutCronos(cronmarker.currentTimer, slotInformations)
 
-        //INTERVALO................................................................................................................................
+        //INTERVALO DO GRUPO DOS PRODUTOS.................................................................................................................
         intervalProductFloor = setInterval(async () => {
 
             countProduct++
+
             if (!filterProducts) return false
+            if (countProduct > filterProducts?.length) {
+                clearInterval(intervalProductFloor)
+                return false;
+            }
             const currentProduct = filterProducts[countProduct]
+
+            if (!currentProduct) {
+                clearInterval(intervalProductFloor)
+                return false;
+            }
 
             // set slot................................................................................................
 
             slotInformations = {
-                auct_id: floorAuct.id,
-                auct_title: floorAuct.title,
-                current_group: currentProduct.group,
-                current_product: currentProduct.title,
-                current_product_id: currentProduct.id,
+                auct_id: floorAuct ? floorAuct.id : '',
+                auct_title: floorAuct ? floorAuct.title : '',
+                current_group: currentProduct ? currentProduct.group : '',
+                current_product: currentProduct ? currentProduct.title : '',
+                current_product_id: currentProduct ? currentProduct.id : '',
                 timer_freezed: 0
             }
 
@@ -80,24 +93,43 @@ const RenderFloor = (floorAuct: IAuct, auctionDate: AuctDateGroups, timer_freeze
             process.stdout.write('PRODUTO: ' + currentProduct.title);
 
             clearInterval(falloutInterval)
-            cronmarker.falloutCronos(cronmarker.currentTimer, slotInformations, timerDelay, false)
+            cronmarker.falloutCronos(cronmarker.currentTimer, slotInformations)
+
+            const isPaused = await checkAuctionStatus(floorAuct.id)
+
+            if (isPaused === 'paused') {
+                clearInterval(intervalProductFloor)
+                return
+            }
+
+            let finishedInterval = false
 
             if (countProduct + 1 >= filterProducts.length) {
 
                 clearInterval(intervalProductFloor)
 
-                setTimeout(() => {
-                    console.log("")
-                    console.log("--------------------------------------- GRUPO FINALIZADO ---------------------------------------")
-                    resolve(intervalProductFloor)
-                }, cronmarker.currentTimer * 1000)
+                await new Promise((resolve) => {
+
+                    setTimeout(() => {
+                        console.log("")
+                        console.log("--------------------------------------- GRUPO FINALIZADO ---------------------------------------")
+                        //resolve(true)
+                        finishedInterval = true
+                        resolve(true)
+                    }, cronmarker.currentTimer * 1000)
+
+                })
+
+                if (finishedInterval && isPaused === 'live') {
+                    resolve(true)
+                }
 
             }
 
-        }, cronmarker.currentTimer * 1000)
+        }, (cronmarker.currentTimer) * 1000)
 
     })
 
 }
 
-export { RenderFloor, intervalProductFloor };
+export { RenderFloor, intervalProductFloor, falloutInterval };

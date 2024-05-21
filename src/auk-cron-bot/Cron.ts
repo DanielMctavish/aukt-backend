@@ -14,19 +14,19 @@ class CronMarker {
 
     public auctions: IAuct[] = []
 
-    public allSlots: any[] = [
-        { SLOT: false },
-        { SLOT: false },
-        { SLOT: false },
-        { SLOT: false },
-        { SLOT: false },
-        { SLOT: false },
-        { SLOT: false },
-        { SLOT: false },
-        { SLOT: false },
-        { SLOT: false },
-        { SLOT: false },
-        { SLOT: false }
+    public allSlots: Array<IFloorAuction | any> = [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
     ]
 
     currentTimer: number = 0
@@ -47,11 +47,11 @@ class CronMarker {
         ValidatePlayFloor(currentTime)
     }
 
-    public renderFloor(floorAuct: IAuct, auctionDate: AuctDateGroups, timer_freezed?: number, current_product_id?: string) {
+    public renderFloor(floorAuct: IAuct, auctionDate: AuctDateGroups) {
 
         return new Promise((resolve, reject) => {
 
-            RenderFloor(floorAuct, auctionDate, timer_freezed, current_product_id).then(result => {
+            RenderFloor(floorAuct, auctionDate).then(result => {
                 resolve('ok')
             })
 
@@ -59,12 +59,12 @@ class CronMarker {
 
     }
 
-    public falloutCronos(timerCronos: number, slotInformations: IFloorAuction, timerDelay: number, firstExecution?: boolean) {
-        FalloutCronos(timerCronos, slotInformations, timerDelay, firstExecution)
+    public falloutCronos(timerCronos: number, slotInformations: IFloorAuction) {
+        FalloutCronos(timerCronos, slotInformations)
     }
 
-    public startAuction(auct_id: string | any): Promise<IBotResponses> {
-        return StartAuction(auct_id)
+    public startAuction(auct_id: string | any, group: string | any): Promise<IBotResponses> {
+        return StartAuction(auct_id, group)
     }
 
     public pauseAuction(auct_id: string | any) {

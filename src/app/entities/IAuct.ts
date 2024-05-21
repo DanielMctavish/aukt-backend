@@ -41,11 +41,12 @@ export interface IAuct {
 }
 
 
-export const AuctStatus: { [x: string]: 'cataloged' | 'live' | 'canceled' | 'finished' } = {
+export const AuctStatus: { [x: string]: 'cataloged' | 'live' | 'canceled' | 'finished' | 'paused' } = {
     cataloged: 'cataloged',
     live: 'live',
     canceled: 'canceled',
     finished: 'finished',
+    paused: 'paused'
 }
 
 const PaymentMethod: { [x: string]: 'Credit' | 'Debit' | 'Pix' | 'Ticket' } = {

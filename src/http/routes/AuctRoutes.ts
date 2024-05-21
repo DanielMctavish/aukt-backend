@@ -25,13 +25,13 @@ router.delete('/delete-cover-auct', ApplyUseCase(mainAuct.FirebaseDeleteCoverAuc
 //ControllerAuct.......................................................................
 router.post('/start-auct', (req, res) => {
 
-    if (!req.query.auct_id) {
+    if (!req.query.auct_id || !req.query.group) {
         return res.status(400).json({
-            message: 'Aukt Auction ID is required',
+            message: 'Aukt Auction ID and Group is required',
         })
     }
 
-    cronmarker.startAuction(req.query.auct_id).then((response) => {
+    cronmarker.startAuction(req.query.auct_id, req.query.group).then((response) => {
 
         res.status(response.status).json({ message: response.message })
 

@@ -1,15 +1,17 @@
 import { changeAuctStatus, cronmarker } from "../AukCronBot"
 import { IBotResponses } from "../interfaces/IBotResponses"
-import { falloutInterval } from "./FalloutCronos"
-import { intervalProductFloor } from "./RenderFloor"
-
-const PauseAuction = (auct_id: string): Promise<IBotResponses> => {
+import { intervalProductFloor, falloutInterval } from "./RenderFloor";
+import { resumeProductInterval } from "./ResumeRenderAuction"
 
 
-    clearInterval(intervalProductFloor)
-    clearInterval(falloutInterval)
+const PauseAuction = async (auct_id: string): Promise<IBotResponses> => {
 
-    changeAuctStatus(auct_id, 'cataloged')
+    clearInterval(intervalProductFloor);
+    clearInterval(falloutInterval);
+    clearInterval(resumeProductInterval)
+    
+    await changeAuctStatus(auct_id, 'paused')
+
 
     return new Promise((resolve, reject) => {
         resolve({

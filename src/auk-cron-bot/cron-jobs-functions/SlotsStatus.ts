@@ -4,31 +4,32 @@ import { cronmarker } from "../AukCronBot";
 class SlotsStatus {
 
     selectSlotAvailable(floorAuction: IFloorAuction) {
-        return new Promise((resolve, reject) => {
-            let slotFound = false;
-    
-            cronmarker.allSlots.forEach((slot, index) => {
-                if (slotFound) return;
-    
-                if (slot.SLOT && slot.SLOT.auct_id === floorAuction.auct_id) {
-                    cronmarker.allSlots[index].SLOT = floorAuction;
-                    slotFound = true;
-                }
-    
-                if (!slot.SLOT) {
-                    cronmarker.allSlots[index].SLOT = floorAuction;
-                    slotFound = true;
-                }
-            });
-    
-            if (slotFound) {
-                resolve(cronmarker.allSlots);
+        let slotMarked = false
+
+
+        return new Promise(async (resolve, reject) => {
+
+            const foundedSlot = cronmarker.allSlots.findIndex(slot => slot.auct_id === floorAuction.auct_id);
+
+            if (foundedSlot !== -1) {
+                cronmarker.allSlots[foundedSlot] = floorAuction;
             } else {
-                reject('No available slot found');
+                cronmarker.allSlots.forEach((slot, index) => {
+                    if (slotMarked) return false
+                    if (slot === false) {
+
+                        cronmarker.allSlots[index] = floorAuction;
+                        slotMarked = true;
+
+                    }
+                })
             }
+
+            resolve(true)
         });
+
     }
-    
+
 
     show() {
         return new Promise((resolve) => {
@@ -37,7 +38,7 @@ class SlotsStatus {
             cronmarker.allSlots.forEach((slot) => {
                 console.log(slot)
             })
-            resolve('slots showed')
+            resolve(true)
 
         })
     }

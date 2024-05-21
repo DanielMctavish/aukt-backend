@@ -1,9 +1,8 @@
 import { IAuct } from "../../app/entities/IAuct"
 import { cronmarker, checkAuctionStatus, changeAuctStatus } from "../AukCronBot"
-import { IArgumentsResume, IBotResponses } from "../interfaces/IBotResponses"
+import { IBotResponses } from "../interfaces/IBotResponses"
 
-
-const StartAuction = (auct_id: string | any, argumentsToResume?: IArgumentsResume): Promise<IBotResponses> => {
+const StartAuction = (auct_id: string | any, group: string): Promise<IBotResponses> => {
 
     return new Promise(async (resolve, reject) => {
 
@@ -43,7 +42,6 @@ const StartAuction = (auct_id: string | any, argumentsToResume?: IArgumentsResum
         //filter auction by auct_ID........
         const auctSelected: IAuct[] = cronmarker.auctions.filter(auction => auction.id === auct_id)
         console.log(auctSelected[0].title)
-        console.log(auctSelected[0].auct_dates[0].group)
 
         changeAuctStatus(auct_id, 'live')
 
@@ -53,32 +51,43 @@ const StartAuction = (auct_id: string | any, argumentsToResume?: IArgumentsResum
             slots: JSON.stringify(cronmarker.allSlots)
         })
 
-        for (let i = 0; i < auctSelected[0].auct_dates.length; i++) {
+        let firstExecution = true
+        let groupDelay = 0
 
-            if (argumentsToResume) {
-                await cronmarker.renderFloor(
-                    argumentsToResume.currentAuction,
-                    argumentsToResume.currentAuctionDate,
-                    argumentsToResume.timer_freezed,
-                    argumentsToResume.current_product_id
-                )
-            } else {
-                for (let i = 0; i < auctSelected[0].auct_dates.length; i++) {
-                    await cronmarker.renderFloor(auctSelected[0], auctSelected[0].auct_dates[i])
-                }
+        for (const date of auctSelected[0].auct_dates) {
+
+            if (groupDelay + 1 === auctSelected[0].auct_dates.length && !firstExecution) return false
+
+            if (date.group === group && firstExecution) {
+                await cronmarker.renderFloor(auctSelected[0], auctSelected[0].auct_dates[groupDelay])
+                firstExecution = false
+                groupDelay++
             }
 
+            if (!firstExecution) {
+                await cronmarker.renderFloor(auctSelected[0], auctSelected[0].auct_dates[groupDelay])
+            }
+
+            groupDelay++
         }
+
+        //se leilão estiver "paused" nada fazer...........................................................
+
+        const isPaused = await checkAuctionStatus(auctSelected[0].id)
+        if (isPaused === 'paused') return false
 
         console.log(`------------------ LEILÃO FINALIZADO! ${auctSelected[0].title} ----------------------------`)
         changeAuctStatus(auct_id, 'finished')
+
+        // esvaziando o slot do leilão em questão................................................................
         cronmarker.allSlots.forEach((slot, index) => {
 
-            if (slot.SLOT.auct_id === auctSelected[0].id) {
-                cronmarker.allSlots[index] = { SLOT: false }
+            if (slot.auct_id === auctSelected[0].id) {
+                cronmarker.allSlots[index] = false
             }
 
         })
+
 
     })
 
