@@ -12,7 +12,7 @@ const upload = multer()
 const mainAuct = new MainAuctUsecases()
 
 router.post('/create-auct', verifyToken, ApplyUseCase(mainAuct.CreateAuct))//testado
-router.get('/find-auct', verifyToken, ApplyUseCase(mainAuct.FindAuct))//testado
+router.get('/find-auct', ApplyUseCase(mainAuct.FindAuct))//testado
 router.get('/find-by-nanoid', verifyToken, ApplyUseCase(mainAuct.FindAuctByNanoId))//
 router.get('/list-auct', verifyToken, ApplyUseCase(mainAuct.ListAuct))//testado
 router.patch('/update-auct', verifyToken, ApplyUseCase(mainAuct.UpdateAuct))//testado

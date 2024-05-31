@@ -3,130 +3,57 @@ import { IAuct } from "../../app/entities/IAuct"
 import { IProduct } from "../../app/entities/IProduct"
 import { checkAuctionStatus, cronmarker } from "../AukCronBot"
 import { falloutInterval } from "./FalloutCronos";
+import dayjs from "dayjs";
 
 let intervalProductFloor: NodeJS.Timeout;
 //let intervalTesting: NodeJS.Timeout;
 const RenderFloor = (floorAuct: IAuct, auctionDate: AuctDateGroups) => {
 
-    // let count: number = 0
-    // return new Promise((resolve) => {
-
-    //     //intervalTesting
-    //     intervalTesting = setInterval(() => {
-    //         count++;
-    //         console.log("rodando intervalo -> ", count)
-    //     }, 1000)
-
-
-    // })
-
-    //TESTING AREA -- TESTING AREA -- TESTING AREA -- TESTING AREA -- TESTING AREA -- TESTING AREA -- TESTING AREA -- TESTING AREA -- 
-
     return new Promise(async (resolve, reject) => {
 
-        if(!auctionDate){
+        if (!auctionDate) {
             resolve(true)
             return false
         }
 
-        let countProduct = 0
         let filterProducts = floorAuct.product_list?.filter(product => product.group === auctionDate.group)
-        let firstProduct: IProduct | null =
-            filterProducts ? filterProducts[0] : null
 
-        //SET SLOT AUCTION .....................................................................
+        const newOrderProducts = filterProducts?.sort((a, b) => {
+            return dayjs(a.created_at).valueOf() - dayjs(b.created_at).valueOf()
+        })
 
-        let slotInformations = {
-            auct_id: floorAuct.id,
-            auct_title: floorAuct.title,
-            current_group: firstProduct ? firstProduct.group : '',
-            current_product: firstProduct ? firstProduct.title : '',
-            current_product_id: firstProduct ? firstProduct.id : '',
-            timer_freezed: 0
-        }
 
-        await cronmarker.slotsStatus().selectSlotAvailable(slotInformations)
-        await cronmarker.slotsStatus().show()
-        //......................................................................................
+        if (!newOrderProducts) return false
+        for (const product of newOrderProducts) {
 
-        console.log("GRUPO: ", auctionDate.group)
-        process.stdout.clearLine(0)
-        process.stdout.write('PRODUTO: ' + firstProduct?.title)
+            //SET SLOT AUCTION .....................................................................
 
-        clearInterval(falloutInterval)
-        cronmarker.currentTimer = floorAuct.product_timer_seconds
-        cronmarker.falloutCronos(cronmarker.currentTimer, slotInformations)
-
-        //INTERVALO DO GRUPO DOS PRODUTOS.................................................................................................................
-        intervalProductFloor = setInterval(async () => {
-
-            countProduct++
-
-            if (!filterProducts) return false
-            if (countProduct > filterProducts?.length) {
-                clearInterval(intervalProductFloor)
-                return false;
-            }
-            const currentProduct = filterProducts[countProduct]
-
-            if (!currentProduct) {
-                clearInterval(intervalProductFloor)
-                return false;
-            }
-
-            // set slot................................................................................................
-
-            slotInformations = {
-                auct_id: floorAuct ? floorAuct.id : '',
-                auct_title: floorAuct ? floorAuct.title : '',
-                current_group: currentProduct ? currentProduct.group : '',
-                current_product: currentProduct ? currentProduct.title : '',
-                current_product_id: currentProduct ? currentProduct.id : '',
+            let slotInformations = {
+                auct_id: floorAuct.id,
+                auct_title: floorAuct.title,
+                current_group: product ? product.group : '',
+                current_product: product ? product.title : '',
+                current_product_id: product ? product.id : '',
                 timer_freezed: 0
             }
 
             await cronmarker.slotsStatus().selectSlotAvailable(slotInformations)
             await cronmarker.slotsStatus().show()
 
-            console.log("")
+            console.log("GRUPO: ", product.group);
             process.stdout.clearLine(0);
-            process.stdout.write('PRODUTO: ' + currentProduct.title);
+            process.stdout.write('PRODUTO: ' + product?.title);
 
-            clearInterval(falloutInterval)
-            cronmarker.falloutCronos(cronmarker.currentTimer, slotInformations)
+            clearInterval(falloutInterval);
+            cronmarker.currentTimer = floorAuct.product_timer_seconds;
+            await cronmarker.falloutCronos(cronmarker.currentTimer, slotInformations);
+        }
 
-            const isPaused = await checkAuctionStatus(floorAuct.id)
+        console.log("")
+        console.log("--------------------------------------- GRUPO FINALIZADO ---------------------------------------")
+        //resolve(true)
 
-            if (isPaused === 'paused') {
-                clearInterval(intervalProductFloor)
-                return
-            }
-
-            let finishedInterval = false
-
-            if (countProduct + 1 >= filterProducts.length) {
-
-                clearInterval(intervalProductFloor)
-
-                await new Promise((resolve) => {
-
-                    setTimeout(() => {
-                        console.log("")
-                        console.log("--------------------------------------- GRUPO FINALIZADO ---------------------------------------")
-                        //resolve(true)
-                        finishedInterval = true
-                        resolve(true)
-                    }, cronmarker.currentTimer * 1000)
-
-                })
-
-                if (finishedInterval && isPaused === 'live') {
-                    resolve(true)
-                }
-
-            }
-
-        }, (cronmarker.currentTimer) * 1000)
+        resolve(true)
 
     })
 

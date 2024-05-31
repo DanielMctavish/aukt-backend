@@ -26,9 +26,14 @@ const firebaseUploadProductsImgs = (product_id: string, Files: Array<FilePhoto>)
                     && file.mimetype !== 'image/jpeg') return reject({ status_code: 500, body: "o arquivo precisa ser uma foto" })
             })
 
-            const currentImages: Array<string> = await uploadMultipleImages('aukt-product-imgs', Files)
-            await prismaProduct.update({ group_imgs_url: currentImages }, product_id)
-            resolve({ status_code: 201, body: { currentImages } })
+            await uploadMultipleImages('aukt-product-imgs', Files).then(async (images) => {
+
+                console.log("observando Images: ", images)
+
+                await prismaProduct.update({ group_imgs_url: images }, product_id)
+                resolve({ status_code: 201, body: { images } })
+
+            })
 
         } catch (error: any) {
             reject({ status_code: 500, body: error.message })

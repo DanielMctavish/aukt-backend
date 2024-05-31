@@ -2,6 +2,7 @@ import { AuctDateGroups, IAuct } from "../../app/entities/IAuct";
 import { IProduct } from "../../app/entities/IProduct";
 import { changeAuctStatus, cronmarker } from "../AukCronBot";
 import { FalloutCronos } from "./FalloutCronos";
+import dayjs from "dayjs"
 
 // 00 ................................................................................................
 const ResumeRenderAuction = async (
@@ -63,9 +64,14 @@ const filteredProducts = async (Auction: IAuct, products: IProduct[], current_pr
 
         let productDelay = 0;
 
-        for (const [index, product] of products.entries()) {
+        const newOrderProducts = products?.sort((a, b) => {
+            return dayjs(a.created_at).valueOf() - dayjs(b.created_at).valueOf()
+        })
+
+        for (const [index, product] of newOrderProducts.entries()) {
 
             if (firstExecution && product.id === current_product_id) {
+
                 productDelay = index
                 await sendProduct(Auction, product, time, timeDelay)
                 firstExecution = false
@@ -119,20 +125,9 @@ const renderResumeProduct = async (Auction: IAuct, product: IProduct, time: numb
         console.log('PRODUTO: ', product.title)
         console.log("GRUPO: ", product.group)
 
-        FalloutCronos(time, slotInformations, timeDelay)
-
-        resumeProductInterval = setInterval(async () => {
-            timerCount++
-
-            await cronmarker.slotsStatus().selectSlotAvailable(slotInformations)
-
-            if (timerCount === time) {
-                clearInterval(resumeProductInterval)
-                resolve(true)
-                return
-            }
-
-        }, 1000)
+        await FalloutCronos(time, slotInformations, timeDelay).then(() => {
+            resolve(true)
+        })
 
     })
 

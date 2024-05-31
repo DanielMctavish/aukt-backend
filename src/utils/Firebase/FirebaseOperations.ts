@@ -39,22 +39,24 @@ export async function uploadSingleImage(folderType: string, file: FilePhoto): Pr
 
 
 export async function uploadMultipleImages(folderType: string, files: Array<FilePhoto>): Promise<Array<string>> {
-    const urlFiles: Array<string> = []
+    const urlFiles: Array<string> = [];
 
-    files.forEach(async (file) => {
-        const fileRef = bucket.file(`${folderType}/${v4()}_${file.originalname}`)
-        await fileRef.save(file.buffer, {
-            metadata: {
-                contentType: file.mimetype
-            }
-        }).then(() => {
-            return fileRef.makePublic()
-        }).then(() => {
-            urlFiles.push(`https://storage.googleapis.com/${bucket.name}/${fileRef.name}`)
-        })
-    })
+    return new Promise(async (resolve) => {
+        for (const file of files) {
+            const fileRef = bucket.file(`${folderType}/${v4()}_${file.originalname}`);
 
-    return urlFiles;
+            await fileRef.save(file.buffer, {
+                metadata: {
+                    contentType: file.mimetype,
+                },
+            });
+
+            await fileRef.makePublic();
+            urlFiles.push(`https://storage.googleapis.com/${bucket.name}/${fileRef.name}`);
+        }
+
+        resolve(urlFiles);
+    });
 }
 
 

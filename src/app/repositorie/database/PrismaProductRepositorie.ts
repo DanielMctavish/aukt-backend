@@ -44,15 +44,24 @@ class PrismaProductRepositorie implements IProductRepositorie {
             }
         });
 
-        console.log('observando ID PRISMA--> ', id, result);
-
         return result as IProduct
     }
 
+    async list(offset: string): Promise<IProduct[]> {
 
+        const products = await prisma.product.findMany({
+            orderBy: {
+                created_at: "asc"
+            }, take: parseInt(offset)
+        });
+
+        return products.map((product) => product as IProduct);
+
+    }
 
 
     async listByAdvertiserId(id: string): Promise<IProduct[]> {
+
         const products = await prisma.product.findMany({
             where: {
                 advertiser_id: id
@@ -60,6 +69,9 @@ class PrismaProductRepositorie implements IProductRepositorie {
             include: {
                 Advertiser: true,
                 Auct: true
+            },
+            orderBy: {
+                created_at: "asc"
             }
         });
 

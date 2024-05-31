@@ -2,6 +2,9 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import { json } from 'body-parser'
+import http from 'http'
+import "./webSocket"
+
 import { AukCronBot } from '../auk-cron-bot/AukCronBot'
 
 import adminRoutes from './routes/AdminRoutes'
@@ -13,6 +16,7 @@ import productRoutes from './routes/ProductRoutes'
 import moderatorRoutes from "./routes/ModeratorRoutes"
 
 const app = express()
+const serverHttp = http.createServer(app)
 
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
@@ -20,10 +24,19 @@ app.use(json())
 
 app.use(cors({
     origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     preflightContinue: false,
-    optionsSuccessStatus: 200
+    optionsSuccessStatus: 204,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true // 
 }))
+
+app.options('*', cors({
+    origin: '*',  // Especifique a origem que você está usando
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 
 app.use('/admin', adminRoutes)
 app.use('/advertiser', advertiserRoutes)
@@ -39,9 +52,6 @@ app.use('/', (req, res) => {
 
 AukCronBot()
 
-app.listen(process.env.PORT || 3008, () => {
-    console.clear()
-    console.log('[DM] Server running on PORT: ', process.env.PORT)
-})
 
-export default app
+
+export { serverHttp }

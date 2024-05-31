@@ -60,7 +60,15 @@ class CronMarker {
     }
 
     public falloutCronos(timerCronos: number, slotInformations: IFloorAuction) {
-        FalloutCronos(timerCronos, slotInformations)
+
+        return new Promise(async (resolve, reject) => {
+
+            await FalloutCronos(timerCronos, slotInformations).then(() => {
+                resolve(true)
+            });
+
+        })
+
     }
 
     public startAuction(auct_id: string | any, group: string | any): Promise<IBotResponses> {
