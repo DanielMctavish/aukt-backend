@@ -1,5 +1,5 @@
 {
-  "main": "App.ts",
+  "main": "./src/http/app.ts",
   "scripts": {
     "watch": "tsc -w",
     "start:http:dev": "nodemon dist/http/App.js",
