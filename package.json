@@ -1,10 +1,9 @@
 {
-  "main": "./src/http/app.ts",
   "scripts": {
     "watch": "tsc -w",
-    "start:http:dev": "nodemon dist/http/App.js",
+    "start:http:dev": "nodemon dist/http/http.js",
     "build": "tsc",
-    "start:http": "node dist/http/app.js"
+    "start:http": "node dist/http/http.js"
   },
   "keywords": [],
   "author": "Daniel Arruda Developer",

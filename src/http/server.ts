@@ -1,6 +1,6 @@
 
 import { Server } from 'socket.io'
-import { serverHttp } from './app'
+import { serverHttp } from './http'
 
 const io = new Server(serverHttp)
 
