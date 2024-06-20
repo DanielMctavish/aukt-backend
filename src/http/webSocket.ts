@@ -1,4 +1,17 @@
-import { io } from "./server";
+import { Server } from 'socket.io';
+import http from 'http';
+
+const PORT = process.env.SOCKET_PORT || 3001;
+const serverHttp = http.createServer();
+
+const io = new Server(serverHttp, {
+    cors: {
+        origin: '*',
+        credentials: true,
+        optionsSuccessStatus: 200,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE'
+    }
+});
 
 interface IMessengerServiceBody {
     body: Object,
@@ -31,5 +44,9 @@ const serverSendMessage = (messageType: string, data: IMessengerServiceBody) => 
         }
     }
 }
+
+serverHttp.listen(PORT, () => {
+    console.log(`[ Socket.io Server ] running on PORT: ${PORT}`);
+});
 
 export { serverSendMessage, IMessengerServiceBody }

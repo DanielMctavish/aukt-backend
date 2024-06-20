@@ -10,4 +10,3 @@ serverHttp.listen(process.env.PORT || 3008, () => {
     console.log('[AUKT] Server running on PORT: ', process.env.PORT)
 })
 
-export { io }
