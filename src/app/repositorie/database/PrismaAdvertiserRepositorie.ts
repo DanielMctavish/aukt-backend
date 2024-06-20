@@ -59,8 +59,8 @@ class PrismaAdvertiserRepositorie implements IAdvertiserRepositorie {
 
     async update(advertiser_id: string, data: Partial<IAdvertiser>): Promise<IAdvertiser> {
 
-        const { CNPJ,email, CPF, address, company_name, company_adress, name, url_profile_company_logo_cover, url_profile_cover } = data//-->
-        const newData = { CNPJ,email, CPF, address, company_name, company_adress, name, url_profile_company_logo_cover, url_profile_cover }//<--
+        const { CNPJ, email, CPF, address, company_name, company_adress, name, url_profile_company_logo_cover, url_profile_cover, password } = data//-->
+        const newData = { CNPJ, email, CPF, address, company_name, company_adress, name, url_profile_company_logo_cover, url_profile_cover, password }//<--
 
         const updatedAdvertiser = await prisma.advertiser.update({
             where: {

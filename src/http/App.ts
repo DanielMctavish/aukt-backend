@@ -24,19 +24,14 @@ app.use(json())
 
 app.use(cors({
     origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     preflightContinue: false,
     optionsSuccessStatus: 204,
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true // 
 }))
 
-app.options('*', cors({
-    origin: '*',  // Especifique a origem que você está usando
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-}));
+
 
 app.use('/admin', adminRoutes)
 app.use('/advertiser', advertiserRoutes)

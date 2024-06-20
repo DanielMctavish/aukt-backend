@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { AdvertiserResponse } from "../../IMainAdvertiser";
 import PrismaAdvertiserRepositorie from "../../../repositorie/database/PrismaAdvertiserRepositorie";
 import { IAdvertiser } from "../../../entities/IAdvertiser";
@@ -9,7 +10,9 @@ export const updateAdvertiser = (data: IAdvertiser, advertiser_id: string): Prom
 
         try {
 
-            const currentAdvertiser = await prismaAdvertiser.update(advertiser_id, data)
+            const salt = await bcrypt.genSalt(10);
+            const hash = await bcrypt.hash(data.password, salt)
+            const currentAdvertiser = await prismaAdvertiser.update(advertiser_id, { ...data, password: hash })
             return resolve({ status_code: 201, body: currentAdvertiser })
 
         } catch (error: any) {

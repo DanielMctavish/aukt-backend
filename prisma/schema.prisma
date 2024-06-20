@@ -143,6 +143,7 @@ model Product {
   highlight_product Boolean?
   created_at        DateTime    @default(now())
   updated_at        DateTime    @updatedAt
+  Bid               Bid[]
 }
 
 model Bid {
@@ -152,6 +153,8 @@ model Bid {
   client_id  String?
   Auct       Auct?    @relation(fields: [auct_id], references: [id])
   auct_id    String?
+  Product    Product? @relation(fields: [product_id], references: [id])
+  product_id  String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }

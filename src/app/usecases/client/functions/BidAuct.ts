@@ -1,15 +1,26 @@
 import IBid from "../../../entities/IBid";
 import { ClientResponse } from "../../IMainClient";
 import PrismaBidRepositorie from "../../../repositorie/database/PrismaBidRepositorie";
+import PrismaClientRepositorie from "../../../repositorie/database/PrismaClientRepositorie";
+import PrismaProductRepositorie from "../../../repositorie/database/PrismaProductRepositorie";
+
 const prismaBid = new PrismaBidRepositorie()
+const prismaClient = new PrismaClientRepositorie()
+const prismaProduct = new PrismaProductRepositorie()
 
 export const bidAuct = (data: IBid): Promise<ClientResponse> => {
 
     return new Promise(async (resolve, reject) => {
 
         try {
-
+            console.log("observando data -> ", data)
             const currentBid = await prismaBid.CreateBid(data)
+
+            data.product_id &&
+                await prismaProduct.update({
+                    initial_value: currentBid.value
+                }, data.product_id)
+
             resolve({ status_code: 200, body: currentBid })
 
         } catch (error: any) {

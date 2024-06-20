@@ -31,9 +31,15 @@ class PrismaBidRepositorie implements IBidRepositorie {
 
     }
 
-    async List(): Promise<IBid[]> {
+    async List(product_id: string): Promise<IBid[]> {
 
-        const listBid = await prisma.bid.findMany()
+        const listBid = await prisma.bid.findMany({
+            where: {
+                product_id: product_id
+            }, orderBy: {
+                created_at: "asc"
+            }
+        })
 
         return listBid as IBid[]
 

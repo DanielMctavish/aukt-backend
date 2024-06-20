@@ -14,7 +14,7 @@ import { updateAdvertiser } from "./functions/UpdateAdvertiser";
 
 interface params {
     url: string
-    advertiser_id: string
+    adv_id: string
     email: string
 }
 
@@ -24,16 +24,16 @@ class MainAdvertiserUsecases implements IMainAdvertiser {
         return createAdvertiser(data)
     }
     FindAdvertiser(data: any, params: params): Promise<AdvertiserResponse> {
-        return findAdvertiser(params.advertiser_id)
+        return findAdvertiser(params.adv_id)
     }
     FindAdvertiserByEmail(data: any, params: params): Promise<AdvertiserResponse> {
         return findAdvertiserByEmail(params.email)
     }
     UpdateAdvertiser(data: IAdvertiser, params: params): Promise<AdvertiserResponse> {
-        return updateAdvertiser(data, params.advertiser_id)
+        return updateAdvertiser(data, params.adv_id)
     }
     DeleteAdvertiser(data: any, params: params): Promise<AdvertiserResponse> {
-        return deleteAdvertiser(params.advertiser_id)
+        return deleteAdvertiser(params.adv_id)
     }
 
     LoginAdvertiser(data: Partial<IAdvertiser>): Promise<AdvertiserResponse> {
@@ -42,13 +42,13 @@ class MainAdvertiserUsecases implements IMainAdvertiser {
 
     //FIREBASE USECASES
     FirebaseUploadLogoCompany(body: any, params: params, File: FilePhoto): Promise<AdvertiserResponse> {
-        return firebaseUploadCompanyLogo(params.advertiser_id, File)
+        return firebaseUploadCompanyLogo(params.adv_id, File)
     }
     FirebaseDeleteLogoCompany(body: any, params: params, File: FilePhoto): Promise<AdvertiserResponse> {
         return firebaseDeleteLogoCompany(params)
     }
     FirebaseUploadPhotoProfile(body: any, params: params, File: FilePhoto): Promise<AdvertiserResponse> {
-        return firebaseUploadAdvertiserProfile(params.advertiser_id,File)
+        return firebaseUploadAdvertiserProfile(params.adv_id,File)
     }
     FirebaseDeletePhotoProfile(body: any, params: params, File: FilePhoto): Promise<AdvertiserResponse> {
         return firebaseDeleteAdvertiserProfile(params)

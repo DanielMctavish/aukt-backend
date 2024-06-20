@@ -26,17 +26,11 @@ app.use(express_1.default.json());
 app.use((0, body_parser_1.json)());
 app.use((0, cors_1.default)({
     origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     preflightContinue: false,
     optionsSuccessStatus: 204,
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true // 
-}));
-app.options('*', (0, cors_1.default)({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
 }));
 app.use('/admin', AdminRoutes_1.default);
 app.use('/advertiser', AdvertiserRoutes_1.default);

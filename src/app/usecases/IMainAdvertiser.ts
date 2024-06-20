@@ -8,7 +8,7 @@ export interface AdvertiserResponse {
 }
 
 interface params {
-    advertiser_id: string
+    adv_id: string
     email: string
 }
 

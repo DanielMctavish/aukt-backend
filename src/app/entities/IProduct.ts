@@ -13,7 +13,7 @@ export interface IProduct {
     auct_id?: string | undefined,
     title: string,
     description: string,
-    categorie: string,
+    categorie: string, 
     initial_value: number,
     reserve_value: number,
     width: number,
