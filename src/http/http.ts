@@ -2,7 +2,6 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import { json } from 'body-parser'
-import http from 'http'
 import "./webSocket"
 
 import { AukCronBot } from '../auk-cron-bot/AukCronBot'
@@ -16,7 +15,6 @@ import productRoutes from './routes/ProductRoutes'
 import moderatorRoutes from "./routes/ModeratorRoutes"
 
 const app = express()
-const serverHttp = http.createServer(app)
 
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
@@ -48,5 +46,8 @@ app.use('/', (req, res) => {
 AukCronBot()
 
 
+app.listen(process.env.PORT || 3008, () => {
+    //console.clear()
+    console.log('[AUKT] Server running on PORT: ', process.env.PORT)
+})
 
-export { serverHttp }
