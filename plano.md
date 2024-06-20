@@ -1,2 +1,0 @@
-## PLANO DO DIA
-
