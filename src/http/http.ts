@@ -40,7 +40,7 @@ app.use('/products', productRoutes)
 app.use('/moderator', moderatorRoutes)
 
 app.use('/', (req, res) => {
-    res.send('AUKT API version 1.0')
+    res.send('AUKT API version 1.0 - changes')
 })
 
 AukCronBot()
