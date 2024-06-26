@@ -1,10 +1,16 @@
 import { IAuct } from "../../app/entities/IAuct"
-import { cronmarker, checkAuctionStatus, changeAuctStatus } from "../AukCronBot"
+import { cronmarker, checkAuctionStatus, changeAuctStatus, AukCronBot } from "../AukCronBot"
 import { IBotResponses } from "../interfaces/IBotResponses"
+import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie"
+
+const prismaAuct = new PrismaAuctRepositorie()
 
 const StartAuction = (auct_id: string | any, group: string): Promise<IBotResponses> => {
 
     return new Promise(async (resolve, reject) => {
+
+        const currentAuct = await prismaAuct.find(auct_id)
+        currentAuct?.advertiser_id && AukCronBot(currentAuct.advertiser_id)
 
         //checkauctstatus...............
         const currentStatus: string | undefined = await checkAuctionStatus(auct_id)
@@ -41,7 +47,16 @@ const StartAuction = (auct_id: string | any, group: string): Promise<IBotRespons
 
         //filter auction by auct_ID........
         const auctSelected: IAuct[] = cronmarker.auctions.filter(auction => auction.id === auct_id)
-        console.log(auctSelected[0].title)
+        console.log(auctSelected[0])
+
+        if (!auctSelected[0]) {
+            reject({
+                status: 500,
+                message: 'auction not found or data at passed',
+            })
+            console.log('auction not found')
+            return
+        }
 
         changeAuctStatus(auct_id, 'live')
 

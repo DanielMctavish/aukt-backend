@@ -76,18 +76,22 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
 
     async list(creator_id: string): Promise<IAuct[]> {
 
-        const aucts = await prisma.auct.findMany({
-            where: {
-                creator_id
-            }, include: {
-                product_list: true,
-                Advertiser: true,
-                auct_dates: true
-            }, orderBy: {
-                created_at: "asc"
-            }
-        });
-        return aucts as IAuct[];
+        try {
+            const aucts = await prisma.auct.findMany({
+                where: {
+                    creator_id
+                }, include: {
+                    product_list: true,
+                    Advertiser: true,
+                    auct_dates: true
+                }, orderBy: {
+                    created_at: "asc"
+                }
+            });
+            return aucts as IAuct[];
+        } catch (error) {
+            return [];
+        }
 
     }
 

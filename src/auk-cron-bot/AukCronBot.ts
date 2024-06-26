@@ -5,20 +5,20 @@ import CronMarker from "./Cron"
 
 const cronmarker = new CronMarker()
 
-const AukCronBot = async () => {
+const AukCronBot = async (creator_id: string) => {
 
     let databaseAuct: IAuct[] = []
 
-    const checkinterval = setInterval(async () => {
-
-        const currentAuct: IAuct[] = await prismaAuct.list('clvlh1n3c0000h1wyl0a62ces')
-
+    const getAuctList = async () => {
+        const currentAuct: IAuct[] = await prismaAuct.list(creator_id)
         if (currentAuct.length > databaseAuct.length) {
             databaseAuct = currentAuct
             cronmarker.receivedAuctions(databaseAuct)
         }
+    }
+    getAuctList()
 
-    }, 3000)
+    const checkinterval = setInterval(async () => { getAuctList() }, 3000)
 
 }
 

@@ -47,7 +47,7 @@ app.get('/check-api', (req, res) => {
     res.send('AUKT API version 1.0 - rota checada com sucesso!')
 })
 
-AukCronBot()
+//AukCronBot()
 
 
 app.listen(process.env.PORT || 3008, () => {
