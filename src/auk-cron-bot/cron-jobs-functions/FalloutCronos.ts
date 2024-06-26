@@ -17,11 +17,11 @@ const FalloutCronos = async (timerCronos: number, slotInformations: IFloorAuctio
         }
 
         const progressBarLength = timerCronos;
-        process.stdout.write('\n');
+        // process.stdout.write('\n');
         const progress = '█'.repeat(count).padEnd(progressBarLength, '░');
-        process.stdout.cursorTo(0);
-        process.stdout.clearLine(0)
-        process.stdout.write(`\x1b[32m${progress}\x1b[0m`);
+        // process.stdout.cursorTo(0);
+        // process.stdout.clearLine(0)
+        // process.stdout.write(`\x1b[32m${progress}\x1b[0m`);
 
         //MENSAGEIRO................................
         serverSendMessage("aukt-server-floor-live", {
@@ -42,17 +42,17 @@ const FalloutCronos = async (timerCronos: number, slotInformations: IFloorAuctio
                 cronTimer: count
             })
 
-            const progress = '█'.repeat(count).padEnd(progressBarLength, '░');
-            process.stdout.cursorTo(0);
-            process.stdout.clearLine(0)
-            process.stdout.write(`\x1b[32m${progress}\x1b[0m`);
+            // const progress = '█'.repeat(count).padEnd(progressBarLength, '░');
+            // process.stdout.cursorTo(0);
+            // process.stdout.clearLine(0)
+            // process.stdout.write(`\x1b[32m${progress}\x1b[0m`);
 
             let minutes = Math.floor(count / 60);
             let seconds = count % 60;
 
             let timeDisplay = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-            process.stdout.write(` ${timeDisplay}`);
+            // process.stdout.write(` ${timeDisplay}`);
 
             if (count >= progressBarLength) {
                 clearInterval(falloutInterval);

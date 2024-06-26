@@ -41,16 +41,16 @@ const RenderFloor = (floorAuct: IAuct, auctionDate: AuctDateGroups) => {
             await cronmarker.slotsStatus().show()
 
             console.log("GRUPO: ", product.group);
-            process.stdout.clearLine(0);
-            process.stdout.write('PRODUTO: ' + product?.title);
+            // process.stdout.clearLine(0);
+            // process.stdout.write('PRODUTO: ' + product?.title);
 
             clearInterval(falloutInterval);
             cronmarker.currentTimer = floorAuct.product_timer_seconds;
             await cronmarker.falloutCronos(cronmarker.currentTimer, slotInformations);
         }
 
-        console.log("")
-        console.log("--------------------------------------- GRUPO FINALIZADO ---------------------------------------")
+        // console.log("")
+        // console.log("--------------------------------------- GRUPO FINALIZADO ---------------------------------------")
         //resolve(true)
 
         resolve(true)
