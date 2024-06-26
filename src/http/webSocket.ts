@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 import http from 'http';
 
-const PORT = process.env.SOCKET_PORT || 3007;
+const PORT = 3007;
 const serverHttp = http.createServer();
 
 const io = new Server(serverHttp, {
