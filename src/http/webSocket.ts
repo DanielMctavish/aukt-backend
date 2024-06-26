@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 import http from 'http';
 
-const PORT = process.env.SOCKET_PORT || 3001;
+const PORT = process.env.SOCKET_PORT || 3007;
 const serverHttp = http.createServer();
 
 const io = new Server(serverHttp, {
@@ -44,6 +44,8 @@ const serverSendMessage = (messageType: string, data: IMessengerServiceBody) => 
         }
     }
 }
+
+
 
 serverHttp.listen(PORT, () => {
     console.log(`[ Socket.io Server ] running on PORT: ${PORT}`);

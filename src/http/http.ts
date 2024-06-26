@@ -39,8 +39,12 @@ app.use('/credit-card', creditRoutes)
 app.use('/products', productRoutes)
 app.use('/moderator', moderatorRoutes)
 
-app.use('/', (req, res) => {
+app.get('/', (req, res) => {
     res.send('AUKT API version 1.0 - changes')
+})
+
+app.get('/check-api', (req, res) => {
+    res.send('AUKT API version 1.0 - rota checada com sucesso!')
 })
 
 AukCronBot()
