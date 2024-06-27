@@ -2,8 +2,12 @@ import { IFloorAuction } from "../interfaces/IBotResponses";
 import { cronmarker } from "../AukCronBot";
 import { serverSendMessage } from "../../http/webSocket";
 import { WinnerTimer } from "./WinnerTimer";
+import PrismaProductRepositorie from "../../app/repositorie/database/PrismaProductRepositorie";
+import PrismaBidRepositorie from "../../app/repositorie/database/PrismaBidRepositorie";
 
 let falloutInterval: NodeJS.Timeout
+const prismaProduct = new PrismaProductRepositorie()
+const prismaBid = new PrismaBidRepositorie()
 
 const FalloutCronos = async (timerCronos: number, slotInformations: IFloorAuction, timerDelay?: number) => {
 
@@ -56,6 +60,32 @@ const FalloutCronos = async (timerCronos: number, slotInformations: IFloorAuctio
 
             if (count >= progressBarLength) {
                 clearInterval(falloutInterval);
+
+                //Identificar e determinar o vencedor................................................................
+                try {
+
+                    const bidList = await prismaBid.List(slotInformations.current_product_id)
+                    let currentValue = 0
+                    let currentWinner = ""
+
+                    for (const [index, bid] of bidList.entries()) {
+                        if (bid.value > currentValue) {
+                            currentValue = bid.value
+                            currentWinner = bid.id
+                        }
+                    }
+
+                    await prismaProduct.update({ winner_id: currentWinner }, slotInformations.current_product_id)
+
+                    serverSendMessage("aukt-server-floor-winner", {
+                        body: currentWinner,
+                        cronTimer: count
+                    })
+
+                } catch (error: any) {
+                    console.log("err at try register winner ", error.message)
+                }
+
                 await WinnerTimer()
                 count = 0
                 resolve(true);

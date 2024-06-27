@@ -6,7 +6,8 @@ exports.AuctStatus = {
     live: 'live',
     canceled: 'canceled',
     finished: 'finished',
-    paused: 'paused'
+    paused: 'paused',
+    pending: 'pending'
 };
 const PaymentMethod = {
     Credit: 'Credit',

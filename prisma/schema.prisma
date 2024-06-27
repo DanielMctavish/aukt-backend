@@ -59,12 +59,15 @@ model Client {
   email              String       @unique
   password           String
   address            String
+  client_avatar      Int?
+  nickname           String?
   credit_cards       CreditCard[]
   subscribed_auct    Auct[]
   Bid                Bid[]
   client_url_profile String?
   created_at         DateTime     @default(now())
   updated_at         DateTime     @updatedAt
+  Product            Product[]
 }
 
 model AuctDateGroups {
@@ -83,7 +86,6 @@ model Auct {
   Advertiser                Advertiser?      @relation(fields: [advertiser_id], references: [id])
   advertiser_id             String?
   creator_id                String
-  winner_id                 String?
   client_id                 String?
   subscribed_clients        Client[]
   Bids                      Bid[]
@@ -127,6 +129,8 @@ model Product {
   Advertiser        Advertiser? @relation(fields: [advertiser_id], references: [id])
   advertiser_id     String?
   owner_id          String?
+  Winner            Client?     @relation(fields: [winner_id], references: [id])
+  winner_id         String?
   group             String?
   Auct              Auct?       @relation(fields: [auct_id], references: [id])
   auct_id           String?
@@ -154,7 +158,7 @@ model Bid {
   Auct       Auct?    @relation(fields: [auct_id], references: [id])
   auct_id    String?
   Product    Product? @relation(fields: [product_id], references: [id])
-  product_id  String?
+  product_id String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
@@ -181,4 +185,5 @@ enum AuctStatus {
   canceled
   finished
   paused
+  pending
 }

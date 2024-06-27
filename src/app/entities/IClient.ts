@@ -10,6 +10,8 @@ export interface IClient {
     email: string
     password: string
     address: string
+    client_avatar?: number
+    nickname?: string
     credit_card?: ICreditCard[] | any
     subscribed_auct?: IAuct[] | any
     Bid?: IBid[] | any

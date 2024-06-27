@@ -15,7 +15,7 @@ export const listAuct = (creator_id: string): Promise<AuctResponse> => {
         try {
 
             // !data?reject({status_code:404,body:'no data sended'}):''
-            const currentAuct = await prismaAuct.list(creator_id ? creator_id : '')
+            const currentAuct = await prismaAuct.list(creator_id)
 
             if (!currentAuct) {
                 reject({ status_code: 404, body: "any auct founded" })

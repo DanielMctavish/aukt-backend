@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 class PrismaProductRepositorie implements IProductRepositorie {
 
     async create(data: IProduct): Promise<IProduct> {
-        const { auct_id, auct_nanoid, advertiser_id, ...restdata } = data;
+        const { auct_id, auct_nanoid, advertiser_id, winner_id, ...restdata } = data;
 
         const createdProduct = await prisma.product.create({
             data: {
@@ -22,6 +22,11 @@ class PrismaProductRepositorie implements IProductRepositorie {
                 Advertiser: {
                     connect: {
                         id: advertiser_id
+                    }
+                },
+                Winner: {
+                    connect: {
+                        id: winner_id
                     }
                 }
             }, include: {

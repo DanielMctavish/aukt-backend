@@ -19,7 +19,6 @@ export interface IAuct {
     creator_id: string
     advertiser_id?: string | null
     Advertiser?: IAdvertiser | any
-    winner_id?: string | any
     client_id?: string | any
     subscribed_clients?: IClient[]
     Bid?: IBid[]
@@ -41,12 +40,13 @@ export interface IAuct {
 }
 
 
-export const AuctStatus: { [x: string]: 'cataloged' | 'live' | 'canceled' | 'finished' | 'paused' } = {
+export const AuctStatus: { [x: string]: 'cataloged' | 'live' | 'canceled' | 'finished' | 'paused' | 'pending' } = {
     cataloged: 'cataloged',
     live: 'live',
     canceled: 'canceled',
     finished: 'finished',
-    paused: 'paused'
+    paused: 'paused',
+    pending:'pending'
 }
 
 const PaymentMethod: { [x: string]: 'Credit' | 'Debit' | 'Pix' | 'Ticket' } = {
