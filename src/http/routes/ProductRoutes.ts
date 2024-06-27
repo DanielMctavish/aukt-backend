@@ -11,6 +11,7 @@ const mainProducts = new MainProductUsecases()
 router.post('/create-product', ApplyUseCase(mainProducts.create))//testado
 router.get('/find', ApplyUseCase(mainProducts.find))//testado
 router.get('/list', ApplyUseCase(mainProducts.list))
+router.get("/list-by-title")//in development...
 router.get('/list-by-advertiser', ApplyUseCase(mainProducts.listByAdvertiserId))//testado
 router.patch('/update', ApplyUseCase(mainProducts.update))//testado
 router.delete('/delete', ApplyUseCase(mainProducts.delete))//testado
