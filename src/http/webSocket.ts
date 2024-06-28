@@ -1,8 +1,6 @@
 import { Server } from 'socket.io';
 import https from 'https';
-import fs from 'fs';
 
-// Carregar os certificados SSL
 
 const PORT = 3007;
 const serverHttps = https.createServer();

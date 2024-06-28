@@ -50,8 +50,8 @@ app.get('/check-api', (req, res) => {
 //AukCronBot()
 
 
-app.listen(process.env.PORT || 3008, () => {
+app.listen( 3008, () => {
     //console.clear()
-    console.log('[AUKT] Server running on PORT: ', process.env.PORT)
+    console.log('[AUKT] Server running on PORT: ',3008)
 })
 
