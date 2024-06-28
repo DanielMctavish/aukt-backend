@@ -3,14 +3,9 @@ import https from 'https';
 import fs from 'fs';
 
 // Carregar os certificados SSL
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/ws.aukwebsocket.xyz/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/ws.aukwebsocket.xyz/fullchain.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/ws.aukwebsocket.xyz/chain.pem', 'utf8');
-
-const credentials = { key: privateKey, cert: certificate, ca: ca };
 
 const PORT = 3007;
-const serverHttps = https.createServer(credentials);
+const serverHttps = https.createServer();
 
 const io = new Server(serverHttps, {
     cors: {
