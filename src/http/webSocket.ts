@@ -1,37 +1,31 @@
 import { Server } from 'socket.io';
-import { Server as HttpsServer } from 'https';
-import express from 'express';
-
-const app = express()
-const serverHttps = new HttpsServer({}, app);
 
 const PORT = 3007;
 
-app.get('/', (req, res) => {
-    res.send('AUK Messenger(websocket)')
-});
-
-const io = new Server(serverHttps, {
+// Criar servidor HTTP (sem HTTPS explícito)
+const io = new Server({
     cors: {
         origin: '*',
         credentials: true,
-        optionsSuccessStatus: 200,
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE'
+        methods: ['GET', 'POST'] // Métodos permitidos
     }
 });
 
+// Definir interface para o corpo da mensagem
 interface IMessengerServiceBody {
-    body: Object,
-    cronTimer: number
+    body: Object;
+    cronTimer: number;
 }
 
 let socketMain: any;
 
+// Evento de conexão WebSocket
 io.on("connection", socket => {
     socketMain = socket;
     console.log("a user connected [ID ]-> ", socket.id);
 });
 
+// Função para enviar mensagens através do WebSocket
 const serverSendMessage = (messageType: string, data: IMessengerServiceBody) => {
     try {
         if (socketMain) {
@@ -43,14 +37,16 @@ const serverSendMessage = (messageType: string, data: IMessengerServiceBody) => 
             throw new Error("socketMain is undefined");
         }
     } catch (error: any) {
+        console.error("Error sending message:", error);
         if (socketMain) {
-            socketMain.close();
+            socketMain.disconnect();
         }
     }
 };
 
-serverHttps.listen(PORT, () => {
-    console.log(`[ Socket.io Server ] running on PORT: ${PORT}`);
-});
+// Iniciar o servidor WebSocket na porta especificada
+io.listen(PORT);
+console.log(`[ Socket.io Server ] running on PORT: ${PORT}`);
 
+// Exportar as funções e interfaces necessárias
 export { serverSendMessage, IMessengerServiceBody };
