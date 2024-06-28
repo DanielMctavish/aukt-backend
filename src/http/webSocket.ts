@@ -1,9 +1,15 @@
 import { Server } from 'socket.io';
-import https from 'https';
+import { Server as HttpsServer } from 'https';
+import express from 'express';
 
+const app = express()
+const serverHttps = new HttpsServer({}, app);
 
 const PORT = 3007;
-const serverHttps = https.createServer();
+
+app.get('/', (req, res) => {
+    res.send('AUK Messenger(websocket)')
+});
 
 const io = new Server(serverHttps, {
     cors: {
