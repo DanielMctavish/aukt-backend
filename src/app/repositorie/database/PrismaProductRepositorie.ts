@@ -8,35 +8,56 @@ class PrismaProductRepositorie implements IProductRepositorie {
 
     async create(data: IProduct): Promise<IProduct> {
         const { auct_id, auct_nanoid, advertiser_id, winner_id, ...restdata } = data;
-
-        const createdProduct = await prisma.product.create({
-            data: {
-                ...restdata,
-                auct_nanoid,
-                Auct: {
-                    connect: {
-                        id: auct_id,
-                        nano_id: auct_nanoid
-                    }
-                },
-                Advertiser: {
-                    connect: {
-                        id: advertiser_id
-                    }
-                },
-                Winner: {
-                    connect: {
-                        id: winner_id
-                    }
+    
+        // Estrutura do tipo esperado pelo Prisma para 'Winner'
+        const winnerConnect = winner_id ? { connect: { id: winner_id } } : undefined;
+    
+        const dataWinner = {
+            ...restdata,
+            auct_nanoid,
+            Auct: {
+                connect: {
+                    id: auct_id,
+                    nano_id: auct_nanoid
                 }
-            }, include: {
+            },
+            Advertiser: {
+                connect: {
+                    id: advertiser_id
+                }
+            },
+            Winner: winnerConnect // Ajuste para corresponder ao tipo esperado
+        }
+    
+        const dataDefault = {
+            ...restdata,
+            auct_nanoid,
+            Auct: {
+                connect: {
+                    id: auct_id,
+                    nano_id: auct_nanoid
+                }
+            },
+            Advertiser: {
+                connect: {
+                    id: advertiser_id
+                }
+            }
+        }
+    
+        const createdProduct = await prisma.product.create({
+            data: winner_id ? dataWinner : dataDefault,
+            include: {
                 Auct: true,
-                Advertiser: true
+                Advertiser: true,
+                Winner: true // Certifique-se de incluir a associação 'Winner'
             }
         });
-
+    
         return createdProduct as IProduct;
     }
+    
+    
 
 
     async find(id: string): Promise<IProduct | null> {

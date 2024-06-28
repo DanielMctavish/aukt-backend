@@ -9,7 +9,7 @@ export interface IProduct {
     Advertiser?: IAdvertiser,
     advertiser_id?: string | undefined,
     owner_id?: string,
-    Winner?: IClient,
+    Winner?: IClient | any,
     winner_id?: string | undefined,
     group?: string,
     Auct?: IAuct,
