@@ -2,9 +2,6 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import { json } from 'body-parser'
-import "./webSocket"
-
-import { AukCronBot } from '../auk-cron-bot/AukCronBot'
 
 import adminRoutes from './routes/AdminRoutes'
 import advertiserRoutes from './routes/AdvertiserRoutes'
@@ -29,8 +26,6 @@ app.use(cors({
     credentials: true // 
 }))
 
-
-
 app.use('/admin', adminRoutes)
 app.use('/advertiser', advertiserRoutes)
 app.use('/auct', auctRoutes)
@@ -48,7 +43,6 @@ app.get('/check-api', (req, res) => {
 })
 
 //AukCronBot()
-
 
 app.listen(3008, () => {
     //console.clear()
