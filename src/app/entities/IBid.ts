@@ -11,7 +11,7 @@ interface IBid {
     Auct?: IAuct
     auct_id?: string | any
     product_id?: string | any
-    Product?: IProduct[]
+    Product?: IProduct[] | any
     created_at: Date
     updated_at: Date
 }
