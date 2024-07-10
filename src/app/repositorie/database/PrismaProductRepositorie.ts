@@ -60,17 +60,22 @@ class PrismaProductRepositorie implements IProductRepositorie {
 
 
 
-    async find(id: string): Promise<IProduct | null> {
+    async find(product_id: string): Promise<IProduct | null> {
+        let result;
 
-        const result = await prisma.product.findFirst({
-            where: { id },
-            include: {
-                Advertiser: true,
-                Auct: true,
-                Bid: true,
-                Winner: true
-            }
-        });
+        if (product_id) {
+            result = await prisma.product.findFirst({
+                where: {
+                    id: product_id
+                },
+                include: {
+                    Advertiser: true,
+                    Auct: true,
+                    Bid: true,
+                    Winner: true
+                }
+            });
+        }
 
         return result as IProduct
     }
