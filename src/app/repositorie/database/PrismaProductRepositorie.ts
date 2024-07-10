@@ -8,10 +8,10 @@ class PrismaProductRepositorie implements IProductRepositorie {
 
     async create(data: IProduct): Promise<IProduct> {
         const { auct_id, auct_nanoid, advertiser_id, winner_id, ...restdata } = data;
-    
+
         // Estrutura do tipo esperado pelo Prisma para 'Winner'
         const winnerConnect = winner_id ? { connect: { id: winner_id } } : undefined;
-    
+
         const dataWinner = {
             ...restdata,
             auct_nanoid,
@@ -28,7 +28,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
             },
             Winner: winnerConnect // Ajuste para corresponder ao tipo esperado
         }
-    
+
         const dataDefault = {
             ...restdata,
             auct_nanoid,
@@ -44,7 +44,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
                 }
             }
         }
-    
+
         const createdProduct = await prisma.product.create({
             data: winner_id ? dataWinner : dataDefault,
             include: {
@@ -53,11 +53,11 @@ class PrismaProductRepositorie implements IProductRepositorie {
                 Winner: true // Certifique-se de incluir a associação 'Winner'
             }
         });
-    
+
         return createdProduct as IProduct;
     }
-    
-    
+
+
 
 
     async find(id: string): Promise<IProduct | null> {
@@ -66,11 +66,31 @@ class PrismaProductRepositorie implements IProductRepositorie {
             where: { id },
             include: {
                 Advertiser: true,
-                Auct: true
+                Auct: true,
+                Bid: true,
+                Winner: true
             }
         });
 
         return result as IProduct
+    }
+
+    async findByTitle(title: string): Promise<IProduct[]> {
+
+        const products = await prisma.product.findMany({
+            where: {
+                title: {
+                    contains: title,
+                    mode: "insensitive"
+                }
+            },
+            orderBy: {
+                created_at: "asc"
+            }, take: 3
+        });
+
+        return products.map((product) => product as IProduct);
+
     }
 
     async list(offset: string): Promise<IProduct[]> {
@@ -107,6 +127,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
     async update(data: Partial<IProduct>, id: string): Promise<IProduct | null> {
         const { categorie,
             cover_img_url,
+            winner_id,
             height,
             width,
             weight,
@@ -123,6 +144,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
             },
             data: {
                 cover_img_url,
+                winner_id,
                 height,
                 width,
                 weight,
@@ -135,7 +157,8 @@ class PrismaProductRepositorie implements IProductRepositorie {
             },
             include: {
                 Auct: true,
-                Advertiser: true
+                Advertiser: true,
+                Winner: true
             }
         });
 

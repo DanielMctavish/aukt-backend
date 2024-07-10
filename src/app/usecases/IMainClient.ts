@@ -26,6 +26,7 @@ interface IMainClient {
     // AUCT OPERATIONS
     SubscribedAuct(data: any, params: params): Promise<ClientResponse>
     BidAuct(bid: IBid): Promise<ClientResponse>
+    ListBidByClientId(data: any, params: params): Promise<ClientResponse>
     //ACCESS
     LoginClient(data: Partial<IClient>): Promise<ClientResponse>
     //FIREBASE

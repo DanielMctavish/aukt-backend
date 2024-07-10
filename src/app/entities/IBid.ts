@@ -7,11 +7,11 @@ interface IBid {
     id: string
     value: number
     Client?: IClient
-    client_id?: string | undefined
+    client_id?: string | any
     Auct?: IAuct
-    auct_id?: string | undefined
-    product_id?: string | undefined
-    Product?: IProduct
+    auct_id?: string | any
+    product_id?: string | any
+    Product?: IProduct[]
     created_at: Date
     updated_at: Date
 }

@@ -16,6 +16,7 @@ interface params {
 interface IMainProduct {
     create(data: IProduct): Promise<ProductResponse>
     find(data: any, params: params): Promise<ProductResponse>
+    findByTitle(data: any, params: params): Promise<ProductResponse>
     list(data: any, params: params): Promise<ProductResponse>
     listByAdvertiserId(data: any, params: params): Promise<ProductResponse>
     update(data: Partial<IProduct>, params: params): Promise<ProductResponse>

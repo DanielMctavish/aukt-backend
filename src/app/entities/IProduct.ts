@@ -1,5 +1,6 @@
 import { IAdvertiser } from "./IAdvertiser"
 import { IAuct } from "./IAuct"
+import IBid from "./IBid"
 import { IClient } from "./IClient"
 
 
@@ -25,6 +26,7 @@ export interface IProduct {
     cover_img_url: string,
     group_imgs_url: Array<string>,
     highlight_product: boolean,
+    Bid: IBid[] | any
     created_at: Date
     updated_at: Date
 }

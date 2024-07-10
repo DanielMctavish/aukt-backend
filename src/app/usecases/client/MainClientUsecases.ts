@@ -9,6 +9,7 @@ import { createClient } from "./functions/CreateClient";
 import { deleteClient } from "./functions/DeleteClient";
 import { findClient } from "./functions/FindClient";
 import { findClientByEmail } from "./functions/FindClientByEmail";
+import { listBidByClientId } from "./functions/ListBidByClientId";
 import { listClient } from "./functions/ListClient";
 import { loginClient } from "./functions/LoginClient";
 import { subscribedAuct } from "./functions/SubscribedAuct";
@@ -50,6 +51,10 @@ class MainClientUsecases implements IMainClient {
 
     async BidAuct(data: IBid): Promise<ClientResponse> {
         return bidAuct(data)
+    }
+
+    async ListBidByClientId(data: any, params: params): Promise<ClientResponse> {
+        return listBidByClientId(params.client_id)
     }
 
     async SubscribedAuct(data: any, params: params): Promise<ClientResponse> {

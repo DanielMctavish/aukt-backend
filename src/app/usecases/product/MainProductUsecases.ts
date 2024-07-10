@@ -7,6 +7,7 @@ import firebaseUploadProductsImgs from "./firebase/FirebaseUploadProductImgs";
 import { createProduct } from "./functions/createProduct";
 import { deleteProduct } from "./functions/deleteProduct";
 import { findProduct } from "./functions/findProduct";
+import { getProductByTitle } from "./functions/getProductByTitle";
 import { listProductByAdvertiser } from "./functions/listProductByAdvertiser";
 import { listProductsByOffset } from "./functions/listProductsByOffset";
 import { updateProduct } from "./functions/updateProduct";
@@ -16,6 +17,7 @@ interface params {
     url_product: string
     advertiser_id: string
     offset: string
+    title: string
 }
 class MainProductUsecases implements IMainProduct {
     create(data: IProduct): Promise<ProductResponse> {
@@ -23,6 +25,9 @@ class MainProductUsecases implements IMainProduct {
     }
     find(data: any, params: params): Promise<ProductResponse> {
         return findProduct(params.product_id)
+    }
+    findByTitle(data: any, params: params): Promise<ProductResponse> {
+        return getProductByTitle(params.title)
     }
     list(data: any, params: params): Promise<ProductResponse> {
         return listProductsByOffset(params.offset)

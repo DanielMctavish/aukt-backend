@@ -30,7 +30,7 @@ const FalloutCronos = async (timerCronos: number, slotInformations: IFloorAuctio
 
         //MENSAGEIRO................................
 
-      
+
         await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=aukt-server-floor-live`, {
             body: slotInformations,
             cronTimer: count
@@ -44,10 +44,14 @@ const FalloutCronos = async (timerCronos: number, slotInformations: IFloorAuctio
             await cronmarker.slotsStatus().selectSlotAvailable(updatedSlot)
 
             //MENSAGEIRO DENTRO DO INTERVALO................................
-            await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=aukt-server-floor-live`, {
-                body: slotInformations,
-                cronTimer: count
-            })
+            try {
+                await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=aukt-server-floor-live`, {
+                    body: slotInformations,
+                    cronTimer: count
+                })
+            } catch (error: any) {
+                console.error(error.message)
+            }
 
             // const progress = '█'.repeat(count).padEnd(progressBarLength, '░');
             // process.stdout.cursorTo(0);
@@ -67,18 +71,25 @@ const FalloutCronos = async (timerCronos: number, slotInformations: IFloorAuctio
                 //Identificar e determinar o vencedor................................................................
                 try {
 
-                    const bidList = await prismaBid.List(slotInformations.current_product_id)
+                    const currentProduct = await prismaProduct.find(slotInformations.current_product_id)
                     let currentValue = 0
                     let currentWinner = ""
 
-                    for (const [index, bid] of bidList.entries()) {
+                    for (const [index, bid] of currentProduct?.Bid.entries()) {
                         if (bid.value > currentValue) {
                             currentValue = bid.value
-                            currentWinner = bid.id
+                            currentWinner = bid.client_id
                         }
                     }
 
                     await prismaProduct.update({ winner_id: currentWinner }, slotInformations.current_product_id)
+                        .then((res: any) => {
+                            console.log("product_id -> ", slotInformations.current_product_id)
+                            console.log("current_winner -> ", currentWinner)
+                            console.log("observando currentProduct --> ", currentProduct?.Bid)
+                            console.log("winner updated --> ", res.winner_id)
+                        })
+
                     await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=aukt-server-floor-winner`, {
                         body: currentWinner,
                         cronTimer: count

@@ -144,23 +144,22 @@ model Product {
   weight            Float
   cover_img_url     String?
   group_imgs_url    String[]
+  Bid               Bid[]
   highlight_product Boolean?
   created_at        DateTime    @default(now())
   updated_at        DateTime    @updatedAt
-  Bid               Bid[]
 }
 
 model Bid {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   value      Int
-  Client     Client?  @relation(fields: [client_id], references: [id])
+  Client     Client?   @relation(fields: [client_id], references: [id])
   client_id  String?
-  Auct       Auct?    @relation(fields: [auct_id], references: [id])
+  Auct       Auct?     @relation(fields: [auct_id], references: [id])
   auct_id    String?
-  Product    Product? @relation(fields: [product_id], references: [id])
-  product_id String?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  Product    Product[]
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
 }
 
 enum CardType {
