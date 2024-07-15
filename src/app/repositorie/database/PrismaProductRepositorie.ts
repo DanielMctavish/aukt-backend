@@ -99,7 +99,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
 
         const products = await prisma.product.findMany({
             orderBy: {
-                created_at: "asc"
+                created_at: "desc"
             }, take: parseInt(offset)
         });
 
