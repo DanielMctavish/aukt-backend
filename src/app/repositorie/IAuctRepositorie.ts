@@ -5,6 +5,7 @@ export interface IAuctRepositorie {
     find(id: string): Promise<IAuct | null>
     findByNanoId(nano_id: string): Promise<IAuct | null>
     list(creator_id: string): Promise<IAuct[]>
+    listByStatus(status: string): Promise<IAuct[]>
     update(data: Partial<IAuct>, id: string): Promise<IAuct | null>
     delete(id: string): Promise<IAuct | null>
 }

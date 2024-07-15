@@ -57,9 +57,6 @@ class PrismaProductRepositorie implements IProductRepositorie {
         return createdProduct as IProduct;
     }
 
-
-
-
     async find(product_id: string): Promise<IProduct | null> {
         let result;
 
@@ -116,6 +113,23 @@ class PrismaProductRepositorie implements IProductRepositorie {
         const products = await prisma.product.findMany({
             where: {
                 advertiser_id: id
+            },
+            include: {
+                Advertiser: true,
+                Auct: true
+            },
+            orderBy: {
+                created_at: "asc"
+            }
+        });
+
+        return products.map((product) => product as IProduct);
+    }
+
+    async listByCategorie(categorie: string): Promise<IProduct[]> {
+        const products = await prisma.product.findMany({
+            where: {
+                categorie: categorie
             },
             include: {
                 Advertiser: true,

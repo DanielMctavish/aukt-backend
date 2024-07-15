@@ -8,6 +8,7 @@ import { createProduct } from "./functions/createProduct";
 import { deleteProduct } from "./functions/deleteProduct";
 import { findProduct } from "./functions/findProduct";
 import { getProductByTitle } from "./functions/getProductByTitle";
+import { listallproductsByCategorie } from "./functions/listallproductsByCategorie";
 import { listProductByAdvertiser } from "./functions/listProductByAdvertiser";
 import { listProductsByOffset } from "./functions/listProductsByOffset";
 import { updateProduct } from "./functions/updateProduct";
@@ -16,6 +17,7 @@ interface params {
     product_id: string
     url_product: string
     advertiser_id: string
+    categorie: string
     offset: string
     title: string
 }
@@ -34,6 +36,9 @@ class MainProductUsecases implements IMainProduct {
     }
     listByAdvertiserId(data: any, params: params): Promise<ProductResponse> {
         return listProductByAdvertiser(params.advertiser_id)
+    }
+    listByCategorie(data: any, params: params): Promise<ProductResponse> {
+        return listallproductsByCategorie(params.categorie)
     }
     update(data: Partial<IProduct>, params: params): Promise<ProductResponse> {
         return updateProduct(data, params.product_id)

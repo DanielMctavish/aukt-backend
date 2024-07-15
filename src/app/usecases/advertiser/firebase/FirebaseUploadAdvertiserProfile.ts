@@ -22,6 +22,11 @@ const firebaseUploadAdvertiserProfile = (advertiser_id: string, File: FilePhoto)
                 && File.mimetype !== 'image/jpg'
                 && File.mimetype !== 'image/jpeg') return reject({ status_code: 500, body: "o arquivo precisa ser uma foto" })
 
+            const fileSizeInMB = File.size / (1024 * 1024);
+            if (fileSizeInMB > 2) {
+                return reject({ status_code: 500, body: "O arquivo é muito grande, máximo 2MB" })
+            }
+
             const currentImage = await uploadSingleImage('firebase-advertiser-profile', File)
             await prismaAdvertiser.update(advertiser_id, { url_profile_cover: currentImage })
 

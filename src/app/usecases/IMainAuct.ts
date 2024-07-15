@@ -11,6 +11,7 @@ interface params {
     auct_id: string
     creator_id: string
     nano_id: string
+    status: any
 }
 
 interface IMainAuct {
@@ -18,6 +19,7 @@ interface IMainAuct {
     FindAuct(data: any, params: params): Promise<AuctResponse>
     FindAuctByNanoId(data: any, params: params): Promise<AuctResponse>
     ListAuct(data: any, params: params): Promise<AuctResponse>
+    ListAuctByStatus(data: any, params: params): Promise<AuctResponse>
     UpdateAuct(data: IAuct, params: params): Promise<AuctResponse>
     DeleteAuct(data: any, params: params): Promise<AuctResponse>
 

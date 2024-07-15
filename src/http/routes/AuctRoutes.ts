@@ -15,6 +15,7 @@ router.post('/create-auct', verifyToken, ApplyUseCase(mainAuct.CreateAuct))//tes
 router.get('/find-auct', ApplyUseCase(mainAuct.FindAuct))//testado
 router.get('/find-by-nanoid', verifyToken, ApplyUseCase(mainAuct.FindAuctByNanoId))//
 router.get('/list-auct', ApplyUseCase(mainAuct.ListAuct))//testado
+router.get('/list-auct-bystatus', ApplyUseCase(mainAuct.ListAuctByStatus))//in development....
 router.patch('/update-auct', verifyToken, ApplyUseCase(mainAuct.UpdateAuct))//testado
 router.delete('/delete-auct', verifyToken, ApplyUseCase(mainAuct.DeleteAuct))//testado
 

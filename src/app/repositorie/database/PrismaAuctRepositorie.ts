@@ -95,6 +95,27 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
 
     }
 
+    async listByStatus(status: any): Promise<IAuct[]> {
+
+        try {
+            const aucts = await prisma.auct.findMany({
+                where: {
+                    status: status
+                }, include: {
+                    product_list: true,
+                    Advertiser: true,
+                    auct_dates: true
+                }, orderBy: {
+                    created_at: "asc"
+                }, take: 6
+            });
+            return aucts as IAuct[];
+        } catch (error) {
+            return []
+        }
+
+    }
+
     async update(data: Partial<IAuct>, auct_id: string): Promise<IAuct | null> {
         //console.log('observando update client--> ', data, auct_id);
 

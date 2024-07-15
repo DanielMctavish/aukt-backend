@@ -11,6 +11,7 @@ interface params {
     product_id: string
     advertiser_id: string
     offset: string
+    categorie: string
 }
 
 interface IMainProduct {
@@ -19,6 +20,7 @@ interface IMainProduct {
     findByTitle(data: any, params: params): Promise<ProductResponse>
     list(data: any, params: params): Promise<ProductResponse>
     listByAdvertiserId(data: any, params: params): Promise<ProductResponse>
+    listByCategorie(data: any, params: params): Promise<ProductResponse>
     update(data: Partial<IProduct>, params: params): Promise<ProductResponse>
     delete(data: any, params: params): Promise<ProductResponse>
 

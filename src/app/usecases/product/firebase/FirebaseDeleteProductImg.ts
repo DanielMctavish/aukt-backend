@@ -28,14 +28,20 @@ const firebaseDeleteProductImg = (params: params): Promise<AdvertiserResponse> =
             })
 
             const currentImage = await deleteSingleImage(params.url_product)
-            await prismaProduct.update({ cover_img_url: "" }, params.product_id)
-            if (verifyUrlGroupChanges > 0) await prismaProduct.update({ group_imgs_url: urlImgsGroup }, params.product_id)
+
+            if (verifyUrlGroupChanges > 0) {
+                await prismaProduct.update({ group_imgs_url: urlImgsGroup }, params.product_id)
+            } else {
+                await prismaProduct.update({ cover_img_url: "" }, params.product_id)
+            }
 
             resolve({ status_code: 200, body: { currentImage } })
         } catch (error: any) {
-            reject({ status_code: 500, body: {
-                message: error.message
-            } })
+            reject({
+                status_code: 500, body: {
+                    message: error.message
+                }
+            })
         }
 
     })

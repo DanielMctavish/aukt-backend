@@ -12,7 +12,7 @@ const firebaseDeleteLogoCompany = (params: any): Promise<AdvertiserResponse> => 
             if (!params.url) return reject({ status_code: 500, body: "parâmetro url é necessário!" })
 
             const currentImage = await deleteSingleImage(params.url)
-            await prismaAdvertiser.update(params.id, { url_profile_cover: "" })
+            await prismaAdvertiser.update(params.id, { url_profile_company_logo_cover: "" })
 
             resolve({ status_code: 200, body: { currentImage } })
         } catch (error: any) {

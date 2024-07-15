@@ -24,6 +24,11 @@ const firebaseUploadProductsImgs = (product_id: string, Files: Array<FilePhoto>)
                 if (file.mimetype !== 'image/png'
                     && file.mimetype !== 'image/jpg'
                     && file.mimetype !== 'image/jpeg') return reject({ status_code: 500, body: "o arquivo precisa ser uma foto" })
+
+                const fileSizeInMB = file.size / (1024 * 1024);
+                if (fileSizeInMB > 2) {
+                    return reject({ status_code: 500, body: "O arquivo é muito grande, máximo 2MB" })
+                }
             })
 
             await uploadMultipleImages('aukt-product-imgs', Files).then(async (images) => {

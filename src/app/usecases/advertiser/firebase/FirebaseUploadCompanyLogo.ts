@@ -19,6 +19,11 @@ const firebaseUploadCompanyLogo = (advertiser_id: string, File: FilePhoto): Prom
                 && File.mimetype !== 'image/jpg'
                 && File.mimetype !== 'image/jpeg') return reject({ status_code: 500, body: "o arquivo precisa ser uma foto" })
 
+            const fileSizeInMB = File.size / (1024 * 1024);
+            if (fileSizeInMB > 2) {
+                return reject({ status_code: 500, body: "O arquivo é muito grande, máximo 2MB" })
+            }
+
             const currentImage = await uploadSingleImage('firebase-company-logo', File)
             await prismaAdvertiser.update(advertiser_id, { url_profile_company_logo_cover: currentImage })
             resolve({ status_code: 201, body: { currentImage } })
