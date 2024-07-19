@@ -107,7 +107,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                     auct_dates: true
                 }, orderBy: {
                     created_at: "desc"
-                }, take: 6
+                }, take: 12
             });
             return aucts as IAuct[];
         } catch (error) {

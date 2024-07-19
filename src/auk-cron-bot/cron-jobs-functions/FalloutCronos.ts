@@ -10,104 +10,122 @@ let falloutInterval: NodeJS.Timeout
 const prismaProduct = new PrismaProductRepositorie()
 const prismaBid = new PrismaBidRepositorie()
 
-const FalloutCronos = async (timerCronos: number, slotInformations: IFloorAuction, timerDelay?: number) => {
+interface IFalloutInterval {
+    auct_id: string
+    interval: NodeJS.Timeout
+}
 
-    return new Promise(async (resolve) => {
+class FalloutCronos {
+    public falloutIntervals: IFalloutInterval[] = []
 
-        // CONTADOR E BARRA DE PROGRESSO..............................................
-        let count = 1
+    public start(timerCronos: number,
+        slotInformations: IFloorAuction,
+        timerDelay?: number) {
+        return new Promise(async (resolve) => {
 
-        if (timerDelay && timerDelay > 0) {
-            count = timerDelay
-        }
+            // CONTADOR E BARRA DE PROGRESSO..............................................
+            let count = 1
 
-        const progressBarLength = timerCronos;
-        // process.stdout.write('\n');
-        // const progress = '█'.repeat(count).padEnd(progressBarLength, '░');
-        // process.stdout.cursorTo(0);
-        // process.stdout.clearLine(0)
-        // process.stdout.write(`\x1b[32m${progress}\x1b[0m`);
-
-        //MENSAGEIRO................................
-
-
-        await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=aukt-server-floor-live`, {
-            body: slotInformations,
-            cronTimer: count
-        })
-
-        falloutInterval = setInterval(async () => {
-
-            count++;
-
-            const updatedSlot = { ...slotInformations, timer_freezed: count }
-            await cronmarker.slotsStatus().selectSlotAvailable(updatedSlot)
-
-            //MENSAGEIRO DENTRO DO INTERVALO................................
-            try {
-                await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=aukt-server-floor-live`, {
-                    body: slotInformations,
-                    cronTimer: count
-                })
-            } catch (error: any) {
-                console.error(error.message)
+            if (timerDelay && timerDelay > 0) {
+                count = timerDelay
             }
 
+            const progressBarLength = timerCronos;
+            // process.stdout.write('\n');
             // const progress = '█'.repeat(count).padEnd(progressBarLength, '░');
             // process.stdout.cursorTo(0);
             // process.stdout.clearLine(0)
             // process.stdout.write(`\x1b[32m${progress}\x1b[0m`);
 
-            let minutes = Math.floor(count / 60);
-            let seconds = count % 60;
+            //MENSAGEIRO................................
 
-            let timeDisplay = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-            // process.stdout.write(` ${timeDisplay}`);
+            await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${slotInformations.auct_id}`, {
+                body: slotInformations,
+                cronTimer: count
+            })
 
-            if (count >= progressBarLength) {
-                clearInterval(falloutInterval);
+            this.falloutIntervals.push({
+                auct_id: slotInformations.auct_id,
+                interval: setInterval(async () => {
 
-                //Identificar e determinar o vencedor................................................................
-                try {
+                    count++;
 
-                    const currentProduct = await prismaProduct.find(slotInformations.current_product_id)
-                    let currentValue = 0
-                    let currentWinner = ""
+                    const updatedSlot = { ...slotInformations, timer_freezed: count }
+                    await cronmarker.slotsStatus().selectSlotAvailable(updatedSlot)
 
-                    for (const [index, bid] of currentProduct?.Bid.entries()) {
-                        if (bid.value > currentValue) {
-                            currentValue = bid.value
-                            currentWinner = bid.client_id
-                        }
+                    //MENSAGEIRO DENTRO DO INTERVALO................................
+                    try {
+                        await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${slotInformations.auct_id}`, {
+                            body: slotInformations,
+                            cronTimer: count
+                        })
+                    } catch (error: any) {
+                        console.error(error.message)
                     }
 
-                    await prismaProduct.update({ winner_id: currentWinner }, slotInformations.current_product_id)
-                        .then((res: any) => {
-                            console.log("product_id -> ", slotInformations.current_product_id)
-                            console.log("current_winner -> ", currentWinner)
-                            console.log("observando currentProduct --> ", currentProduct?.Bid)
-                            console.log("winner updated --> ", res.winner_id)
-                        })
+                    // const progress = '█'.repeat(count).padEnd(progressBarLength, '░');
+                    // process.stdout.cursorTo(0);
+                    // process.stdout.clearLine(0)
+                    // process.stdout.write(`\x1b[32m${progress}\x1b[0m`);
 
-                    await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=aukt-server-floor-winner`, {
-                        body: currentWinner,
-                        cronTimer: count
-                    })
+                    let minutes = Math.floor(count / 60);
+                    let seconds = count % 60;
 
-                } catch (error: any) {
-                    console.log("err at try register winner ", error.message)
-                }
+                    let timeDisplay = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-                await WinnerTimer()
-                count = 0
-                resolve(true);
-            }
+                    // process.stdout.write(` ${timeDisplay}`);
 
-        }, 1000);
+                    if (count >= progressBarLength) {
+                        const currentInterval = this.falloutIntervals.find((item: any) => item.auct_id === slotInformations.auct_id)
 
-    })
+                        clearInterval(currentInterval?.interval);
 
+                        //Identificar e determinar o vencedor................................................................
+                        try {
+
+                            const currentProduct = await prismaProduct.find(slotInformations.current_product_id)
+                            let currentValue = 0
+                            let currentWinner: any = null
+
+                            for (const [index, bid] of currentProduct?.Bid.entries()) {
+                                if (bid.value > currentValue) {
+                                    currentValue = bid.value
+                                    currentWinner = bid.client_id
+                                }
+                            }
+
+                            if (currentWinner)
+                                await prismaProduct.update({ winner_id: currentWinner }, slotInformations.current_product_id)
+                                    .then((res: any) => {
+                                        console.log("product_id -> ", slotInformations.current_product_id)
+                                        console.log("current_winner -> ", currentWinner)
+                                        console.log("observando currentProduct --> ", currentProduct?.Bid)
+                                        console.log("winner updated --> ", res.winner_id)
+                                    })
+
+                            await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${slotInformations.auct_id}-winner`, {
+                                body: currentWinner,
+                                cronTimer: count
+                            })
+
+                        } catch (error: any) {
+                            console.log("err at try register winner ", error.message)
+                        }
+
+                        await WinnerTimer()
+                        count = 0
+                        resolve(true);
+                    }
+
+                }, 1000)
+            })
+
+        })
+    }
 }
 
-export { FalloutCronos, falloutInterval };
+
+
+
+export { FalloutCronos };

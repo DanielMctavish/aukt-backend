@@ -125,7 +125,9 @@ const renderResumeProduct = async (Auction: IAuct, product: IProduct, time: numb
         console.log('PRODUTO: ', product.title)
         console.log("GRUPO: ", product.group)
 
-        await FalloutCronos(time, slotInformations, timeDelay).then(() => {
+        const falloutCronos = new FalloutCronos()
+
+        await falloutCronos.start(time, slotInformations, timeDelay).then(() => {
             resolve(true)
         })
 

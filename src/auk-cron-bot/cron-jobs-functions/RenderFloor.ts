@@ -2,12 +2,14 @@ import { AuctDateGroups } from "@prisma/client"
 import { IAuct } from "../../app/entities/IAuct"
 import { IProduct } from "../../app/entities/IProduct"
 import { checkAuctionStatus, cronmarker } from "../AukCronBot"
-import { falloutInterval } from "./FalloutCronos";
+import { FalloutCronos } from "./FalloutCronos";
 import dayjs from "dayjs";
 
 let intervalProductFloor: NodeJS.Timeout;
 //let intervalTesting: NodeJS.Timeout;
 const RenderFloor = (floorAuct: IAuct, auctionDate: AuctDateGroups) => {
+
+    const falloutCronos = new FalloutCronos()
 
     return new Promise(async (resolve, reject) => {
 
@@ -44,7 +46,9 @@ const RenderFloor = (floorAuct: IAuct, auctionDate: AuctDateGroups) => {
             // process.stdout.clearLine(0);
             // process.stdout.write('PRODUTO: ' + product?.title);
 
-            clearInterval(falloutInterval);
+            const currentInterval = falloutCronos.falloutIntervals.find(item => item.auct_id === floorAuct.id)
+
+            clearInterval(currentInterval?.interval);
             cronmarker.currentTimer = floorAuct.product_timer_seconds;
             await cronmarker.falloutCronos(cronmarker.currentTimer, slotInformations);
         }
@@ -59,4 +63,4 @@ const RenderFloor = (floorAuct: IAuct, auctionDate: AuctDateGroups) => {
 
 }
 
-export { RenderFloor, intervalProductFloor, falloutInterval };
+export { RenderFloor, intervalProductFloor };

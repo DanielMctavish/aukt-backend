@@ -63,7 +63,9 @@ class CronMarker {
 
         return new Promise(async (resolve, reject) => {
 
-            await FalloutCronos(timerCronos, slotInformations).then(() => {
+            const falloutCronos = new FalloutCronos()
+
+            await falloutCronos.start(timerCronos, slotInformations).then(() => {
                 resolve(true)
             });
 

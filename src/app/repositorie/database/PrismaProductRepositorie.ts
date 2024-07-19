@@ -68,7 +68,11 @@ class PrismaProductRepositorie implements IProductRepositorie {
                 include: {
                     Advertiser: true,
                     Auct: true,
-                    Bid: true,
+                    Bid: {
+                        include: {
+                            Client: true
+                        }
+                    },
                     Winner: true
                 }
             });
