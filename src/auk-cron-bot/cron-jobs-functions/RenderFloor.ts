@@ -1,9 +1,10 @@
 import { AuctDateGroups } from "@prisma/client"
 import { IAuct } from "../../app/entities/IAuct"
-import { IProduct } from "../../app/entities/IProduct"
-import { checkAuctionStatus, cronmarker } from "../AukCronBot"
+// import { IProduct } from "../../app/entities/IProduct"
+import { changeAuctStatus, checkAuctionStatus, cronmarker } from "../AukCronBot"
 import { FalloutCronos } from "./FalloutCronos";
 import dayjs from "dayjs";
+
 
 let intervalProductFloor: NodeJS.Timeout;
 //let intervalTesting: NodeJS.Timeout;
@@ -51,6 +52,7 @@ const RenderFloor = (floorAuct: IAuct, auctionDate: AuctDateGroups) => {
             clearInterval(currentInterval?.interval);
             cronmarker.currentTimer = floorAuct.product_timer_seconds;
             await cronmarker.falloutCronos(cronmarker.currentTimer, slotInformations);
+
         }
 
         // console.log("")

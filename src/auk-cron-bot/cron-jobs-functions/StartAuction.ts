@@ -66,25 +66,9 @@ const StartAuction = (auct_id: string | any, group: string): Promise<IBotRespons
             slots: JSON.stringify(cronmarker.allSlots)
         })
 
-        let firstExecution = true
-        let groupDelay = 0
 
-        for (const date of auctSelected[0].auct_dates) {
-
-            if (groupDelay + 1 === auctSelected[0].auct_dates.length && !firstExecution) return false
-
-            if (date.group === group && firstExecution) {
-                await cronmarker.renderFloor(auctSelected[0], auctSelected[0].auct_dates[groupDelay])
-                firstExecution = false
-                groupDelay++
-            }
-
-            if (!firstExecution) {
-                await cronmarker.renderFloor(auctSelected[0], auctSelected[0].auct_dates[groupDelay])
-            }
-
-            groupDelay++
-        }
+        const filteredGroup = auctSelected[0].auct_dates.filter(date => date.group === group)
+        await cronmarker.renderFloor(auctSelected[0], filteredGroup[0])
 
         //se leilão estiver "paused" nada fazer...........................................................
 

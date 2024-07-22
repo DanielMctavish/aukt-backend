@@ -64,7 +64,7 @@ class PrismaBidRepositorie implements IBidRepositorie {
             where: {
                 client_id: client_id
             }, orderBy: {
-                created_at: "asc"
+                created_at: "desc"
             }, include: {
                 Product: true
             }
@@ -76,7 +76,10 @@ class PrismaBidRepositorie implements IBidRepositorie {
 
     async ListByAuctId(auct_id: string): Promise<IBid[]> {
 
-        const listBid = await prisma.bid.findMany({ where: { auct_id } })
+        const listBid = await prisma.bid.findMany({
+            where: { auct_id },
+            orderBy: { created_at: "desc" }
+        })
 
         return listBid as IBid[]
 

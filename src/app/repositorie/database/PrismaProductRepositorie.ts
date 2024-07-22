@@ -69,6 +69,9 @@ class PrismaProductRepositorie implements IProductRepositorie {
                     Advertiser: true,
                     Auct: true,
                     Bid: {
+                        orderBy:{
+                            created_at:"desc"
+                        },
                         include: {
                             Client: true
                         }
