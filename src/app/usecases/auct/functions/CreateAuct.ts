@@ -3,7 +3,7 @@ import { AuctResponse } from "../../IMainAuct";
 import PrismaAuctRepositorie from "../../../repositorie/database/PrismaAuctRepositorie";
 import generateNanoId from "../../../../utils/GenerateNanoId";
 import PrismaAdvertiserRepositorie from "../../../repositorie/database/PrismaAdvertiserRepositorie";
-import { AukCronBot } from "../../../../auk-cron-bot/AukCronBot";
+import { AukCronBot } from "../../../../auk-cron-bot(descontinuado)/AukCronBot";
 const prismaAuct = new PrismaAuctRepositorie()
 const prismaAdvertiser = new PrismaAdvertiserRepositorie()
 

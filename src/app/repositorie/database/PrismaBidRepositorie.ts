@@ -46,16 +46,17 @@ class PrismaBidRepositorie implements IBidRepositorie {
 
 
 
-    async FindBid(bid_id: string): Promise<IBid | null> {
+    async FindBid(value: number): Promise<IBid | null> {
 
         const currentBid = await prisma.bid.findFirst({
             where: {
-                id: bid_id
+                value: {
+                    gt: value
+                }
             }
         })
 
         return currentBid as IBid
-
     }
 
     async List(client_id: string): Promise<IBid[]> {

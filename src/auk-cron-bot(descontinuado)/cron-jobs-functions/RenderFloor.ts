@@ -1,16 +1,12 @@
 import { AuctDateGroups } from "@prisma/client"
 import { IAuct } from "../../app/entities/IAuct"
-// import { IProduct } from "../../app/entities/IProduct"
-import { changeAuctStatus, checkAuctionStatus, cronmarker } from "../AukCronBot"
-import { FalloutCronos } from "./FalloutCronos";
+import { falloutCronosInstance } from "../Cron";
 import dayjs from "dayjs";
 
 
 let intervalProductFloor: NodeJS.Timeout;
 //let intervalTesting: NodeJS.Timeout;
 const RenderFloor = (floorAuct: IAuct, auctionDate: AuctDateGroups) => {
-
-    const falloutCronos = new FalloutCronos()
 
     return new Promise(async (resolve, reject) => {
 
@@ -25,10 +21,8 @@ const RenderFloor = (floorAuct: IAuct, auctionDate: AuctDateGroups) => {
             return dayjs(a.created_at).valueOf() - dayjs(b.created_at).valueOf()
         })
 
-
         if (!newOrderProducts) return false
         for (const product of newOrderProducts) {
-
             //SET SLOT AUCTION .....................................................................
 
             let slotInformations = {
@@ -40,24 +34,17 @@ const RenderFloor = (floorAuct: IAuct, auctionDate: AuctDateGroups) => {
                 timer_freezed: 0
             }
 
-            await cronmarker.slotsStatus().selectSlotAvailable(slotInformations)
-            await cronmarker.slotsStatus().show()
+            console.log("execução: ", product.title)
 
-            console.log("GRUPO: ", product.group);
-            // process.stdout.clearLine(0);
-            // process.stdout.write('PRODUTO: ' + product?.title);
-
-            const currentInterval = falloutCronos.falloutIntervals.find(item => item.auct_id === floorAuct.id)
-
-            clearInterval(currentInterval?.interval);
-            cronmarker.currentTimer = floorAuct.product_timer_seconds;
-            await cronmarker.falloutCronos(cronmarker.currentTimer, slotInformations);
+            await falloutCronosInstance.start(floorAuct.product_timer_seconds, slotInformations)
+            // await cronmarker.falloutCronos(cronmarker.currentTimer, slotInformations);
 
         }
 
-        // console.log("")
-        // console.log("--------------------------------------- GRUPO FINALIZADO ---------------------------------------")
-        //resolve(true)
+        const currentInterval = falloutCronosInstance.falloutIntervals
+        currentInterval.forEach((item) => [
+            clearInterval(item.interval)
+        ])
 
         resolve(true)
 

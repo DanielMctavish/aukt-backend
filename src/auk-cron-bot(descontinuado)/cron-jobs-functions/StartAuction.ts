@@ -41,13 +41,8 @@ const StartAuction = (auct_id: string | any, group: string): Promise<IBotRespons
             return
         }
 
-        console.clear()
-        console.log('--------------------------------------------------------')
-        console.log('starting auction... ')
-
         //filter auction by auct_ID........
         const auctSelected: IAuct[] = cronmarker.auctions.filter(auction => auction.id === auct_id)
-        console.log(auctSelected[0])
 
         if (!auctSelected[0]) {
             reject({
@@ -62,10 +57,8 @@ const StartAuction = (auct_id: string | any, group: string): Promise<IBotRespons
 
         resolve({
             status: 200,
-            message: 'auction started',
-            slots: JSON.stringify(cronmarker.allSlots)
+            message: 'auction started'
         })
-
 
         const filteredGroup = auctSelected[0].auct_dates.filter(date => date.group === group)
         await cronmarker.renderFloor(auctSelected[0], filteredGroup[0])
@@ -77,15 +70,6 @@ const StartAuction = (auct_id: string | any, group: string): Promise<IBotRespons
 
         console.log(`------------------ LEILÃO FINALIZADO! ${auctSelected[0].title} ----------------------------`)
         changeAuctStatus(auct_id, 'finished')
-
-        // esvaziando o slot do leilão em questão................................................................
-        cronmarker.allSlots.forEach((slot, index) => {
-
-            if (slot.auct_id === auctSelected[0].id) {
-                cronmarker.allSlots[index] = false
-            }
-
-        })
 
 
     })

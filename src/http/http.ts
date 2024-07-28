@@ -10,6 +10,7 @@ import clientRoutes from './routes/ClientRoutes'
 import creditRoutes from './routes/CreditCardRoutes'
 import productRoutes from './routes/ProductRoutes'
 import moderatorRoutes from "./routes/ModeratorRoutes"
+import MainAukController from '../aukontroller/MainAukController'
 
 const app = express()
 
@@ -42,10 +43,12 @@ app.get('/check-api', (req, res) => {
     res.send('AUKT API version 1.0 - rota checada com sucesso!')
 })
 
-//AukCronBot()
+
+const controllerInstance = new MainAukController()
 
 app.listen(3008, () => {
     //console.clear()
     console.log('[AUKT] Server running on PORT: ', 3008)
 })
 
+export { controllerInstance }

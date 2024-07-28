@@ -19,8 +19,9 @@ router.delete('/delete-client', verifyToken, ApplyUseCase(mainClient.DeleteClien
 // AUCT OPERATIONS
 
 router.post("/bid-auct", verifyToken, ApplyUseCase(mainClient.BidAuct))//testado
-router.get("/list-bid", verifyToken, ApplyUseCase(mainClient.ListBidByClientId))//in development................................................................
+router.get("/list-bid", verifyToken, ApplyUseCase(mainClient.ListBidByClientId))//testado
 router.post("/subscribed-auct", verifyToken, ApplyUseCase(mainClient.SubscribedAuct))//testado
+router.get("/find-bid", verifyToken, ApplyUseCase(mainClient.FindBid))//development...
 
 //ACCESS
 

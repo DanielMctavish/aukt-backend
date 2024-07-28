@@ -11,8 +11,10 @@ export interface ClientResponse {
 interface params {
     id: string
     auct_id: string
+    bid_id: string;
     client_id: string
     email: string
+    value: number
 }
 
 interface IMainClient {
@@ -26,6 +28,7 @@ interface IMainClient {
     // AUCT OPERATIONS
     SubscribedAuct(data: any, params: params): Promise<ClientResponse>
     BidAuct(bid: IBid): Promise<ClientResponse>
+    FindBid(data: any, params: params): Promise<ClientResponse>
     ListBidByClientId(data: any, params: params): Promise<ClientResponse>
     //ACCESS
     LoginClient(data: Partial<IClient>): Promise<ClientResponse>

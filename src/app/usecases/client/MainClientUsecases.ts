@@ -7,6 +7,7 @@ import firebaseUploadClientProfile from "./firebase/FirebaseUploadClientProfile"
 import { bidAuct } from "./functions/BidAuct";
 import { createClient } from "./functions/CreateClient";
 import { deleteClient } from "./functions/DeleteClient";
+import { findBid } from "./functions/FindBid";
 import { findClient } from "./functions/FindClient";
 import { findClientByEmail } from "./functions/FindClientByEmail";
 import { listBidByClientId } from "./functions/ListBidByClientId";
@@ -16,9 +17,11 @@ import { subscribedAuct } from "./functions/SubscribedAuct";
 import { updateClient } from "./functions/UpdateClient";
 
 interface params {
+    bid_id: string;
     auct_id: string
     client_id: string
     email: string
+    value: number
 }
 
 class MainClientUsecases implements IMainClient {
@@ -51,6 +54,10 @@ class MainClientUsecases implements IMainClient {
 
     async BidAuct(data: IBid): Promise<ClientResponse> {
         return bidAuct(data)
+    }
+
+    async FindBid(data: any, params: params): Promise<ClientResponse> {
+        return findBid(params.value)
     }
 
     async ListBidByClientId(data: any, params: params): Promise<ClientResponse> {

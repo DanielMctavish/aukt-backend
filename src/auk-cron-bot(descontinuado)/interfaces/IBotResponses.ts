@@ -2,8 +2,7 @@ import { AuctDateGroups, IAuct } from "../../app/entities/IAuct";
 
 export interface IBotResponses {
     status: number,
-    message: string,
-    slots: JSON | string
+    message: string
 }
 
 export interface IFloorAuction {

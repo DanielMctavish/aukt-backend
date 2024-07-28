@@ -3,7 +3,7 @@ import multer from 'multer'
 import { ApplyUseCase } from '../middlewares/ApllyUseCases'
 import MainAuctUsecases from '../../app/usecases/auct/MainAuctUsecases'
 import { verifyToken } from '../../authentication/JWT'
-import { cronmarker } from '../../auk-cron-bot/AukCronBot'
+import { cronmarker } from '../../auk-cron-bot(descontinuado)/AukCronBot'
 import { IAuct } from '../../app/entities/IAuct'
 
 const router = Router()
@@ -59,6 +59,16 @@ router.post('/resume-floor', (req, res) => {
 })
 
 router.post('/change-product-time', (req, res) => {
+
+    interface IParams {
+        auct_id: string | any
+        add?: number | any
+    }
+    const params: IParams = {
+        auct_id: req.query.auct_id,
+        add: req.query.add
+    }
+    cronmarker.changeTime(params.auct_id, params.add)
 
 })
 
