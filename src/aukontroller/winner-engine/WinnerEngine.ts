@@ -1,10 +1,15 @@
 import axios from "axios"
 import PrismaProductRepositorie from "../../app/repositorie/database/PrismaProductRepositorie"
+import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie"
+import { controllerInstance } from "../MainAukController"
+import IntervalEngine from "../engine/IntervalEngine"
+
 const prismaProduct = new PrismaProductRepositorie()
+const prismaAuk = new PrismaAuctRepositorie()
 
 function WinnerEngine(auct_id: string, product_id: string) {
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
         console.log("winner started")
 
         try {
@@ -31,14 +36,22 @@ function WinnerEngine(auct_id: string, product_id: string) {
                     throw new Error(error)
                 }
             }
-            
+
         } catch (error: any) {
             console.error(error.message)
-            reject(error)
+            resolve(true)
         }
 
-        setTimeout(() => {
-            console.log("winner time out!")
+        setTimeout(async () => {
+            const currentSocket = controllerInstance.auk_sockets.find(socket => socket.auct_id === auct_id)
+
+            console.log("winner time out!", currentSocket)
+            const sokect_message = `${auct_id}-playing-auction`
+            const currentAuct = await prismaAuk.find(auct_id)
+
+            if (currentAuct && currentSocket?.group)
+                IntervalEngine(currentAuct, currentSocket.group, sokect_message, 0, currentSocket?.product_id)
+
             resolve(true)
         }, 3000);
 

@@ -26,10 +26,11 @@ interface IQuerys {
 
 interface IMainAukController {
     PlayAuk(querys: IQuerys): Promise<Partial<IFloorStatus>>;
-    ResumeAuk(querys: IQuerys): Promise<Partial<IFloorStatus>>
+    ResumeAuk(querys: IQuerys): Promise<Partial<IFloorStatus>>;
     PauseAuk(querys: IQuerys): Promise<Partial<IFloorStatus>>;
     AddTime(querys: IQuerys): Promise<Partial<IFloorStatus>>;
-    KillAuk(querys: IQuerys): Promise<Partial<IFloorStatus>>
+    NextProduct(querys: IQuerys): Promise<Partial<IFloorStatus>>;
+    KillAuk(querys: IQuerys): Promise<Partial<IFloorStatus>>;
 }
 
 

@@ -1,7 +1,7 @@
 import { IFloorStatus } from "../IMainAukController";
 import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie";
 import IntervalEngine from "../engine/IntervalEngine";
-import { controllerInstance } from "../../http/http";
+import { controllerInstance } from "../MainAukController";
 
 const prismaAuk = new PrismaAuctRepositorie();
 
@@ -10,11 +10,11 @@ async function playAuk(auct_id: string,
     resume_count?: number,
     resume_product_id?: string): Promise<Partial<IFloorStatus>> {
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
 
         const currentAuct = await prismaAuk.find(auct_id)
         if (!currentAuct) {
-            return reject({
+            return resolve({
                 response: {
                     status: 404,
                     body: "auct not found"

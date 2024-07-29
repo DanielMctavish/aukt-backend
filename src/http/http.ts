@@ -2,7 +2,7 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import { json } from 'body-parser'
-
+import '../aukontroller/MainAukController'
 import adminRoutes from './routes/AdminRoutes'
 import advertiserRoutes from './routes/AdvertiserRoutes'
 import auctRoutes from './routes/AuctRoutes'
@@ -10,7 +10,9 @@ import clientRoutes from './routes/ClientRoutes'
 import creditRoutes from './routes/CreditCardRoutes'
 import productRoutes from './routes/ProductRoutes'
 import moderatorRoutes from "./routes/ModeratorRoutes"
-import MainAukController from '../aukontroller/MainAukController'
+import { currentCategorieData } from '../categories/categoriesLibrary'
+
+
 
 const app = express()
 
@@ -43,12 +45,13 @@ app.get('/check-api', (req, res) => {
     res.send('AUKT API version 1.0 - rota checada com sucesso!')
 })
 
+app.get('/category', (req, res) => {
+    res.status(200).json(currentCategorieData)
+})
 
-const controllerInstance = new MainAukController()
 
 app.listen(3008, () => {
     //console.clear()
     console.log('[AUKT] Server running on PORT: ', 3008)
 })
 
-export { controllerInstance }

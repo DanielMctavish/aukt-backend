@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 
 export const ApplyUseCase = (usecase: Function) => {
+    
     const applyResponse = async (req: Request | any, res: Response) => {
 
         let data = {

@@ -1,14 +1,17 @@
 import { FLOOR_STATUS, IFloorStatus } from "../IMainAukController";
-import { controllerInstance } from "../../http/http";
+import { controllerInstance } from "../MainAukController";
+import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie";
+
+const prismaAukt = new PrismaAuctRepositorie()
 
 
 async function pauseAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
 
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve) => {
 
         const currentAuctionSocket = controllerInstance.auk_sockets.find(socket => socket.auct_id === auct_id)
         if (!currentAuctionSocket) {
-            return reject({
+            return resolve({
                 response: {
                     status: 404,
                     body: "auct not found"
@@ -18,6 +21,7 @@ async function pauseAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
 
         clearInterval(currentAuctionSocket.interval)
         currentAuctionSocket.status = FLOOR_STATUS.PAUSED
+        await prismaAukt.update({ status: "paused" }, auct_id)
 
         resolve({
             response: {
@@ -28,7 +32,7 @@ async function pauseAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
                 }
             }
         })
-        
+
     })
 
 }

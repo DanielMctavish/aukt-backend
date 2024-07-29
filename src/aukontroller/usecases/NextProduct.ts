@@ -1,24 +1,14 @@
 import { controllerInstance } from "../MainAukController";
 import { IFloorStatus } from "../IMainAukController";
-import IntervalEngine from "../engine/IntervalEngine";
 import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie";
+import IntervalEngine from "../engine/IntervalEngine";
 
 const prismaAuct = new PrismaAuctRepositorie()
 
 
-async function resumeAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
+async function nextProduct(auct_id: string): Promise<Partial<IFloorStatus>> {
 
     return new Promise(async (resolve) => {
-
-        // const currentAuctionIndex = controllerInstance.auk_sockets.findIndex((socket: any) => socket.auct_id === auct_id)
-        // if (!currentAuctionIndex) {
-        //     return resolve({
-        //         response: {
-        //             status: 404,
-        //             body: "auct not found"
-        //         }
-        //     })
-        // }
 
         const currentSocket = controllerInstance.auk_sockets.find((socket: any) => socket.auct_id === auct_id)
         const currentCount = currentSocket?.timer
@@ -37,13 +27,15 @@ async function resumeAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
                 }
             })
 
-            const count = currentCount
+
             clearInterval(currentSocket.interval)
             const currentAuk = await prismaAuct.find(auct_id)
             const sokect_message = `${auct_id}-playing-auction`
 
-            if (currentAuk)
+            if (currentAuk) {
+                const count = currentAuk?.product_timer_seconds
                 IntervalEngine(currentAuk, currentGroup, sokect_message, count, currentProductId)
+            }
 
         } else {
             resolve({
@@ -59,4 +51,4 @@ async function resumeAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
 }
 
 
-export { resumeAuk }
+export { nextProduct }

@@ -125,6 +125,7 @@ model CreditCard {
 
 model Product {
   id                String      @id @default(cuid())
+  lote              Int
   auct_nanoid       String?
   Advertiser        Advertiser? @relation(fields: [advertiser_id], references: [id])
   advertiser_id     String?
