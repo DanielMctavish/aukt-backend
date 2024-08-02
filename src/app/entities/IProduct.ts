@@ -6,7 +6,7 @@ import { IClient } from "./IClient"
 
 export interface IProduct {
     id: string
-    lote:number
+    lote: number
     auct_nanoid?: string
     Advertiser?: IAdvertiser
     advertiser_id?: string | undefined

@@ -9,6 +9,9 @@ export const findProduct = (product_id: string): Promise<ProductResponse> => {
         try {
 
             const currentProduct = await prismaProducts.find(product_id)
+
+            console.log("observando produto -> ", currentProduct)
+
             if (!currentProduct) {
                 return reject({ status_code: 404, body: 'not product founded' })
             }

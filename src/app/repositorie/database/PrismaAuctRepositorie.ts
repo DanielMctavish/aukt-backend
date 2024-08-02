@@ -56,7 +56,11 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
             where: {
                 id,
             }, include: {
-                product_list: true,
+                product_list: {
+                    orderBy: {
+                        lote: "asc"
+                    }
+                },
                 Advertiser: true
             }
         });

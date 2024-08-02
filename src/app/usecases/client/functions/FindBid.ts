@@ -14,7 +14,7 @@ export const findBid = (value: number): Promise<ClientResponse> => {
             if (currentBid) {
                 resolve({ status_code: 200, body: currentBid })
             } else {
-                reject({ status_code: 404, body: 'not bid founded' })
+                resolve({ status_code: 404, body: 'not bid founded' })
             }
 
         } catch (error: any) {
