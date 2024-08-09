@@ -44,8 +44,6 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
             }
         })
 
-
-
         return createdAuct as IAuct;
     }
 
@@ -61,7 +59,8 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                         lote: "asc"
                     }
                 },
-                Advertiser: true
+                Advertiser: true,
+                auct_dates: true
             }
         });
         return foundAuct as IAuct;
@@ -83,7 +82,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
         try {
             const aucts = await prisma.auct.findMany({
                 where: {
-                    creator_id
+                    advertiser_id: creator_id
                 }, include: {
                     product_list: true,
                     Advertiser: true,

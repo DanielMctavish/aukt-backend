@@ -10,7 +10,7 @@ const mainProducts = new MainProductUsecases()
 
 router.post('/create-product', ApplyUseCase(mainProducts.create))//testado
 router.get('/find', ApplyUseCase(mainProducts.find))//testado
-router.get('/list', ApplyUseCase(mainProducts.list))
+router.get('/list-by-filters', ApplyUseCase(mainProducts.listProductsByFilters))
 router.get("/list-by-title", ApplyUseCase(mainProducts.findByTitle))//testado
 router.get('/list-by-advertiser', ApplyUseCase(mainProducts.listByAdvertiserId))//testado
 router.get('/list-by-categorie', ApplyUseCase(mainProducts.listByCategorie))//in development....

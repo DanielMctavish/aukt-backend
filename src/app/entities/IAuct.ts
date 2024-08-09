@@ -39,7 +39,6 @@ export interface IAuct {
     updated_at: Date
 }
 
-
 export const AuctStatus: { [x: string]: 'cataloged' | 'live' | 'canceled' | 'finished' | 'paused' | 'pending' } = {
     cataloged: 'cataloged',
     live: 'live',

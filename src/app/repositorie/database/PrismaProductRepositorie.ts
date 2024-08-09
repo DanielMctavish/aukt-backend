@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import { IProductRepositorie } from "../IProductRepositorie"
 import { IProduct } from "../../entities/IProduct"
+import IParams from "../../entities/IParams";
 
 const prisma = new PrismaClient()
 
@@ -69,8 +70,8 @@ class PrismaProductRepositorie implements IProductRepositorie {
                     Advertiser: true,
                     Auct: true,
                     Bid: {
-                        orderBy:{
-                            created_at:"desc"
+                        orderBy: {
+                            created_at: "desc"
                         },
                         include: {
                             Client: true
@@ -94,7 +95,8 @@ class PrismaProductRepositorie implements IProductRepositorie {
                 }
             },
             orderBy: {
-                created_at: "asc"
+                created_at: "asc",
+                lote: "asc"
             }, take: 3
         });
 
@@ -102,17 +104,50 @@ class PrismaProductRepositorie implements IProductRepositorie {
 
     }
 
-    async list(offset: string): Promise<IProduct[]> {
+    async list(params: Partial<IParams>): Promise<IProduct[]> {
+
+        const { categorie, group, auct_id, bid_count_order, lote_order, initial_value_order, take, skip } = params
+
+        let whereFiltered: any = { Winner: null };
+
+        if (categorie) {
+            whereFiltered.categorie = categorie;
+        }
+
+        if (group) {
+            whereFiltered.group = group;
+        }
+
+        if (auct_id) {
+            whereFiltered.auct_id = auct_id;
+        }
+
+        let orderBy: any = undefined;
+
+        if (bid_count_order !== undefined) {
+            orderBy = {
+                Bid: {
+                    _count: bid_count_order.toString() === "true" ? 'desc' : 'asc'
+                }
+            };
+        } else if (lote_order) {
+            orderBy = { lote: lote_order };
+        } else if (initial_value_order) {
+            orderBy = { initial_value: initial_value_order };
+        }
+
+        const isTake = take ? parseInt(take) : 12
 
         const products = await prisma.product.findMany({
-            orderBy: {
-                created_at: "desc"
-            }, take: parseInt(offset)
+            where: whereFiltered,
+            orderBy: orderBy,
+            take: isTake,
+            skip: skip ? parseInt(skip) : 0
         });
 
         return products.map((product) => product as IProduct);
-
     }
+
 
 
     async listByAdvertiserId(id: string): Promise<IProduct[]> {
