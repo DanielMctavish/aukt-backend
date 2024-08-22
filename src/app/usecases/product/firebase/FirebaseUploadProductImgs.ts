@@ -15,7 +15,7 @@ const firebaseUploadProductsImgs = (product_id: string, Files: Array<FilePhoto>)
             if (!File) return reject({ status_code: 404, body: "Nenhum arquivo enviado" })
             if (!product_id) return reject({ status_code: 403, body: "Nenhum parametro ID foi enviado" })
 
-            const currentProduct = await prismaProduct.find(product_id)
+            const currentProduct = await prismaProduct.find({product_id})
             if (!currentProduct) {
                 return reject({ status_code: 404, body: "produto não encontrado" })
             }

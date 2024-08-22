@@ -11,7 +11,7 @@ const mainClient = new MainClientUsecases()
 
 router.post('/create-client', ApplyUseCase(mainClient.CreateClient))//testado
 router.get('/find-client', ApplyUseCase(mainClient.FindClient))//testado
-router.get('/find-by-email', verifyToken, ApplyUseCase(mainClient.FindClientByEmail))//testado
+router.get('/find-by-email', ApplyUseCase(mainClient.FindClientByEmail))//testado
 router.get('/list-clients', verifyToken, ApplyUseCase(mainClient.ListClient))//testado
 router.patch('/update-client', verifyToken, ApplyUseCase(mainClient.UpdateClient))//testado
 router.delete('/delete-client', verifyToken, ApplyUseCase(mainClient.DeleteClient))//testado

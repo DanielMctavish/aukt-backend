@@ -34,8 +34,6 @@ function IntervalEngine(currentAuct: IAuct,
         if (resume_product_id) {
             nextProductIndex = filteredProducts.findIndex(product => product.id === resume_product_id) + 1
 
-            console.log("dentro da condição index -> ", nextProductIndex)
-
             if (nextProductIndex === -1) {
                 nextProductIndex = 0
             }
@@ -43,7 +41,7 @@ function IntervalEngine(currentAuct: IAuct,
 
         if (filteredProducts[nextProductIndex]) {
             const currentProduct = filteredProducts[nextProductIndex]
-            const productWithBids = await prismaProduct.find(currentProduct.id)
+            const productWithBids = await prismaProduct.find({ product_id: currentProduct.id })
 
             const currentInterval: NodeJS.Timeout = setInterval(async () => {//INTERVAL........................................
                 const currentSocket = controllerInstance.auk_sockets.find(socket => socket.auct_id === currentAuct.id)
@@ -60,9 +58,11 @@ function IntervalEngine(currentAuct: IAuct,
                             auct_id: currentAuct.id
                         },
                         cronTimer: count
+                    }).then(() => {
+                        console.log("mensagem enviada com sucesso -> ", productWithBids?.title)
                     })
                 } catch (error: any) {
-                    console.error(error.message)
+                    console.error("error at try send message: ", error.response)
                 }
 
                 if (currentSocket) {

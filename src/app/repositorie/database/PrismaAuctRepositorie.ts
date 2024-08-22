@@ -84,7 +84,14 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                 where: {
                     advertiser_id: creator_id
                 }, include: {
-                    product_list: true,
+                    product_list: {
+                        select: {
+                            Winner: true,
+                            title: true,
+                            initial_value: true,
+                            cover_img_url: true,
+                        }
+                    },
                     Advertiser: true,
                     auct_dates: true
                 }, orderBy: {

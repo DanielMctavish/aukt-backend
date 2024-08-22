@@ -16,7 +16,7 @@ const firebaseDeleteProductImg = (params: params): Promise<AdvertiserResponse> =
         try {
             if (!params.url_product) return reject({ status_code: 500, body: "parâmetro url é necessário!" })
 
-            const currentProduct = await prismaProduct.find(params.product_id)
+            const currentProduct = await prismaProduct.find({ product_id: params.product_id })
             const urlImgsGroup = currentProduct?.group_imgs_url
 
             let verifyUrlGroupChanges = 0

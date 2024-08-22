@@ -3,7 +3,6 @@ import { AuctResponse } from "../../IMainAuct";
 import PrismaAuctRepositorie from "../../../repositorie/database/PrismaAuctRepositorie";
 import generateNanoId from "../../../../utils/GenerateNanoId";
 import PrismaAdvertiserRepositorie from "../../../repositorie/database/PrismaAdvertiserRepositorie";
-import { AukCronBot } from "../../../../auk-cron-bot(descontinuado)/AukCronBot";
 const prismaAuct = new PrismaAuctRepositorie()
 const prismaAdvertiser = new PrismaAdvertiserRepositorie()
 
@@ -18,8 +17,7 @@ export const createAuct = (data: IAuct): Promise<AuctResponse> => {
                     body: "advertiser_id not sended"
                 })
             }
-            
-            AukCronBot(data.advertiser_id)
+
             const currentAdvertiser = await prismaAdvertiser.find(data.advertiser_id)
             if (!currentAdvertiser) {
                 return reject({

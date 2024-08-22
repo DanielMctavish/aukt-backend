@@ -20,7 +20,7 @@ class MainProductUsecases implements IMainProduct {
         return createProduct(data)
     }
     find(data: any, params: IParams): Promise<ProductResponse> {
-        return findProduct(params.product_id)
+        return findProduct(params)
     }
     findByTitle(data: any, params: IParams): Promise<ProductResponse> {
         return getProductByTitle(params.title)

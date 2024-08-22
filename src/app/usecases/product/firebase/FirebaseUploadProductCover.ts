@@ -19,7 +19,7 @@ const firebaseUploadProductCover = (product_id: string, File: FilePhoto): Promis
                 && File.mimetype !== 'image/jpeg') return reject({ status_code: 500, body: "o arquivo precisa ser uma foto" })
 
 
-            const currentProduct = await prismaProduct.find(product_id)
+            const currentProduct = await prismaProduct.find({product_id})
             if (!currentProduct) {
                 return reject({ status_code: 404, body: "produto não encontrado" })
             }

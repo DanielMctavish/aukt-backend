@@ -7,9 +7,6 @@ export const findClient = (client_id: string): Promise<ClientResponse> => {
 
     return new Promise(async (resolve, reject) => {
 
-        console.log('dentro do findClient -> ', client_id);
-
-
         try {
 
             const currentClient = await prismaClient.find(client_id)

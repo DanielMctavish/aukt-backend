@@ -58,34 +58,56 @@ class PrismaProductRepositorie implements IProductRepositorie {
         return createdProduct as IProduct;
     }
 
-    async find(product_id: string): Promise<IProduct | null> {
-        let result;
+    async find(params: Partial<IParams>): Promise<IProduct | null> {
+        const { categorie, group, auct_id, product_id, lote } = params
 
-        if (product_id) {
-            result = await prisma.product.findFirst({
-                where: {
-                    id: product_id
-                },
-                include: {
-                    Advertiser: true,
-                    Auct: true,
-                    Bid: {
-                        orderBy: {
-                            created_at: "desc"
-                        },
-                        include: {
-                            Client: true
-                        }
-                    },
-                    Winner: true
-                }
-            });
+        let whereFiltered: any = {};
+
+        if (categorie) {
+            whereFiltered.categorie = categorie;
         }
 
+        if (group) {
+            whereFiltered.group = group;
+        }
+
+        if (auct_id) {
+            whereFiltered.auct_id = auct_id;
+        }
+
+        if (product_id) {
+            whereFiltered.id = product_id;
+        }
+
+        if (lote) {
+            whereFiltered.lote = parseInt(lote);
+        }
+
+        console.log("parametros -> ", whereFiltered)
+
+        const result = await prisma.product.findFirst({
+            where: whereFiltered,
+            include: {
+                Advertiser: true,
+                Auct: true,
+                Bid: {
+                    include: {
+                        Client: true
+                    }
+                },
+                Winner: true
+            }
+        });
+
         return result as IProduct
+
     }
 
+
+
     async findByTitle(title: string): Promise<IProduct[]> {
+
+        console.log("obs param title -> ", title)
 
         const products = await prisma.product.findMany({
             where: {
@@ -94,10 +116,10 @@ class PrismaProductRepositorie implements IProductRepositorie {
                     mode: "insensitive"
                 }
             },
-            orderBy: {
-                created_at: "asc",
-                lote: "asc"
-            }, take: 3
+            orderBy: [
+                { created_at: "asc" },
+                { lote: "asc" },
+            ], take: 3
         });
 
         return products.map((product) => product as IProduct);
@@ -134,6 +156,8 @@ class PrismaProductRepositorie implements IProductRepositorie {
             orderBy = { lote: lote_order };
         } else if (initial_value_order) {
             orderBy = { initial_value: initial_value_order };
+        }else{
+            orderBy = { created_at: 'desc' };
         }
 
         const isTake = take ? parseInt(take) : 12
