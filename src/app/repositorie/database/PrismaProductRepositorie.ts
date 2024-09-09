@@ -263,7 +263,23 @@ class PrismaProductRepositorie implements IProductRepositorie {
         return deletedProduct as IProduct;
     }
 
+    async countAllProducts(): Promise<number> {
 
+        const count = await prisma.product.count();
+
+        return count;
+    }
+
+    async countAllWithWinners(): Promise<number> {
+        const count = await prisma.product.count({
+            where: {
+                winner_id: {
+                    not: null
+                }
+            }
+        });
+        return count;
+    }
 }
 
 export default PrismaProductRepositorie

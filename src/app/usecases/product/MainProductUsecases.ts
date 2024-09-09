@@ -13,7 +13,7 @@ import { listallproductsByCategorie } from "./functions/listallproductsByCategor
 import { listProductByAdvertiser } from "./functions/listProductByAdvertiser";
 import { ListProductsByFilters } from "./functions/listProductsByFilters";
 import { updateProduct } from "./functions/updateProduct";
-
+import { counterProducts, counterProductsWithBids } from "./functions/CounterProducts";
 
 class MainProductUsecases implements IMainProduct {
     create(data: IProduct): Promise<ProductResponse> {
@@ -35,8 +35,6 @@ class MainProductUsecases implements IMainProduct {
         return listallproductsByCategorie(params.categorie)
     }
 
-
-
     update(data: Partial<IProduct>, params: IParams): Promise<ProductResponse> {
         return updateProduct(data, params.product_id)
     }
@@ -53,6 +51,14 @@ class MainProductUsecases implements IMainProduct {
     }
     FirebaseDeleteProductImg(body: any, params: any): Promise<ProductResponse> {
         return firebaseDeleteProductImg(params)
+    }
+
+    CounterProducts(): Promise<ProductResponse> {
+        return counterProducts()
+    }
+
+    CounterProductsWithBids(): Promise<ProductResponse> {
+        return counterProductsWithBids()
     }
 }
 

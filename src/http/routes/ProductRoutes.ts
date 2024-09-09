@@ -21,4 +21,8 @@ router.post('/upload-cover-img', upload.single('aukt-product-img'), ApplyUseCase
 router.post('/upload-products-imgs', upload.array('aukt-products-imgs', 10), ApplyUseCase(mainProducts.FirebaseUploadProductImgs))
 router.delete('/delete-product-img', ApplyUseCase(mainProducts.FirebaseDeleteProductImg))
 
+// New routes for product counters
+router.get('/count-products', ApplyUseCase(mainProducts.CounterProducts))
+router.get('/count-products-with-bids', ApplyUseCase(mainProducts.CounterProductsWithBids))
+
 export default router;

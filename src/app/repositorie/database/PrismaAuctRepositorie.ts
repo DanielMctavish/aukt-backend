@@ -2,7 +2,6 @@ import { PrismaClient, Prisma } from "@prisma/client";
 import { IAuctRepositorie } from "../IAuctRepositorie";
 import { IAuct } from "../../entities/IAuct";
 
-
 const prisma = new PrismaClient();
 
 class PrismaAuctRepositorie implements IAuctRepositorie {
@@ -10,50 +9,59 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
     async create(data: IAuct): Promise<IAuct | null> {
         const { product_list, advertiser_id, id, Cartelas, ...restData } = data;
 
-        if (!data.auct_dates || !product_list || typeof advertiser_id !== 'string') return null;
+        try {
+            // Convertendo datas para o formato ISO-8601
+            const auct_dates = data.auct_dates.map(date => ({
+                ...date,
+                date_auct: new Date(date.date_auct).toISOString()
+            }));
 
-        const createdAuct = await prisma.auct.create({
-            data: {
-                ...restData,
-                ...(advertiser_id && { advertiser_id }),  
+            const createdAuct = await prisma.auct.create({
+                data: {
+                    ...restData,
+                    ...(advertiser_id && { advertiser_id }),
 
-                auct_dates: {
-                    createMany: {
-                        data: data.auct_dates,
-                    }
-                },
+                    auct_dates: {
+                        createMany: {
+                            data: auct_dates,
+                        }
+                    },
 
+                    ...(product_list && {
+                        product_list: {
+                            connect: product_list.map(product => ({
+                                id: product.id
+                            }))
+                        }
+                    }),
 
-                product_list: {
-                    createMany: {
-                        data: product_list,
-                    }
-                },
+                    // Conectando `Cartelas` existentes
+                    ...(Cartelas && Cartelas.length > 0 && {
+                        Cartelas: {
+                            connect: Cartelas.map(cartela => ({
+                                id: cartela.id  // Conectando as cartelas pelo `id`
+                            })),
+                        }
+                    }),
 
-                // Conectando `Cartelas` existentes
-                ...(Cartelas && Cartelas.length > 0 && {
-                    Cartelas: {
-                        connect: Cartelas.map(cartela => ({
-                            id: cartela.id  // Conectando as cartelas pelo `id`
-                        })),
-                    }
-                }),
+                    subscribed_clients: {
+                        create: data.subscribed_clients?.map(subs => subs) || []
+                    },
 
-
-                subscribed_clients: {
-                    create: data.subscribed_clients?.map(subs => subs) || []
-                },
-
-
-                Bids: {
-                    createMany: {
-                        data: !data.Bid ? [] : data.Bid,
+                    Bids: {
+                        createMany: {
+                            data: !data.Bid ? [] : data.Bid,
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        return createdAuct as IAuct;
+            console.log("Leilão criado com sucesso:", createdAuct);
+            return createdAuct as IAuct;
+        } catch (error) {
+            console.log("Erro ao criar leilão:", error);
+            return null;
+        }
     }
 
 
