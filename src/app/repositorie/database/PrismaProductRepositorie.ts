@@ -213,47 +213,27 @@ class PrismaProductRepositorie implements IProductRepositorie {
         return products.map((product) => product as IProduct);
     }
 
-    async update(data: Partial<IProduct>, id: string): Promise<IProduct | null> {
-        const {
-            categorie,
-            cover_img_url,
-            winner_id,
-            height,
-            width,
-            weight,
-            highlight_product,
-            description,
-            initial_value,
-            group_imgs_url,
-            title,
-        } = data;
+    async update(data: Partial<IProduct>, product_id: string): Promise<IProduct | null> {
+        // Filtrar apenas os campos que têm valores definidos
+        const updatedFields = Object.fromEntries(
+            Object.entries(data).filter(([_, value]) => value !== undefined)
+        );
 
         const updatedProduct = await prisma.product.update({
             where: {
-                id,
+                id: product_id
             },
-            data: {
-                cover_img_url,
-                winner_id,
-                height,
-                width,
-                weight,
-                highlight_product,
-                description,
-                initial_value,
-                group_imgs_url,
-                title,
-                categorie
-            },
+            data: updatedFields,  // Usar apenas os campos definidos
             include: {
                 Auct: true,
                 Advertiser: true,
-                Winner: true
-            }
+                Winner: true,
+            },
         });
 
         return updatedProduct as IProduct;
     }
+
 
     async delete(id: string): Promise<IProduct | null> {
         const deletedProduct = await prisma.product.delete({
