@@ -10,6 +10,8 @@ import clientRoutes from './routes/ClientRoutes'
 import creditRoutes from './routes/CreditCardRoutes'
 import productRoutes from './routes/ProductRoutes'
 import moderatorRoutes from "./routes/ModeratorRoutes"
+import cartelaRoutes from "./routes/CartelaRoutes"
+import transactionRoutes from "./routes/TransactionRoutes"
 import { currentCategorieData } from '../categories/categoriesLibrary'
 
 
@@ -36,6 +38,8 @@ app.use('/client', clientRoutes)
 app.use('/credit-card', creditRoutes)
 app.use('/products', productRoutes)
 app.use('/moderator', moderatorRoutes)
+app.use('/cartela', cartelaRoutes)
+app.use('/transaction', transactionRoutes)
 
 app.get('/', (req, res) => {
     res.send('AUKT API version 1.0 - changes')

@@ -6,7 +6,6 @@ import { pauseAuk } from "./usecases/PauseAuk";
 import { playAuk } from "./usecases/PlayAuk";
 import { resumeAuk } from "./usecases/ResumeAuk";
 
-
 class MainAukController implements IMainAukController {
     public auk_sockets: Partial<IFloorStatus>[] = []
 

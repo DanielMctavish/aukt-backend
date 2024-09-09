@@ -1,5 +1,6 @@
 import { IAdvertiser } from "./IAdvertiser"
 import IBid from "./IBid"
+import { ICartela } from "./ICartela"
 import { IClient } from "./IClient"
 import { IProduct } from "./IProduct"
 
@@ -22,6 +23,7 @@ export interface IAuct {
     client_id?: string | any
     subscribed_clients?: IClient[]
     Bid?: IBid[]
+    Cartelas: ICartela[]
     title: string
     tags: string[]
     auct_cover_img: string

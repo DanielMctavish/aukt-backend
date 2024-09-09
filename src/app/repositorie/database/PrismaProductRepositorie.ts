@@ -8,12 +8,12 @@ const prisma = new PrismaClient()
 class PrismaProductRepositorie implements IProductRepositorie {
 
     async create(data: IProduct): Promise<IProduct> {
-        const { auct_id, auct_nanoid, advertiser_id, winner_id, ...restdata } = data;
+        const { auct_id, auct_nanoid, advertiser_id, winner_id, cartela_id, ...restdata } = data;
 
-        // Estrutura do tipo esperado pelo Prisma para 'Winner'
         const winnerConnect = winner_id ? { connect: { id: winner_id } } : undefined;
+        const cartelaConnect = cartela_id ? { connect: { id: cartela_id } } : undefined;
 
-        const dataWinner = {
+        let dataWinner = {
             ...restdata,
             auct_nanoid,
             Auct: {
@@ -27,10 +27,11 @@ class PrismaProductRepositorie implements IProductRepositorie {
                     id: advertiser_id
                 }
             },
-            Winner: winnerConnect // Ajuste para corresponder ao tipo esperado
-        }
+            Winner: winnerConnect,
+            Cartela: cartelaConnect
+        };
 
-        const dataDefault = {
+        const dataDefault: any = {
             ...restdata,
             auct_nanoid,
             Auct: {
@@ -44,6 +45,10 @@ class PrismaProductRepositorie implements IProductRepositorie {
                     id: advertiser_id
                 }
             }
+        };
+
+        if (cartela_id) {
+            dataDefault["cartela_id"] = cartela_id;
         }
 
         const createdProduct = await prisma.product.create({
@@ -51,12 +56,14 @@ class PrismaProductRepositorie implements IProductRepositorie {
             include: {
                 Auct: true,
                 Advertiser: true,
-                Winner: true // Certifique-se de incluir a associação 'Winner'
+                Winner: true,  // Certifique-se de incluir a associação 'Winner'
+                Cartela: true  // Incluindo a associação 'Cartela' se necessário
             }
         });
 
         return createdProduct as IProduct;
     }
+
 
     async find(params: Partial<IParams>): Promise<IProduct | null> {
         const { categorie, group, auct_id, product_id, lote } = params
@@ -83,8 +90,6 @@ class PrismaProductRepositorie implements IProductRepositorie {
             whereFiltered.lote = parseInt(lote);
         }
 
-        console.log("parametros -> ", whereFiltered)
-
         const result = await prisma.product.findFirst({
             where: whereFiltered,
             include: {
@@ -100,7 +105,6 @@ class PrismaProductRepositorie implements IProductRepositorie {
         });
 
         return result as IProduct
-
     }
 
 
@@ -156,7 +160,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
             orderBy = { lote: lote_order };
         } else if (initial_value_order) {
             orderBy = { initial_value: initial_value_order };
-        }else{
+        } else {
             orderBy = { created_at: 'desc' };
         }
 
@@ -210,7 +214,8 @@ class PrismaProductRepositorie implements IProductRepositorie {
     }
 
     async update(data: Partial<IProduct>, id: string): Promise<IProduct | null> {
-        const { categorie,
+        const {
+            categorie,
             cover_img_url,
             winner_id,
             height,

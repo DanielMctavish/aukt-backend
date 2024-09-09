@@ -15,7 +15,7 @@ router.post('/create-auct', verifyToken, ApplyUseCase(mainAuct.CreateAuct))//tes
 router.get('/find-auct', ApplyUseCase(mainAuct.FindAuct))//testado
 router.get('/find-by-nanoid', verifyToken, ApplyUseCase(mainAuct.FindAuctByNanoId))//
 router.get('/list-auct', ApplyUseCase(mainAuct.ListAuct))//testado
-router.get('/list-auct-bystatus', ApplyUseCase(mainAuct.ListAuctByStatus))//in development....
+router.get('/list-auct-bystatus', ApplyUseCase(mainAuct.ListAuctByStatus))//testado
 router.patch('/update-auct', verifyToken, ApplyUseCase(mainAuct.UpdateAuct))//testado
 router.delete('/delete-auct', verifyToken, ApplyUseCase(mainAuct.DeleteAuct))//testado
 
@@ -27,7 +27,10 @@ router.get('/start-auct', verifyToken, ApplyControllerUsecases(controllerInstanc
 router.get('/pause-product-time', verifyToken, ApplyControllerUsecases(controllerInstance.PauseAuk))//testado
 router.get('/resume-floor', verifyToken, ApplyControllerUsecases(controllerInstance.ResumeAuk))//testado
 router.get('/change-product-time', verifyToken, ApplyControllerUsecases(controllerInstance.AddTime))//testado
-router.get('/next-product', verifyToken, ApplyControllerUsecases(controllerInstance.NextProduct))//in development...
+router.get('/next-product', verifyToken, ApplyControllerUsecases(controllerInstance.NextProduct))//testado...
+router.get('/kill-auct', verifyToken, ApplyControllerUsecases(controllerInstance.KillAuk))//testado...
 
+//counter.....................................................................................................................
 
+router.get('/counter', ApplyUseCase(mainAuct.CounterAucts))//in development
 export default router;

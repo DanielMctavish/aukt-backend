@@ -25,6 +25,8 @@ interface IMainAuct {
 
     FirebaseUploadCoverAuct(body: any, params: any, File: FilePhoto): Promise<AuctResponse>
     FirebaseDeleteCoverAuct(body: any, params: any, File: FilePhoto): Promise<AuctResponse>
+
+    CounterAucts(): Promise<AuctResponse>
 }
 
 export default IMainAuct

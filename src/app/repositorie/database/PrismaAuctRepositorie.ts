@@ -1,59 +1,68 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { IAuctRepositorie } from "../IAuctRepositorie";
 import { IAuct } from "../../entities/IAuct";
-import dayjs from "dayjs";
+
 
 const prisma = new PrismaClient();
 
 class PrismaAuctRepositorie implements IAuctRepositorie {
 
-    async create(data: IAuct): Promise<IAuct> {
-        const { product_list, ...restData } = data;
+    async create(data: IAuct): Promise<IAuct | null> {
+        const { product_list, advertiser_id, id, Cartelas, ...restData } = data;
+
+        if (!data.auct_dates || !product_list || typeof advertiser_id !== 'string') return null;
 
         const createdAuct = await prisma.auct.create({
             data: {
                 ...restData,
+                ...(advertiser_id && { advertiser_id }),  
+
                 auct_dates: {
                     createMany: {
-                        data: data.auct_dates.map(group => {
-                            return {
-                                date_auct: new Date(group.date_auct),
-                                group: group.group,
-                                hour: group.hour
-                            }
-                        })
+                        data: data.auct_dates,
                     }
                 },
+
+
                 product_list: {
                     createMany: {
-                        data: product_list?.map(product => {
-                            return product;
-                        }) || []
+                        data: product_list,
                     }
                 },
+
+                // Conectando `Cartelas` existentes
+                ...(Cartelas && Cartelas.length > 0 && {
+                    Cartelas: {
+                        connect: Cartelas.map(cartela => ({
+                            id: cartela.id  // Conectando as cartelas pelo `id`
+                        })),
+                    }
+                }),
+
+
                 subscribed_clients: {
-                    create: data.subscribed_clients?.map(subs => {
-                        return subs;
-                    }) || []
+                    create: data.subscribed_clients?.map(subs => subs) || []
                 },
+
+
                 Bids: {
                     createMany: {
-                        data: !data.Bid ? [] : data.Bid
+                        data: !data.Bid ? [] : data.Bid,
                     }
                 }
             }
-        })
+        });
 
         return createdAuct as IAuct;
     }
 
 
     async find(id: string): Promise<IAuct | null> {
-
         const foundAuct = await prisma.auct.findFirst({
             where: {
                 id,
-            }, include: {
+            },
+            include: {
                 product_list: {
                     orderBy: {
                         lote: "asc"
@@ -88,8 +97,22 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                         select: {
                             Winner: true,
                             title: true,
+                            auct_nanoid: true,
+                            Bid: true,
+                            group: true,
+                            group_imgs_url: true,
+                            lote: true,
+                            id: true,
+                            categorie: true,
+                            created_at: true,
+                            description: true,
                             initial_value: true,
+                            reserve_value: true,
                             cover_img_url: true,
+                            width: true,
+                            height: true,
+                            weight: true,
+                            highlight_product: true
                         }
                     },
                     Advertiser: true,
@@ -127,8 +150,6 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
     }
 
     async update(data: Partial<IAuct>, auct_id: string): Promise<IAuct | null> {
-        //console.log('observando update client--> ', data, auct_id);
-
         return new Promise((resolve, reject) => {
             prisma.auct.findUnique({
                 where: {
@@ -189,15 +210,44 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                 where: {
                     id,
                 },
-            })
-                .then(deletedAuct => {
-                    console.log('Leilão deletado com sucesso:', deletedAuct);
-                    resolve(deletedAuct as IAuct);
-                })
-                .catch(error => {
-                    reject(`erro ao tentar deletar leilão: ${error.message}`);
-                });
+            }).then(deletedAuct => {
+                console.log('Leilão deletado com sucesso:', deletedAuct);
+                resolve(deletedAuct as IAuct);
+            }).catch(error => {
+                reject(`erro ao tentar deletar leilão: ${error.message}`);
+            });
+
         });
+    }
+
+    //Count............................................................................
+
+    async countAll(): Promise<number> {
+        return await prisma.auct.count()
+    }
+
+    async countLive(): Promise<number> {
+        return await prisma.auct.count({
+            where: {
+                status: 'live'
+            }
+        })
+    }
+
+    async countCataloged(): Promise<number> {
+        return await prisma.auct.count({
+            where: {
+                status: 'cataloged'
+            }
+        })
+    }
+
+    async countFinished(): Promise<number> {
+        return await prisma.auct.count({
+            where: {
+                status: 'finished'
+            }
+        })
     }
 
 }

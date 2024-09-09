@@ -1,6 +1,7 @@
 import { FilePhoto } from "../../../utils/Firebase/FirebaseOperations";
 import { IAuct } from "../../entities/IAuct";
 import IMainAuct, { AuctResponse } from "../IMainAuct";
+import { counterAucts } from "./functions/CounterAucts";
 import { createAuct } from "./functions/CreateAuct";
 import { deleteAuct } from "./functions/DeleteAuct";
 import { findAuct } from "./functions/FindAuct";
@@ -14,7 +15,7 @@ import firebaseUploadAuctCover from "./functions/firebase/FirebaseUploadAuctCove
 interface params {
     auct_id: string
     creator_id: string
-    url:string
+    url: string
     nano_id: string
     status: any
 }
@@ -47,6 +48,10 @@ class MainAuctUsecases implements IMainAuct {
     }
     FirebaseDeleteCoverAuct(body: any, params: params, File: FilePhoto): Promise<AuctResponse> {
         return firebaseDeleteAuctCover(params)
+    }
+
+    CounterAucts(): Promise<AuctResponse> {
+        return counterAucts()
     }
 }
 

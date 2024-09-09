@@ -33,8 +33,9 @@ model Moderator {
 }
 
 model Advertiser {
-  id                             String       @id @default(cuid())
-  nano_id                        String       @unique
+  id                             String        @id @default(cuid())
+  amount                         Float?
+  nano_id                        String        @unique
   name                           String
   CPF                            String
   company_name                   String
@@ -42,14 +43,17 @@ model Advertiser {
   url_profile_cover              String?
   url_profile_company_logo_cover String?
   company_adress                 String
-  email                          String       @unique
+  email                          String        @unique
   password                       String
   address                        String
   credit_cards                   CreditCard[]
   Aucts                          Auct[]
   Products                       Product[]
-  created_at                     DateTime     @default(now())
-  updated_at                     DateTime     @updatedAt
+  Cartela                        Cartela[]
+  Transaction                    Transaction[]
+  Clients                        Client[]
+  created_at                     DateTime      @default(now())
+  updated_at                     DateTime      @updatedAt
 }
 
 model Client {
@@ -65,9 +69,11 @@ model Client {
   subscribed_auct    Auct[]
   Bid                Bid[]
   client_url_profile String?
+  Product            Product[]
+  Cartela            Cartela[]
+  Advertiser         Advertiser[]
   created_at         DateTime     @default(now())
   updated_at         DateTime     @updatedAt
-  Product            Product[]
 }
 
 model AuctDateGroups {
@@ -89,6 +95,7 @@ model Auct {
   client_id                 String?
   subscribed_clients        Client[]
   Bids                      Bid[]
+  Cartelas                  Cartela[]
   title                     String
   tags                      String[]
   auct_cover_img            String
@@ -147,6 +154,8 @@ model Product {
   group_imgs_url    String[]
   Bid               Bid[]
   highlight_product Boolean?
+  Cartela           Cartela?    @relation(fields: [cartela_id], references: [id])
+  cartela_id        String?
   created_at        DateTime    @default(now())
   updated_at        DateTime    @updatedAt
 }
@@ -161,6 +170,43 @@ model Bid {
   Product    Product[]
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
+}
+
+model Cartela {
+  id             String        @id @default(cuid())
+  advertiser_id  String
+  client_id      String
+  Advertiser     Advertiser    @relation(fields: [advertiser_id], references: [id])
+  Client         Client        @relation(fields: [client_id], references: [id])
+  Auct           Auct          @relation(fields: [auction_id], references: [id])
+  auction_id     String
+  products       Product[]
+  amount         Float
+  status         CartelaStatus
+  Transaction    Transaction?  @relation("CartelaToTransaction")
+  transaction_id String?       @unique
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+}
+
+model Transaction {
+  id              String        @id @default(cuid())
+  amount          Float
+  Advertiser      Advertiser    @relation(fields: [advertiser_id], references: [id])
+  advertiser_id   String
+  auction_cartela Cartela       @relation("CartelaToTransaction", fields: [cartela_id], references: [id])
+  cartela_id      String        @unique
+  payment_method  PaymentMethod
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+}
+
+enum CartelaStatus {
+  PENDENT
+  PROCESS
+  SENDED
+  DELIVERED
+  DENIED
 }
 
 enum CardType {

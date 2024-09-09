@@ -107,6 +107,32 @@ function IntervalEngine(currentAuct: IAuct,
         } else {
             // FIM DO LEILÃO! Futura mensagem de finalização poderá ser escrita ou chamada aqui
             console.log("Fim do leilão!")
+
+            // const productNotWinner = currentAuct.product_list?.filter(product => !product.Winner)
+
+            // if (productNotWinner && productNotWinner.length > 10) {
+            //     const separateTitle = currentAuct.title.split("_")
+
+
+            //     if (separateTitle[1]) {
+            //         let currentTitleVersion = parseInt(separateTitle[1], 10)
+            //         prismaAuct.create({
+            //             ...currentAuct,
+            //             title: currentAuct.title + '_' + currentTitleVersion++,
+            //             status: 'cataloged',
+            //             product_list: productNotWinner
+            //         })
+            //     } else {
+            //         prismaAuct.create({
+            //             ...currentAuct,
+            //             title: currentAuct.title + '_2',
+            //             status: 'cataloged',
+            //             product_list: productNotWinner
+            //         })
+            //     }
+
+            // }
+
             await prismaAuct.update({ status: "finished" }, currentAuct.id)
             //envio de mensagem............................................................................................
             try {
