@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 class PrismaCartelaRepositorie implements ICartelaRepositorie {
 
     async create(data: ICartela): Promise<ICartela> {
-        const { client_id, advertiser_id, products, ...restData } = data;
+        const { client_id, advertiser_id, auction_id, products, ...restData } = data;
 
         const cartelaData: any = {
             ...restData,
@@ -25,6 +25,14 @@ class PrismaCartelaRepositorie implements ICartelaRepositorie {
             cartelaData.Client = {
                 connect: {
                     id: client_id
+                }
+            };
+        }
+
+        if (auction_id) {
+            cartelaData.Auct = {
+                connect: {
+                    id: auction_id
                 }
             };
         }
@@ -55,20 +63,39 @@ class PrismaCartelaRepositorie implements ICartelaRepositorie {
         return result as ICartela;
     }
 
-    async list(advertiser_id: string, auction_id?: string): Promise<ICartela[]> {
-        const whereClause: any = { advertiser_id };
+    async list(auction_id: string): Promise<ICartela[]> {
+        const whereClause: any = { auction_id };
         if (auction_id) {
             whereClause.auction_id = auction_id;
         }
 
         const result = await prisma.cartela.findMany({
             where: whereClause,
+            include: {
+                Client: true,
+                Transaction: true,
+                products: true
+            }
         })
-        return result as ICartela[];
+        return result as unknown as ICartela[];
+    }
+
+    async listByClient(client_id: string): Promise<ICartela[]> {
+        const result = await prisma.cartela.findMany({
+            where: {
+                client_id: client_id
+            },
+            include: {
+                Client: true,
+                Transaction: true,
+                products: true
+            }
+        })
+        return result as unknown as ICartela[];
     }
 
     async update(data: Partial<ICartela>, cartela_id: string): Promise<ICartela> {
-        const { Advertiser, Client, client_id, advertiser_id, products, ...restData } = data;
+        const { Advertiser, tracking_code, Client, client_id, advertiser_id, products, ...restData } = data;
 
         const cartelaData: any = {
             ...restData,
@@ -78,6 +105,10 @@ class PrismaCartelaRepositorie implements ICartelaRepositorie {
             cartelaData.products = {
                 create: products.map(product => ({ ...product }))
             };
+        }
+
+        if (tracking_code) {
+            cartelaData.tracking_code = tracking_code
         }
 
         const result = await prisma.cartela.update({

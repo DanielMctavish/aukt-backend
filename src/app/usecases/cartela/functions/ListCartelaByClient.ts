@@ -1,27 +1,26 @@
 import PrismaCartelaRepositorie from "../../../repositorie/database/PrismaCartelaRepositorie"
-import { ICartela } from "../../../entities/ICartela"
 import { CartelaResponse } from "../../IMainCartela"
 
 const prismaCartela = new PrismaCartelaRepositorie()
 
-const listCartela = async (auction_id: string): Promise<CartelaResponse> => {
+const listCartelaByClient = async (client_id: string): Promise<CartelaResponse> => {
 
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            const currentCartelas = await prismaCartela.list(auction_id)
+            const currentCartelas = await prismaCartela.listByClient(client_id)
 
             if (!currentCartelas[0]) {
                 return reject({
                     status_code: 404,
                     body: {
-                        msg: "not founded valids cartelas"
+                        msg: "not founded valid client"
                     }
                 })
             }
             resolve({
-                status_code: 201,
+                status_code: 200,
                 body: currentCartelas
             })
 
@@ -39,4 +38,4 @@ const listCartela = async (auction_id: string): Promise<CartelaResponse> => {
 
 }
 
-export { listCartela }
+export { listCartelaByClient }

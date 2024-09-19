@@ -183,6 +183,7 @@ model Cartela {
   products       Product[]
   amount         Float
   status         CartelaStatus
+  tracking_code  String?
   Transaction    Transaction?  @relation("CartelaToTransaction")
   transaction_id String?       @unique
   created_at     DateTime      @default(now())
@@ -194,8 +195,8 @@ model Transaction {
   amount          Float
   Advertiser      Advertiser    @relation(fields: [advertiser_id], references: [id])
   advertiser_id   String
-  auction_cartela Cartela       @relation("CartelaToTransaction", fields: [cartela_id], references: [id])
-  cartela_id      String        @unique
+  auction_cartela Cartela?      @relation("CartelaToTransaction", fields: [cartela_id], references: [id])
+  cartela_id      String?       @unique
   payment_method  PaymentMethod
   created_at      DateTime      @default(now())
   updated_at      DateTime      @updatedAt
@@ -203,6 +204,7 @@ model Transaction {
 
 enum CartelaStatus {
   PENDENT
+  PAYMENT_CONFIRMED
   PROCESS
   SENDED
   DELIVERED

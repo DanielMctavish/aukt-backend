@@ -72,6 +72,7 @@ class PrismaAdvertiserRepositorie implements IAdvertiserRepositorie {
             email,
             CPF,
             address,
+            amount,
             company_name,
             company_adress,
             name,
@@ -87,6 +88,7 @@ class PrismaAdvertiserRepositorie implements IAdvertiserRepositorie {
             email,
             CPF,
             address,
+            amount,
             company_name,
             company_adress,
             name,
@@ -114,7 +116,7 @@ class PrismaAdvertiserRepositorie implements IAdvertiserRepositorie {
 
     async delete(advertiser_id: string): Promise<IAdvertiser | null> {
         try {
-            console.log('dentro do prisma delete --> ', advertiser_id);
+            
             const deletedAdvertiser = await prisma.advertiser.delete({
                 where: {
                     id: advertiser_id

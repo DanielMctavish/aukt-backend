@@ -8,6 +8,7 @@ interface CartelaResponse {
 
 interface paramsCartela {
     auction_id: string
+    client_id: string
     creator_id: string
     nano_id: string
     status: any

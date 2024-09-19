@@ -4,6 +4,7 @@ import { createCartela } from "./functions/CreateCartela";
 import { deleteCartela } from "./functions/DeleteCartela";
 import { findCartela } from "./functions/FindCartela";
 import { listCartela } from "./functions/ListCartela";
+import { listCartelaByClient } from "./functions/ListCartelaByClient";
 import { updateCartela } from "./functions/UpdateCartela";
 
 class MainCartelaUsecases implements IMainCartela {
@@ -18,6 +19,10 @@ class MainCartelaUsecases implements IMainCartela {
 
     async ListCartela(data: any, params: paramsCartela): Promise<CartelaResponse> {
         return listCartela( params.auction_id) 
+    }
+
+    async ListCartelaByClient(data: any, params: paramsCartela): Promise<CartelaResponse> {
+        return listCartelaByClient(params.client_id)
     }
 
     async UpdateCartela(data: ICartela, params: paramsCartela): Promise<CartelaResponse> {

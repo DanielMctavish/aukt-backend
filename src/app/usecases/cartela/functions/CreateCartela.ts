@@ -1,6 +1,7 @@
 import PrismaCartelaRepositorie from "../../../repositorie/database/PrismaCartelaRepositorie"
 import { ICartela } from "../../../entities/ICartela"
 import { CartelaResponse } from "../../IMainCartela"
+import { createTransaction } from "../../transactions/functions/CreateTransaction";
 
 const prismaCartela = new PrismaCartelaRepositorie()
 
@@ -19,17 +20,26 @@ const createCartela = async (data: ICartela): Promise<CartelaResponse> => {
 
             const newCartela = await prismaCartela.create(data)
 
+            
+            await createTransaction({
+                advertiser_id: data.advertiser_id,
+                amount: data.amount,
+                cartela_id: newCartela.id,
+                payment_method:"Pix"
+            })
+
             resolve({
                 status_code: 201,
                 body: newCartela
             })
 
         } catch (error: any) {
+
+            console.log(error)
             reject({
                 status_code: 500,
                 body: {
-                    msg: "error at try create cartela",
-                    error: error.message
+                    msg: error.message,
                 }
             })
         }

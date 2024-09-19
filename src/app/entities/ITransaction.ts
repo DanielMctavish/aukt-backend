@@ -7,8 +7,8 @@ interface ITransaction {
     amount: number
     advertiser: IAdvertiser
     advertiser_id: string
-    auction_cartela: ICartela
-    cartela_id: string
+    auction_cartela?: ICartela
+    cartela_id?: string
     payment_method: PaymentMethod
     created_at: Date
     updated_at: Date
