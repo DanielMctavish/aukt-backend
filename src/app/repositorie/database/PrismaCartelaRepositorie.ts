@@ -64,6 +64,7 @@ class PrismaCartelaRepositorie implements ICartelaRepositorie {
     }
 
     async list(auction_id: string): Promise<ICartela[]> {
+
         const whereClause: any = { auction_id };
         if (auction_id) {
             whereClause.auction_id = auction_id;

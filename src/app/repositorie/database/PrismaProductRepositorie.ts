@@ -132,9 +132,14 @@ class PrismaProductRepositorie implements IProductRepositorie {
 
     async list(params: Partial<IParams>): Promise<IProduct[]> {
 
-        const { categorie, group, auct_id, bid_count_order, lote_order, initial_value_order, take, skip } = params
+        const { categorie, group, auct_id, bid_count_order, lote_order, initial_value_order, take, skip, creator_id } = params
 
         let whereFiltered: any = { Winner: null };
+
+
+        if (creator_id) {
+            whereFiltered.advertiser_id = creator_id
+        }
 
         if (categorie) {
             whereFiltered.categorie = categorie;

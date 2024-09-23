@@ -1,6 +1,7 @@
 interface IParams {
     product_id: string
     advertiser_id: string
+    creator_id:string
     title: string
     lote?: string
     take?: string
