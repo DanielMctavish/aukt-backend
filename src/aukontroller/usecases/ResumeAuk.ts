@@ -1,31 +1,49 @@
 import { controllerInstance } from "../MainAukController";
-import { IFloorStatus } from "../IMainAukController";
+import { IFloorStatus, FLOOR_STATUS } from "../IMainAukController"; // Certifique-se de importar FLOOR_STATUS
 import IntervalEngine from "../engine/IntervalEngine";
 import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie";
+import PrismaAuctDateRepositorie from "../../app/repositorie/database/PrismaAuctDateRepositorie";
 
-const prismaAuct = new PrismaAuctRepositorie()
-
+const prismaAuct = new PrismaAuctRepositorie();
+const prismaDateGroup = new PrismaAuctDateRepositorie();
 
 async function resumeAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
-
     return new Promise(async (resolve) => {
+        const currentSocket = controllerInstance.auk_sockets.find((socket: any) => socket.auct_id === auct_id);
+        const currentCount = currentSocket?.timer;
+        const currentProductId = currentSocket?.product_id;
+        const currentGroup = currentSocket?.group;
 
-        // const currentAuctionIndex = controllerInstance.auk_sockets.findIndex((socket: any) => socket.auct_id === auct_id)
-        // if (!currentAuctionIndex) {
-        //     return resolve({
-        //         response: {
-        //             status: 404,
-        //             body: "auct not found"
-        //         }
-        //     })
-        // }
+        const currentAuk = await prismaAuct.find(auct_id);
+        const groupStatus = currentAuk?.auct_dates.find(group_date => group_date.group === currentSocket?.group)
 
-        const currentSocket = controllerInstance.auk_sockets.find((socket: any) => socket.auct_id === auct_id)
-        const currentCount = currentSocket?.timer
-        const currentProductId = currentSocket?.product_id
-        const currentGroup = currentSocket?.group
+        if (groupStatus?.group_status === "finished" || groupStatus?.group_status === "live" || !currentSocket) {
+            return resolve({
+                response: {
+                    status: 400,
+                    body: {
+                        message: "auct finished or already live",
+                    }
+                }
+            })
+        }
 
-        if (currentSocket && currentGroup && currentCount) {
+        if (currentSocket && currentGroup && currentCount !== undefined) {
+
+            currentSocket.status = FLOOR_STATUS.PLAYING;
+
+            await prismaAuct.update({ status: "live" }, auct_id);
+            const groupDate = currentAuk?.auct_dates.find(group_date => group_date.group === currentSocket.group)
+            if (groupDate)
+                await prismaDateGroup.update({ group_status: "live" }, groupDate?.id)
+
+            clearInterval(currentSocket.interval);
+
+            const sokect_message = `${auct_id}-playing-auction`;
+
+            if (currentAuk) {
+                IntervalEngine(currentAuk, currentGroup, sokect_message, currentCount, currentProductId);
+            }
 
             resolve({
                 response: {
@@ -35,15 +53,7 @@ async function resumeAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
                         auct_id: auct_id
                     }
                 }
-            })
-
-            const count = currentCount
-            clearInterval(currentSocket.interval)
-            const currentAuk = await prismaAuct.find(auct_id)
-            const sokect_message = `${auct_id}-playing-auction`
-
-            if (currentAuk)
-                IntervalEngine(currentAuk, currentGroup, sokect_message, count, currentProductId)
+            });
 
         } else {
             resolve({
@@ -51,12 +61,9 @@ async function resumeAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
                     status: 404,
                     body: "auct not found or not playing"
                 }
-            })
+            });
         }
-
-    })
-
+    });
 }
 
-
-export { resumeAuk }
+export { resumeAuk };

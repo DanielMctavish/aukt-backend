@@ -163,43 +163,41 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                 where: {
                     id: auct_id,
                 },
-            })
-                .then(existingAuct => {
-                    if (!existingAuct) {
-                        reject(new Error(`Leilão com ID ${auct_id} não encontrado.`));
-                        return;
-                    }
+            }).then(existingAuct => {
+                if (!existingAuct) {
+                    reject(new Error(`Leilão com ID ${auct_id} não encontrado.`));
+                    return;
+                }
 
-                    const {
+                const {
+                    auct_cover_img,
+                    descriptions_informations,
+                    tags,
+                    terms_conditions,
+                    title,
+                    categorie,
+                    status,
+                } = data;
+
+                return prisma.auct.update({
+                    where: {
+                        id: auct_id,
+                    },
+                    data: {
                         auct_cover_img,
                         descriptions_informations,
                         tags,
-                        terms_conditions,
                         title,
+                        terms_conditions,
                         categorie,
                         status
-                    } = data;
-
-                    return prisma.auct.update({
-                        where: {
-                            id: auct_id,
-                        },
-                        data: {
-                            auct_cover_img,
-                            descriptions_informations,
-                            tags,
-                            title,
-                            terms_conditions,
-                            categorie,
-                            status
-                        },
-                    });
-                })
-                .then(updatedAuct => {
-                    resolve(updatedAuct as IAuct);
-                }).catch(error => {
-                    reject(error.message);
+                    },
                 });
+            }).then(updatedAuct => {
+                resolve(updatedAuct as IAuct);
+            }).catch(error => {
+                reject(error.message);
+            });
         });
     }
 

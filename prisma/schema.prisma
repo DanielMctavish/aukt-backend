@@ -77,12 +77,13 @@ model Client {
 }
 
 model AuctDateGroups {
-  id        String   @id @default(cuid())
-  date_auct DateTime
-  hour      String
-  group     String
-  Auct      Auct?    @relation(fields: [auctId], references: [id])
-  auctId    String?
+  id           String     @id @default(cuid())
+  date_auct    DateTime
+  group_status AuctStatus
+  hour         String
+  group        String
+  Auct         Auct?      @relation(fields: [auctId], references: [id])
+  auctId       String?
 }
 
 model Auct {

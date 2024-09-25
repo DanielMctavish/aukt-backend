@@ -1,14 +1,17 @@
 import axios from "axios";
 import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie";
 import PrismaProductRepositorie from "../../app/repositorie/database/PrismaProductRepositorie";
-import { IAuct } from "../../app/entities/IAuct";
+import PrismaAuctDateRepositorie from "../../app/repositorie/database/PrismaAuctDateRepositorie";
+import { AuctStatus, IAuct } from "../../app/entities/IAuct";
 import { FLOOR_STATUS, IFloorStatus } from "../IMainAukController";
 import { controllerInstance } from "../MainAukController";
 import { WinnerEngine } from "../winner-engine/WinnerEngine";
 
 const prismaAuct = new PrismaAuctRepositorie()
 const prismaProduct = new PrismaProductRepositorie()
+const prismaAuctDate = new PrismaAuctDateRepositorie()
 
+let nextProductIndex = 0
 function IntervalEngine(currentAuct: IAuct,
     group: string,
     sokect_message: string,
@@ -29,15 +32,26 @@ function IntervalEngine(currentAuct: IAuct,
         }
 
         let count = resume_count ? resume_count : 0
-        let nextProductIndex = 0
+
+        async function findIndexAsync<T>(
+            array: T[],
+            predicate: (item: T) => Promise<boolean>
+        ): Promise<number> {
+            for (let i = 0; i < array.length; i++) {
+                if (await predicate(array[i])) {
+                    return i;
+                }
+            }
+            return -1; // Se não encontrar nenhum item que satisfaça a condição
+        }
 
         if (resume_product_id) {
-            nextProductIndex = filteredProducts.findIndex(product => product.id === resume_product_id) + 1
-
-            if (nextProductIndex === -1) {
-                nextProductIndex = 0
-            }
+            nextProductIndex = await findIndexAsync(filteredProducts, async (product) => {
+                return product.id === resume_product_id;
+            }) + 1;
         }
+
+        console.log("product index >>> ", nextProductIndex)
 
         if (filteredProducts[nextProductIndex]) {
             const currentProduct = filteredProducts[nextProductIndex]
@@ -45,6 +59,17 @@ function IntervalEngine(currentAuct: IAuct,
 
             const currentInterval: NodeJS.Timeout = setInterval(async () => {//INTERVAL........................................
                 const currentSocket = controllerInstance.auk_sockets.find(socket => socket.auct_id === currentAuct.id)
+                console.log("count -> ", count)
+
+                if (productWithBids?.Winner) {
+                    console.log('product have a winner...>>> ', productWithBids?.Winner);
+                    clearInterval(currentInterval)
+                    nextProductIndex++
+                    count = 0
+                    currentSocket ?
+                        currentSocket.product_id = currentProduct.id : ""
+                    IntervalEngine(currentAuct, group, sokect_message)
+                }
 
                 if (!filteredProducts[nextProductIndex]) {//ultimo produto detectado
                     clearInterval(currentInterval)
@@ -59,6 +84,7 @@ function IntervalEngine(currentAuct: IAuct,
                         },
                         cronTimer: count
                     }).then(() => {
+                        console.log("LOTE: ", productWithBids?.lote)
                         console.log("mensagem enviada com sucesso -> ", productWithBids?.title)
                     })
                 } catch (error: any) {
@@ -71,7 +97,7 @@ function IntervalEngine(currentAuct: IAuct,
 
                 count++
 
-                if (count >= currentAuct.product_timer_seconds) {
+                if (count >= currentAuct.product_timer_seconds + 1) {
                     clearInterval(currentInterval)
                     if (currentSocket) {
                         currentSocket.product_id = currentProduct.id
@@ -105,35 +131,20 @@ function IntervalEngine(currentAuct: IAuct,
             resolve({ auct_id: currentAuct.id })
 
         } else {
-            // FIM DO LEILÃO! Futura mensagem de finalização poderá ser escrita ou chamada aqui
+
             console.log("Fim do leilão!")
 
-            // const productNotWinner = currentAuct.product_list?.filter(product => !product.Winner)
+            // Atualizando o status do grupo específico
+            const groupToUpdate = await prismaAuct.find(currentAuct.id); // Obtenha o leilão atual
 
-            // if (productNotWinner && productNotWinner.length > 10) {
-            //     const separateTitle = currentAuct.title.split("_")
+            if (groupToUpdate) {
+                const groupDate = groupToUpdate.auct_dates.find(date => date.group === group);
 
+                if (groupDate)
+                    await prismaAuctDate.update({ group_status: "finished" }, groupDate.id)
 
-            //     if (separateTitle[1]) {
-            //         let currentTitleVersion = parseInt(separateTitle[1], 10)
-            //         prismaAuct.create({
-            //             ...currentAuct,
-            //             title: currentAuct.title + '_' + currentTitleVersion++,
-            //             status: 'cataloged',
-            //             product_list: productNotWinner
-            //         })
-            //     } else {
-            //         prismaAuct.create({
-            //             ...currentAuct,
-            //             title: currentAuct.title + '_2',
-            //             status: 'cataloged',
-            //             product_list: productNotWinner
-            //         })
-            //     }
+            }
 
-            // }
-
-            await prismaAuct.update({ status: "finished" }, currentAuct.id)
             //envio de mensagem............................................................................................
             try {
                 await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${currentAuct.id}-auct-finished`, {

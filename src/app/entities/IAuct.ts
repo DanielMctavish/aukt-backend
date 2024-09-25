@@ -7,6 +7,7 @@ import { IProduct } from "./IProduct"
 export interface AuctDateGroups {
     id: string
     date_auct: Date
+    group_status: AuctStatus,
     hour: string
     group: string
     Auct?: IAuct | any
@@ -47,7 +48,7 @@ export const AuctStatus: { [x: string]: 'cataloged' | 'live' | 'canceled' | 'fin
     canceled: 'canceled',
     finished: 'finished',
     paused: 'paused',
-    pending:'pending'
+    pending: 'pending'
 }
 
 const PaymentMethod: { [x: string]: 'Credit' | 'Debit' | 'Pix' | 'Ticket' } = {

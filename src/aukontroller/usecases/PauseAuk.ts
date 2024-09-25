@@ -8,13 +8,23 @@ const prismaAukt = new PrismaAuctRepositorie()
 async function pauseAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
 
     return new Promise(async (resolve) => {
+        const currentAuction = await prismaAukt.find(auct_id)
+
+        if (currentAuction?.status === "paused" || currentAuction?.status === "cataloged") {
+            return resolve({
+                response: {
+                    status: 400,
+                    body: "auct already paused or cataloged"
+                }
+            })
+        }
 
         const currentAuctionSocket = controllerInstance.auk_sockets.find(socket => socket.auct_id === auct_id)
         if (!currentAuctionSocket) {
             return resolve({
                 response: {
                     status: 404,
-                    body: "auct not found"
+                    body: "auct not found or out of memory"
                 }
             })
         }
@@ -36,6 +46,5 @@ async function pauseAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
     })
 
 }
-
 
 export { pauseAuk }

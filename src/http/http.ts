@@ -55,7 +55,7 @@ app.get('/category', (req, res) => {
 
 
 app.listen(3008, () => {
-    //console.clear()
+    console.clear()
     console.log('[AUKT] Server running on PORT: ', 3008)
 })
 

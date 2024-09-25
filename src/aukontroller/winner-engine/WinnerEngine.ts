@@ -13,7 +13,7 @@ function WinnerEngine(auct_id: string, product_id: string) {
         console.log("winner started")
 
         try {
-            const currentProduct = await prismaProduct.find({product_id})
+            const currentProduct = await prismaProduct.find({ product_id })
             let currentValue = 0
             let currentWinner: any = null
 
