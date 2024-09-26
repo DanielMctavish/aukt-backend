@@ -8,7 +8,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
 
     async create(data: IAuct): Promise<IAuct | null> {
         const { product_list, advertiser_id, id, Cartelas, ...restData } = data;
-
+       
         try {
             // Convertendo datas para o formato ISO-8601
             const auct_dates = data.auct_dates.map(date => ({
