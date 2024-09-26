@@ -50,17 +50,6 @@ async function playAuk(auct_id: string,
 
         const result = await IntervalEngine(currentAuct, group, socket_message, resume_count, resume_product_id);
 
-        // Verificar se já existe um intervalo do mesmo leilão na memória
-        const currentIntervalAuk = controllerInstance.auk_sockets.find(socket => socket.auct_id === result?.auct_id);
-        if (currentIntervalAuk) {
-            return resolve({
-                response: {
-                    status: 400,
-                    body: "Já existe um intervalo ativo para este leilão"
-                }
-            });
-        }
-
         resolve({
             response: {
                 status: 200,

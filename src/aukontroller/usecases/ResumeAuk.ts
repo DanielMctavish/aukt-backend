@@ -17,16 +17,7 @@ async function resumeAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
         const currentAuk = await prismaAuct.find(auct_id);
         const groupStatus = currentAuk?.auct_dates.find(group_date => group_date.group === currentSocket?.group)
 
-        if (groupStatus?.group_status === "finished" || groupStatus?.group_status === "live" || !currentSocket) {
-            return resolve({
-                response: {
-                    status: 400,
-                    body: {
-                        message: "auct finished or already live",
-                    }
-                }
-            })
-        }
+        
 
         if (currentSocket && currentGroup && currentCount !== undefined) {
 

@@ -52,13 +52,13 @@ function IntervalEngine(currentAuct: IAuct,
         }
 
         console.log("product index >>> ", nextProductIndex)
+        const currentSocket = controllerInstance.auk_sockets.find(socket => socket.auct_id === currentAuct.id)
 
         if (filteredProducts[nextProductIndex]) {
             const currentProduct = filteredProducts[nextProductIndex]
             const productWithBids = await prismaProduct.find({ product_id: currentProduct.id })
 
             const currentInterval: NodeJS.Timeout = setInterval(async () => {//INTERVAL........................................
-                const currentSocket = controllerInstance.auk_sockets.find(socket => socket.auct_id === currentAuct.id)
                 console.log("count -> ", count)
 
                 if (productWithBids?.Winner) {
@@ -111,8 +111,6 @@ function IntervalEngine(currentAuct: IAuct,
 
             }, 1000)
 
-            //..................................................................................................................
-            const currentSocket = controllerInstance.auk_sockets.find(socket => socket.auct_id === currentAuct.id)
 
             if (!currentSocket) {
                 controllerInstance.auk_sockets.push({
@@ -136,6 +134,8 @@ function IntervalEngine(currentAuct: IAuct,
 
             // Atualizando o status do grupo específico
             const groupToUpdate = await prismaAuct.find(currentAuct.id); // Obtenha o leilão atual
+            await prismaAuct.update({ status: "cataloged" }, currentAuct.id)
+            currentSocket ? currentSocket.status = FLOOR_STATUS.COMPLETED : ""
 
             if (groupToUpdate) {
                 const groupDate = groupToUpdate.auct_dates.find(date => date.group === group);
