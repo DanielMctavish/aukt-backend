@@ -6,6 +6,7 @@ import '../aukontroller/MainAukController'
 import adminRoutes from './routes/AdminRoutes'
 import advertiserRoutes from './routes/AdvertiserRoutes'
 import auctRoutes from './routes/AuctRoutes'
+import auctDatesRoutes from './routes/AuctDatesRoutes'; // Importando as rotas de AuctDates
 import clientRoutes from './routes/ClientRoutes'
 import creditRoutes from './routes/CreditCardRoutes'
 import productRoutes from './routes/ProductRoutes'
@@ -13,8 +14,6 @@ import moderatorRoutes from "./routes/ModeratorRoutes"
 import cartelaRoutes from "./routes/CartelaRoutes"
 import transactionRoutes from "./routes/TransactionRoutes"
 import { currentCategorieData } from '../categories/categoriesLibrary'
-
-
 
 const app = express()
 
@@ -34,6 +33,7 @@ app.use(cors({
 app.use('/admin', adminRoutes)
 app.use('/advertiser', advertiserRoutes)
 app.use('/auct', auctRoutes)
+app.use('/auct-dates', auctDatesRoutes)
 app.use('/client', clientRoutes)
 app.use('/credit-card', creditRoutes)
 app.use('/products', productRoutes)
@@ -52,7 +52,6 @@ app.get('/check-api', (req, res) => {
 app.get('/category', (req, res) => {
     res.status(200).json(currentCategorieData)
 })
-
 
 app.listen(3008, () => {
     console.clear()

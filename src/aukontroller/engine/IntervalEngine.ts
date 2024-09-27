@@ -19,6 +19,9 @@ function IntervalEngine(currentAuct: IAuct,
     resume_product_id?: string,
     increment?: number): Promise<Partial<IFloorStatus> | null> {
 
+    // Redefinir o nextProductIndex para 0 ao iniciar um novo leilão
+    nextProductIndex = 0; // Adicione esta linha
+
     return new Promise(async (resolve) => {
 
         if (!currentAuct) return resolve(null)
@@ -42,7 +45,7 @@ function IntervalEngine(currentAuct: IAuct,
                     return i;
                 }
             }
-            return -1; // Se não encontrar nenhum item que satisfaça a condição
+            return -1; // Se não encontrar nenhum item que satisfaça a condiço
         }
 
         if (resume_product_id) {
@@ -132,10 +135,13 @@ function IntervalEngine(currentAuct: IAuct,
 
             console.log("Fim do leilão!")
 
+            // Remover o leilão do array auk_sockets
+            controllerInstance.auk_sockets = controllerInstance.auk_sockets.filter(socket => socket.auct_id !== currentAuct.id);
+
             // Atualizando o status do grupo específico
             const groupToUpdate = await prismaAuct.find(currentAuct.id); // Obtenha o leilão atual
             await prismaAuct.update({ status: "cataloged" }, currentAuct.id)
-            currentSocket ? currentSocket.status = FLOOR_STATUS.COMPLETED : ""
+            
 
             if (groupToUpdate) {
                 const groupDate = groupToUpdate.auct_dates.find(date => date.group === group);

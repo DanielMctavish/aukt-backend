@@ -1,4 +1,4 @@
-import { IFloorStatus } from "../IMainAukController";
+import { FLOOR_STATUS, IFloorStatus } from "../IMainAukController";
 import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie";
 import IntervalEngine from "../engine/IntervalEngine";
 import { controllerInstance } from "../MainAukController";
@@ -10,7 +10,18 @@ async function playAuk(auct_id: string,
     resume_count?: number,
     resume_product_id?: string): Promise<Partial<IFloorStatus>> {
 
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve) => { // Mover o resolve para dentro da Promise
+        // Verificar se o leilão já está em andamento
+        const currentSocket = controllerInstance.auk_sockets.find(socket => socket.auct_id === auct_id);
+        if (currentSocket && currentSocket.status === FLOOR_STATUS.PLAYING) {
+            return resolve({ // Agora resolve está dentro da Promise
+                response: {
+                    status: 400,
+                    body: "Leilão já está em andamento"
+                }
+            });
+        }
+
         const currentAuct = await prismaAuk.find(auct_id);
 
         if (!currentAuct) {

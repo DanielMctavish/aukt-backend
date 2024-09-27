@@ -18,6 +18,7 @@ model Admin {
   address           String
   admin_url_profile String?
   credit_cards      CreditCard[]
+  balance           Float?
   created_at        DateTime     @default(now())
   updated_at        DateTime     @updatedAt
 }
