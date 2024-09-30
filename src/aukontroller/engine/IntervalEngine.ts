@@ -6,12 +6,14 @@ import { AuctStatus, IAuct } from "../../app/entities/IAuct";
 import { FLOOR_STATUS, IFloorStatus } from "../IMainAukController";
 import { controllerInstance } from "../MainAukController";
 import { WinnerEngine } from "../winner-engine/WinnerEngine";
+import { addTime } from "../usecases/AddTime";
 
 const prismaAuct = new PrismaAuctRepositorie()
 const prismaProduct = new PrismaProductRepositorie()
 const prismaAuctDate = new PrismaAuctDateRepositorie()
 
 let nextProductIndex = 0
+
 function IntervalEngine(currentAuct: IAuct,
     group: string,
     sokect_message: string,
@@ -45,7 +47,7 @@ function IntervalEngine(currentAuct: IAuct,
                     return i;
                 }
             }
-            return -1; // Se não encontrar nenhum item que satisfaça a condiço
+            return -1; 
         }
 
         if (resume_product_id) {
@@ -64,15 +66,15 @@ function IntervalEngine(currentAuct: IAuct,
             const currentInterval: NodeJS.Timeout = setInterval(async () => {//INTERVAL........................................
                 console.log("count -> ", count)
 
-                if (productWithBids?.Winner) {
-                    console.log('product have a winner...>>> ', productWithBids?.Winner);
-                    clearInterval(currentInterval)
-                    nextProductIndex++
-                    count = 0
-                    currentSocket ?
-                        currentSocket.product_id = currentProduct.id : ""
-                    IntervalEngine(currentAuct, group, sokect_message)
-                }
+                // if (productWithBids?.Winner) {
+                //     console.log('product have a winner...>>> ', productWithBids?.Winner);
+                //     clearInterval(currentInterval)
+                //     nextProductIndex++
+                //     count = 0
+                //     currentSocket ?
+                //         currentSocket.product_id = currentProduct.id : ""
+                //     IntervalEngine(currentAuct, group, sokect_message)
+                // }
 
                 if (!filteredProducts[nextProductIndex]) {//ultimo produto detectado
                     clearInterval(currentInterval)
@@ -93,9 +95,31 @@ function IntervalEngine(currentAuct: IAuct,
                 } catch (error: any) {
                     console.error("error at try send message: ", error.response)
                 }
+                //recebimento de mensagem.......................................................................................
+
+                const websocketUrl = process.env.API_WEBSOCKET_AUK;
+
+                if (!websocketUrl) {
+                    throw new Error('A URL do WebSocket não está definida');
+                }
+
+                const socket = new WebSocket(websocketUrl)
+
+                socket.onmessage = async (event) => {
+                    const data = JSON.parse(event.data);
+                    if (data.message_type === `${currentAuct.id}-bid`) {
+                        // Aqui você pode processar o lance recebido
+                        console.log("Lance recebido no intervalEngine: ", data);
+                        const timerRemainings = currentAuct.product_timer_seconds - count
+                        if (timerRemainings <= 3) {
+                            await addTime(currentAuct.id, 2)
+                        }
+                    }
+                };
+                //---------------------------------------------------------------------------------------------------------------
 
                 if (currentSocket) {
-                    currentSocket.timer = count
+                    currentSocket.timer = count;
                 }
 
                 count++
@@ -141,7 +165,7 @@ function IntervalEngine(currentAuct: IAuct,
             // Atualizando o status do grupo específico
             const groupToUpdate = await prismaAuct.find(currentAuct.id); // Obtenha o leilão atual
             await prismaAuct.update({ status: "cataloged" }, currentAuct.id)
-            
+
 
             if (groupToUpdate) {
                 const groupDate = groupToUpdate.auct_dates.find(date => date.group === group);
@@ -168,5 +192,6 @@ function IntervalEngine(currentAuct: IAuct,
     })
 
 }
+
 
 export default IntervalEngine;

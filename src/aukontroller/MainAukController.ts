@@ -12,11 +12,9 @@ class MainAukController implements IMainAukController {
     async PlayAuk(querys: IQuerys): Promise<Partial<IFloorStatus>> {
         return playAuk(querys.auct_id, querys.group)
     }
-
     async ResumeAuk(querys: IQuerys): Promise<Partial<IFloorStatus>> {
         return resumeAuk(querys.auct_id)
     }
-
     async PauseAuk(querys: IQuerys): Promise<Partial<IFloorStatus>> {
         return pauseAuk(querys.auct_id)
     }
