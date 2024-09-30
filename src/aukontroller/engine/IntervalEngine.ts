@@ -97,25 +97,25 @@ function IntervalEngine(currentAuct: IAuct,
                 }
                 //recebimento de mensagem.......................................................................................
 
-                const websocketUrl = process.env.API_WEBSOCKET_AUK;
+                // const websocketUrl = process.env.API_WEBSOCKET_AUK;
 
-                if (!websocketUrl) {
-                    throw new Error('A URL do WebSocket não está definida');
-                }
+                // if (!websocketUrl) {
+                //     return false
+                // }
 
-                const socket = new WebSocket(websocketUrl)
+                // const socket = new WebSocket(websocketUrl)
 
-                socket.onmessage = async (event) => {
-                    const data = JSON.parse(event.data);
-                    if (data.message_type === `${currentAuct.id}-bid`) {
-                        // Aqui você pode processar o lance recebido
-                        console.log("Lance recebido no intervalEngine: ", data);
-                        const timerRemainings = currentAuct.product_timer_seconds - count
-                        if (timerRemainings <= 3) {
-                            await addTime(currentAuct.id, 2)
-                        }
-                    }
-                };
+                // socket.onmessage = async (event) => {
+                //     const data = JSON.parse(event.data);
+                //     if (data.message_type === `${currentAuct.id}-bid`) {
+                //         // Aqui você pode processar o lance recebido
+                //         console.log("Lance recebido no intervalEngine: ", data);
+                //         const timerRemainings = currentAuct.product_timer_seconds - count
+                //         if (timerRemainings <= 3) {
+                //             await addTime(currentAuct.id, 2)
+                //         }
+                //     }
+                // };
                 //---------------------------------------------------------------------------------------------------------------
 
                 if (currentSocket) {
