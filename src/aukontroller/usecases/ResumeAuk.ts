@@ -15,32 +15,33 @@ async function resumeAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
         const currentGroup = currentSocket?.group;
 
         const currentAuk = await prismaAuct.find(auct_id);
-        const groupStatus = currentAuk?.auct_dates.find(group_date => group_date.group === currentSocket?.group)
 
-        
+        console.log("DENTRO DO RESUME (count): ", currentCount)
 
         if (currentSocket && currentGroup && currentCount !== undefined) {
 
             currentSocket.status = FLOOR_STATUS.PLAYING;
 
             await prismaAuct.update({ status: "live" }, auct_id);
-            const groupDate = currentAuk?.auct_dates.find(group_date => group_date.group === currentSocket.group)
-            if (groupDate)
-                await prismaDateGroup.update({ group_status: "live" }, groupDate?.id)
+
+            const groupDate = currentAuk?.auct_dates.find(group_date => group_date.group === currentSocket.group);
+            if (groupDate) {
+                await prismaDateGroup.update({ group_status: "live" }, groupDate?.id);
+            }
 
             clearInterval(currentSocket.interval);
 
-            const sokect_message = `${auct_id}-playing-auction`;
+            const socket_message = `${auct_id}-playing-auction`;
 
             if (currentAuk) {
-                IntervalEngine(currentAuk, currentGroup, sokect_message, currentCount, currentProductId);
+                IntervalEngine(currentAuk, currentGroup, socket_message, currentCount, currentProductId);
             }
 
             resolve({
                 response: {
                     status: 200,
                     body: {
-                        message: "auct resumed successfully",
+                        message: "Auction resumed successfully",
                         auct_id: auct_id
                     }
                 }
@@ -50,7 +51,7 @@ async function resumeAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
             resolve({
                 response: {
                     status: 404,
-                    body: "auct not found or not playing"
+                    body: "Auction not found or not in a resumable state"
                 }
             });
         }

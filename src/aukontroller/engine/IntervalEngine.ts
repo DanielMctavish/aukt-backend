@@ -1,4 +1,5 @@
 import axios from "axios";
+import { io } from "socket.io-client";
 import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie";
 import PrismaProductRepositorie from "../../app/repositorie/database/PrismaProductRepositorie";
 import PrismaAuctDateRepositorie from "../../app/repositorie/database/PrismaAuctDateRepositorie";
@@ -8,35 +9,39 @@ import { controllerInstance } from "../MainAukController";
 import { WinnerEngine } from "../winner-engine/WinnerEngine";
 import { addTime } from "../usecases/AddTime";
 
-const prismaAuct = new PrismaAuctRepositorie()
-const prismaProduct = new PrismaProductRepositorie()
-const prismaAuctDate = new PrismaAuctDateRepositorie()
+const prismaAuct = new PrismaAuctRepositorie();
+const prismaProduct = new PrismaProductRepositorie();
+const prismaAuctDate = new PrismaAuctDateRepositorie();
 
-let nextProductIndex = 0
+let nextProductIndex = 0;
 
-function IntervalEngine(currentAuct: IAuct,
+const websocketUrl = process.env.WS_WEBSOCKET_CONNECTION;
+const socket = io(websocketUrl);
+
+socket.on('connect', () => {
+    console.log('Conectado ao servidor Socket.IO');
+});
+
+async function IntervalEngine(currentAuct: IAuct,
     group: string,
     sokect_message: string,
     resume_count?: number,
     resume_product_id?: string,
     increment?: number): Promise<Partial<IFloorStatus> | null> {
 
-    // Redefinir o nextProductIndex para 0 ao iniciar um novo leilão
-    nextProductIndex = 0; // Adicione esta linha
-
     return new Promise(async (resolve) => {
+        if (!currentAuct) return resolve(null);
+        const allProducts = currentAuct.product_list;
+        const filteredProducts = allProducts?.filter(product => product.group === group); // Filtrando produtos pelo grupo
 
-        if (!currentAuct) return resolve(null)
-        const allProducts = currentAuct.product_list
-        const filteredProducts = allProducts?.filter(product => product.group === group)//filtrando produtos pelo grupo
-
-        await prismaAuct.update({ status: "live" }, currentAuct.id)
+        await prismaAuct.update({ status: "live" }, currentAuct.id);
 
         if (!filteredProducts) {
-            return resolve(null)
+            return resolve(null);
         }
 
-        let count = resume_count ? resume_count : 0
+        // Inicialize count com resume_count se estiver presente, senão comece de 0
+        let count = resume_count !== undefined ? resume_count : 0;
 
         async function findIndexAsync<T>(
             array: T[],
@@ -47,7 +52,7 @@ function IntervalEngine(currentAuct: IAuct,
                     return i;
                 }
             }
-            return -1; 
+            return -1;
         }
 
         if (resume_product_id) {
@@ -56,31 +61,22 @@ function IntervalEngine(currentAuct: IAuct,
             }) + 1;
         }
 
-        console.log("product index >>> ", nextProductIndex)
-        const currentSocket = controllerInstance.auk_sockets.find(socket => socket.auct_id === currentAuct.id)
+        console.log("product index >>> ", nextProductIndex);
 
         if (filteredProducts[nextProductIndex]) {
-            const currentProduct = filteredProducts[nextProductIndex]
-            const productWithBids = await prismaProduct.find({ product_id: currentProduct.id })
+            const currentProduct = filteredProducts[nextProductIndex];
+            const productWithBids = await prismaProduct.find({ product_id: currentProduct.id });
 
-            const currentInterval: NodeJS.Timeout = setInterval(async () => {//INTERVAL........................................
-                console.log("count -> ", count)
+            // INTERVAL ########################################################################################################################
+            const currentInterval: NodeJS.Timeout = setInterval(async () => {
+                const currentInstanceAuk = controllerInstance.auk_sockets.find(socket => socket.auct_id === currentAuct.id);
 
-                // if (productWithBids?.Winner) {
-                //     console.log('product have a winner...>>> ', productWithBids?.Winner);
-                //     clearInterval(currentInterval)
-                //     nextProductIndex++
-                //     count = 0
-                //     currentSocket ?
-                //         currentSocket.product_id = currentProduct.id : ""
-                //     IntervalEngine(currentAuct, group, sokect_message)
-                // }
-
-                if (!filteredProducts[nextProductIndex]) {//ultimo produto detectado
-                    clearInterval(currentInterval)
-                    return resolve(null)
+                if (!filteredProducts[nextProductIndex]) {
+                    clearInterval(currentInterval);
+                    return resolve(null);
                 }
-                //envio de mensagem............................................................................................
+
+                // Envio de mensagem............................................................................................
                 try {
                     await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${sokect_message}`, {
                         body: {
@@ -88,109 +84,95 @@ function IntervalEngine(currentAuct: IAuct,
                             auct_id: currentAuct.id
                         },
                         cronTimer: count
-                    }).then(() => {
-                        console.log("LOTE: ", productWithBids?.lote)
-                        console.log("mensagem enviada com sucesso -> ", productWithBids?.title)
-                    })
+                    });
                 } catch (error: any) {
-                    console.error("error at try send message: ", error.response)
+                    console.error("Error at try send message: ", error.response);
                 }
-                //recebimento de mensagem.......................................................................................
 
-                // const websocketUrl = process.env.API_WEBSOCKET_AUK;
+                // Recebimento de mensagem.......................................................................................
+                socket.on(`${currentAuct.id}-bid`, async (data) => {
+                    console.log("Lance recebido no intervalEngine: ", data);
 
-                // if (!websocketUrl) {
-                //     return false
-                // }
+                    const timerRemainings = currentAuct.product_timer_seconds - count;
+                    if (timerRemainings <= 5) {
+                        count -= 3;
+                        if (currentInstanceAuk)
+                            currentInstanceAuk.timer = count
 
-                // const socket = new WebSocket(websocketUrl)
+                    }
+                });
 
-                // socket.onmessage = async (event) => {
-                //     const data = JSON.parse(event.data);
-                //     if (data.message_type === `${currentAuct.id}-bid`) {
-                //         // Aqui você pode processar o lance recebido
-                //         console.log("Lance recebido no intervalEngine: ", data);
-                //         const timerRemainings = currentAuct.product_timer_seconds - count
-                //         if (timerRemainings <= 3) {
-                //             await addTime(currentAuct.id, 2)
-                //         }
-                //     }
-                // };
+                socket.on('disconnect', () => {
+                    console.log('Desconectado do servidor Socket.IO');
+                });
+
                 //---------------------------------------------------------------------------------------------------------------
 
-                if (currentSocket) {
-                    currentSocket.timer = count;
+                count++;
+                if (currentInstanceAuk) {
+                    currentInstanceAuk.timer = count;
+                } else {
+                    controllerInstance.auk_sockets.push({
+                        interval: currentInterval,
+                        auct_id: currentAuct.id,
+                        group: group,
+                        timer: 0,
+                        status: FLOOR_STATUS.PLAYING
+                    });
                 }
 
-                count++
-
                 if (count >= currentAuct.product_timer_seconds + 1) {
-                    clearInterval(currentInterval)
-                    if (currentSocket) {
-                        currentSocket.product_id = currentProduct.id
+                    clearInterval(currentInterval);
+                    if (currentInstanceAuk) {
+                        currentInstanceAuk.product_id = currentProduct.id; // Atualiza o produto atual
                     }
 
                     await WinnerEngine(currentAuct.id, currentProduct.id).then(() => {
-                        nextProductIndex++
-                        count = 0
-                    })
+                        nextProductIndex++;
+                        count = 0; // Reinicia o contador para o próximo produto
+                    });
                 }
 
-            }, 1000)
+            }, 1000);
 
+            const currentInstanceAuk = controllerInstance.auk_sockets.find(socket => socket.auct_id === currentAuct.id);
 
-            if (!currentSocket) {
-                controllerInstance.auk_sockets.push({
-                    interval: currentInterval,
-                    auct_id: currentAuct.id,
-                    group: group,
-                    timer: 0,
-                    status: FLOOR_STATUS.PLAYING
-                })
-            } else {
-                currentSocket.interval = currentInterval
-                currentSocket.group = group
-                currentSocket.status = FLOOR_STATUS.PLAYING
+            if (currentInstanceAuk) {
+                currentInstanceAuk.interval = currentInterval;
+                currentInstanceAuk.group = group;
+                currentInstanceAuk.status = FLOOR_STATUS.PLAYING;
             }
 
-            resolve({ auct_id: currentAuct.id })
+            resolve({ auct_id: currentAuct.id });
 
         } else {
-
-            console.log("Fim do leilão!")
-
-            // Remover o leilão do array auk_sockets
-            controllerInstance.auk_sockets = controllerInstance.auk_sockets.filter(socket => socket.auct_id !== currentAuct.id);
+            console.log("Fim do leilão!");
 
             // Atualizando o status do grupo específico
             const groupToUpdate = await prismaAuct.find(currentAuct.id); // Obtenha o leilão atual
-            await prismaAuct.update({ status: "cataloged" }, currentAuct.id)
-
+            await prismaAuct.update({ status: "cataloged" }, currentAuct.id);
 
             if (groupToUpdate) {
                 const groupDate = groupToUpdate.auct_dates.find(date => date.group === group);
-
-                if (groupDate)
-                    await prismaAuctDate.update({ group_status: "finished" }, groupDate.id)
-
+                if (groupDate) {
+                    await prismaAuctDate.update({ group_status: "finished" }, groupDate.id);
+                }
             }
 
-            //envio de mensagem............................................................................................
+            // Envio de mensagem de finalização........................................................................................
             try {
                 await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${currentAuct.id}-auct-finished`, {
                     body: {
                         auct_id: currentAuct.id
                     }
-                })
+                });
             } catch (error: any) {
-                console.error(error.message)
+                console.error(error.message);
             }
 
-            resolve(null)
+            resolve(null);
         }
-
-    })
-
+    });
 }
 
 
