@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
-import { IFloorStatus } from './IMainAukController';
-
+import { IEngineFloorStatus } from './IMainAukController';
 
 
 function ApplyControllerUsecases(Usecase: Function) {
@@ -13,7 +12,7 @@ function ApplyControllerUsecases(Usecase: Function) {
         }
 
         await Usecase(req.query)
-            .then((result: Partial<IFloorStatus>) => {
+            .then((result: Partial<IEngineFloorStatus>) => {
                 return res.status(result.response ? result.response.status : 200)
                     .json(result.response?.body)
             })

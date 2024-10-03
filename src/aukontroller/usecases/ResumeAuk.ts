@@ -1,47 +1,46 @@
-import { controllerInstance } from "../MainAukController";
-import { IFloorStatus, FLOOR_STATUS } from "../IMainAukController"; // Certifique-se de importar FLOOR_STATUS
-import IntervalEngine from "../engine/IntervalEngine";
+import { IEngineFloorStatus, FLOOR_STATUS } from "../IMainAukController";
+import EngineMaster from "../engine/EngineMaster";
 import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie";
 import PrismaAuctDateRepositorie from "../../app/repositorie/database/PrismaAuctDateRepositorie";
+import { auk_sockets, setAukSocket } from "../engine/EngineSocket";
 
-const prismaAuct = new PrismaAuctRepositorie();
+
+
+const prismaAuk = new PrismaAuctRepositorie();
 const prismaDateGroup = new PrismaAuctDateRepositorie();
 
-async function resumeAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
+async function resumeAuk(auct_id: string): Promise<Partial<IEngineFloorStatus>> {
     return new Promise(async (resolve) => {
-        const currentSocket = controllerInstance.auk_sockets.find((socket: any) => socket.auct_id === auct_id);
-        const currentCount = currentSocket?.timer;
-        const currentProductId = currentSocket?.product_id;
-        const currentGroup = currentSocket?.group;
+        
+        const currentCount = auk_sockets?.timer;
+        const currentProductId = auk_sockets?.product_id;
+        const currentGroup = auk_sockets?.group;
 
-        const currentAuk = await prismaAuct.find(auct_id);
+        const currentAuk = await prismaAuk.find(auct_id);
 
-        console.log("DENTRO DO RESUME (count): ", currentCount)
+        if (auk_sockets && currentGroup && currentCount !== undefined) {
+            setAukSocket({status:FLOOR_STATUS.PLAYING})
 
-        if (currentSocket && currentGroup && currentCount !== undefined) {
+            await prismaAuk.update({ status: "live" }, auct_id);
 
-            currentSocket.status = FLOOR_STATUS.PLAYING;
-
-            await prismaAuct.update({ status: "live" }, auct_id);
-
-            const groupDate = currentAuk?.auct_dates.find(group_date => group_date.group === currentSocket.group);
+            const groupDate = currentAuk?.auct_dates.find(group_date => group_date.group === auk_sockets.group);
             if (groupDate) {
                 await prismaDateGroup.update({ group_status: "live" }, groupDate?.id);
             }
 
-            clearInterval(currentSocket.interval);
+            clearInterval(auk_sockets.interval);
 
             const socket_message = `${auct_id}-playing-auction`;
 
             if (currentAuk) {
-                IntervalEngine(currentAuk, currentGroup, socket_message, currentCount, currentProductId);
+                EngineMaster(currentAuk, currentGroup, socket_message, currentCount, currentProductId);
             }
 
             resolve({
                 response: {
                     status: 200,
                     body: {
-                        message: "Auction resumed successfully",
+                        message: "Leilão retomado com sucesso",
                         auct_id: auct_id
                     }
                 }
@@ -51,7 +50,7 @@ async function resumeAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
             resolve({
                 response: {
                     status: 404,
-                    body: "Auction not found or not in a resumable state"
+                    body: "Leilão não encontrado ou não está em um estado retomável"
                 }
             });
         }

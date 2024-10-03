@@ -1,21 +1,21 @@
-import { controllerInstance } from "../MainAukController";
-import { IFloorStatus } from "../IMainAukController";
+import { IEngineFloorStatus } from "../IMainAukController";
 import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie";
-import IntervalEngine from "../engine/IntervalEngine";
+import EngineMaster from "../engine/EngineMaster";
+import { auk_sockets } from "../engine/EngineSocket";
+
 
 const prismaAuct = new PrismaAuctRepositorie()
 
 
-async function nextProduct(auct_id: string): Promise<Partial<IFloorStatus>> {
+async function nextProduct(auct_id: string): Promise<Partial<IEngineFloorStatus>> {
 
     return new Promise(async (resolve) => {
 
-        const currentSocket = controllerInstance.auk_sockets.find((socket: any) => socket.auct_id === auct_id)
-        const currentCount = currentSocket?.timer
-        const currentProductId = currentSocket?.product_id
-        const currentGroup = currentSocket?.group
+        const currentCount = auk_sockets?.timer
+        const currentProductId = auk_sockets?.product_id
+        const currentGroup = auk_sockets?.group
 
-        if (currentSocket && currentGroup && currentCount) {
+        if (auk_sockets && currentGroup && currentCount) {
 
             resolve({
                 response: {
@@ -27,14 +27,13 @@ async function nextProduct(auct_id: string): Promise<Partial<IFloorStatus>> {
                 }
             })
 
-
-            clearInterval(currentSocket.interval)
+            clearInterval(auk_sockets.interval)
             const currentAuk = await prismaAuct.find(auct_id)
             const sokect_message = `${auct_id}-playing-auction`
 
             if (currentAuk) {
                 const count = currentAuk?.product_timer_seconds
-                IntervalEngine(currentAuk, currentGroup, sokect_message, count, currentProductId)
+                EngineMaster(currentAuk, currentGroup, sokect_message, count, currentProductId)
             }
 
         } else {

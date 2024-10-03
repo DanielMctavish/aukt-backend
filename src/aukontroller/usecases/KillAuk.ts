@@ -1,43 +1,36 @@
-import { controllerInstance } from "../MainAukController";
-import { IFloorStatus } from "../IMainAukController";
+import { IEngineFloorStatus, FLOOR_STATUS } from "../IMainAukController";
 import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie";
 import axios from "axios";
+import { getAukSocket, resetAukSockets, setAukSocket } from "../engine/EngineSocket";
 
 const prismaAuct = new PrismaAuctRepositorie();
 
-async function killAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
+async function killAuk(auct_id: string): Promise<Partial<IEngineFloorStatus>> {
     return new Promise(async (resolve) => {
-        console.log("Received auct_id:", auct_id); // Log para depuração
+        console.log("Received auct_id:", auct_id);
 
-        const currentAuctionIndex: number = controllerInstance.auk_sockets.findIndex(socket => socket.auct_id === auct_id)
-        if (currentAuctionIndex === -1) {
-            console.log("Auction not found in auk_sockets"); // Log para depuração
-            return resolve({
-                response: {
-                    status: 404,
-                    body: "auct not found"
-                }
-            })
-        }
-        clearInterval(controllerInstance.auk_sockets[currentAuctionIndex].interval)
+        const currentSocketAuk = getAukSocket();
+        clearInterval(currentSocketAuk.interval);
 
+        // Atualiza o status do leilão para COMPLETED
+        await setAukSocket({
+            status: FLOOR_STATUS.COMPLETED
+        });
 
-
-        // Atualiza o status do leilão para "cataloged"
         await prismaAuct.update({ status: "cataloged" }, auct_id);
-
-        //envio de mensagem finalização........................................................................................
+        
         try {
             await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${auct_id}-auct-finished`, {
                 body: {
                     auct_id: auct_id
                 }
-            })
+            });
         } catch (error: any) {
-            console.error(error.message)
+            console.error(error.message);
         }
 
-        controllerInstance.auk_sockets.splice(currentAuctionIndex, 1)
+        // Reseta os sockets após enviar a mensagem de finalização
+        resetAukSockets();
 
         resolve({
             response: {
@@ -47,8 +40,8 @@ async function killAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
                     auct_id: auct_id
                 }
             }
-        })
-    })
+        });
+    });
 }
 
-export { killAuk }
+export { killAuk };

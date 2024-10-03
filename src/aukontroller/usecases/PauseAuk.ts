@@ -1,15 +1,19 @@
-import { FLOOR_STATUS, IFloorStatus } from "../IMainAukController";
-import { controllerInstance } from "../MainAukController";
+import { FLOOR_STATUS, IEngineFloorStatus } from "../IMainAukController";
 import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie";
 import PrismaAuctDateRepositorie from "../../app/repositorie/database/PrismaAuctDateRepositorie";
+import { getAukSocket, setAukSocket } from "../engine/EngineSocket";
+
 
 const prismaAukt = new PrismaAuctRepositorie();
 const prismaDateGroup = new PrismaAuctDateRepositorie();
 
-async function pauseAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
+async function pauseAuk(auct_id: string): Promise<Partial<IEngineFloorStatus>> {
 
     return new Promise(async (resolve) => {
         const currentAuction = await prismaAukt.find(auct_id);
+
+        const currentAukSocket = getAukSocket()
+        console.log("dentro do PAUSE -> ", currentAukSocket)
 
         if (currentAuction?.status === "paused" || currentAuction?.status === "cataloged") {
             return resolve({
@@ -20,10 +24,8 @@ async function pauseAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
             });
         }
 
-        const currentAuctionSocket = controllerInstance.auk_sockets.find(socket => socket.auct_id === auct_id);
-        console.log("dentro do PAUSE -> ", currentAuctionSocket)
 
-        if (!currentAuctionSocket) {
+        if (!currentAukSocket) {
             return resolve({
                 response: {
                     status: 404,
@@ -32,10 +34,10 @@ async function pauseAuk(auct_id: string): Promise<Partial<IFloorStatus>> {
             });
         }
 
-        clearInterval(currentAuctionSocket.interval);
-        currentAuctionSocket.status = FLOOR_STATUS.PAUSED;
+        clearInterval(currentAukSocket.interval);
+        setAukSocket({ status: FLOOR_STATUS.PAUSED })
 
-        const groupDate = currentAuction?.auct_dates.find(group_date => group_date.group === currentAuctionSocket.group);
+        const groupDate = currentAuction?.auct_dates.find(group_date => group_date.group === currentAukSocket.group);
         if (groupDate) {
             await prismaDateGroup.update({ group_status: "paused" }, groupDate?.id);
         }

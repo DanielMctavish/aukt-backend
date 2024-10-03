@@ -1,29 +1,32 @@
-import { FLOOR_STATUS, IFloorStatus } from "../IMainAukController";
+import { FLOOR_STATUS, IEngineFloorStatus } from "../IMainAukController";
 import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie";
-import IntervalEngine from "../engine/IntervalEngine";
-import { controllerInstance } from "../MainAukController";
+import EngineMaster from "../engine/EngineMaster";
+import { getAukSocket, setAukSocket, resetAukSockets } from "../engine/EngineSocket";
+import axios from "axios";
 
 const prismaAuk = new PrismaAuctRepositorie();
 
-async function playAuk(auct_id: string,
+async function playAuk(
+    auct_id: string,
     group: string,
     resume_count?: number,
-    resume_product_id?: string): Promise<Partial<IFloorStatus>> {
+    resume_product_id?: string
+): Promise<Partial<IEngineFloorStatus>> {
 
-    return new Promise(async (resolve) => { // Mover o resolve para dentro da Promise
-        // Verificar se o leilão já está em andamento
-        const currentSocket = controllerInstance.auk_sockets.find(socket => socket.auct_id === auct_id);
-        if (currentSocket && currentSocket.status === FLOOR_STATUS.PLAYING) {
-            return resolve({ // Agora resolve está dentro da Promise
+    return new Promise(async (resolve) => {
+        const currentSocketAuk = getAukSocket();
+        if (currentSocketAuk.status === FLOOR_STATUS.PLAYING) {
+            return resolve({
                 response: {
                     status: 400,
-                    body: "Leilão já está em andamento"
+                    body: "Já existe um leilão em andamento"
                 }
             });
         }
 
-        const currentAuct = await prismaAuk.find(auct_id);
+        resetAukSockets();
 
+        const currentAuct = await prismaAuk.find(auct_id);
         if (!currentAuct) {
             return resolve({
                 response: {
@@ -33,11 +36,7 @@ async function playAuk(auct_id: string,
             });
         }
 
-        // Filtrando o auct_dates pelo grupo
-        const groupStatus = currentAuct.auct_dates.find(group_date => group_date.group === group)
-
-        console.log('observando status -> ', groupStatus);
-
+        const groupStatus = currentAuct.auct_dates.find(group_date => group_date.group === group);
         if (groupStatus?.group_status === 'finished') {
             return resolve({
                 response: {
@@ -56,10 +55,36 @@ async function playAuk(auct_id: string,
             });
         }
 
-        // Se chegar aqui, significa que o leilão pode começar
         const socket_message = `${currentAuct.id}-playing-auction`;
 
-        const result = await IntervalEngine(currentAuct, group, socket_message, resume_count, resume_product_id);
+        // Enviar mensagem imediata de início do leilão
+        try {
+            await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${socket_message}`, {
+                body: {
+                    auct_id: auct_id,
+                    group: group,
+                    status: "started"
+                }
+            });
+        } catch (error: any) {
+            console.error("Erro ao enviar mensagem de início do leilão:", error.message);
+        }
+
+        await setAukSocket({
+            auct_id,
+            status: FLOOR_STATUS.PLAYING,
+            group: group,
+            nextProductIndex: 0,
+            timer: resume_count ?? 0
+        });
+
+        EngineMaster(currentAuct, group, socket_message, resume_count, resume_product_id)
+            .then(() => {
+                console.log("Leilão finalizado");
+            })
+            .catch((error) => {
+                console.error("Erro durante a execução do leilão:", error);
+            });
 
         resolve({
             response: {

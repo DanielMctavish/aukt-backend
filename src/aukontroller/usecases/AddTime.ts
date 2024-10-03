@@ -1,23 +1,21 @@
-import { IFloorStatus } from "../IMainAukController";
-import { controllerInstance } from "../MainAukController";
+import { IEngineFloorStatus } from "../IMainAukController";
 import PrismaAuctRepositorie from "../../app/repositorie/database/PrismaAuctRepositorie";
-import IntervalEngine from "../engine/IntervalEngine";
+import EngineMaster from "../engine/EngineMaster";
+import { auk_sockets } from "../engine/EngineSocket";
 const prismaAuct = new PrismaAuctRepositorie()
 
 async function addTime(auct_id: string, time_seconds: number)
-    : Promise<Partial<IFloorStatus>> {
+    : Promise<Partial<IEngineFloorStatus>> {
 
     return new Promise(async (resolve) => {
 
-        const currentSocket = controllerInstance.auk_sockets.find(socket => socket.auct_id === auct_id)
+        console.log("observando socket -> ", auk_sockets)
 
-        console.log("observando socket -> ", currentSocket)
+        const currentCount = auk_sockets?.timer
+        const currentProductId = auk_sockets?.product_id
+        const currentGroup = auk_sockets?.group
 
-        const currentCount = currentSocket?.timer
-        const currentProductId = currentSocket?.product_id
-        const currentGroup = currentSocket?.group
-
-        if (currentSocket && currentGroup && currentCount) {
+        if (auk_sockets && currentGroup && currentCount) {
             resolve({
                 response: {
                     status: 200,
@@ -27,13 +25,13 @@ async function addTime(auct_id: string, time_seconds: number)
                 }
             })
             const increment = currentCount - time_seconds
-            clearInterval(currentSocket.interval)
+            clearInterval(auk_sockets.interval)
 
             const currentAuk = await prismaAuct.find(auct_id)
             const sokect_message = `${auct_id}-playing-auction`
 
             if (currentAuk)
-                IntervalEngine(currentAuk, currentGroup, sokect_message, increment, currentProductId)
+                EngineMaster(currentAuk, currentGroup, sokect_message, increment, currentProductId)
 
         } else {
             resolve({
