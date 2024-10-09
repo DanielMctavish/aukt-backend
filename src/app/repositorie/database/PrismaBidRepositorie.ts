@@ -6,8 +6,9 @@ const prisma = new PrismaClient();
 class PrismaBidRepositorie implements IBidRepositorie {
 
     async CreateBid(data: IBid): Promise<IBid> {
-        const dataProduct = {
+        const baseData = {
             value: data.value,
+            cover_auto: data.cover_auto !== undefined ? data.cover_auto : undefined,
             Auct: {
                 connect: {
                     id: data.auct_id
@@ -17,34 +18,25 @@ class PrismaBidRepositorie implements IBidRepositorie {
                 connect: {
                     id: data.client_id
                 }
-            }
+            },
+            Product: data.product_id ? {
+                connect: {
+                    id: data.product_id
+                }
+            } : undefined
         };
 
         const currentBid = await prisma.bid.create({
-            data: data.product_id ? {
-                value: data.value,
-                Product: {
-                    connect: {
-                        id: data.product_id
-                    }
-                },
-                Auct: {
-                    connect: {
-                        id: data.auct_id
-                    }
-                },
-                Client: {
-                    connect: {
-                        id: data.client_id
-                    }
-                }
-            } : dataProduct
+            data: baseData,
+            include: {
+                Product: true,
+                Auct: true,
+                Client: true
+            }
         });
 
         return currentBid as IBid;
     }
-
-
 
     async FindBid(value: number): Promise<IBid | null> {
 
@@ -84,6 +76,19 @@ class PrismaBidRepositorie implements IBidRepositorie {
 
         return listBid as IBid[]
 
+    }
+
+    async UpdateBid(id: string, data: Partial<IBid>): Promise<IBid> {
+        const updatedBid = await prisma.bid.update({
+            where: { id },
+            data: {
+                value: data.value,
+                cover_auto: data.cover_auto !== undefined ? data.cover_auto : undefined,
+                // Adicione outros campos que você deseja permitir atualizar
+            },
+        });
+
+        return updatedBid as IBid;
     }
 }
 

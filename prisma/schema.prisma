@@ -170,6 +170,7 @@ model Bid {
   Auct       Auct?     @relation(fields: [auct_id], references: [id])
   auct_id    String?
   Product    Product[]
+  cover_auto Boolean?
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
 }

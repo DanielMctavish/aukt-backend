@@ -15,6 +15,7 @@ import { listClient } from "./functions/ListClient";
 import { loginClient } from "./functions/LoginClient";
 import { subscribedAuct } from "./functions/SubscribedAuct";
 import { updateClient } from "./functions/UpdateClient";
+import { updateBid } from "./functions/UpdateBid";
 
 interface params {
     bid_id: string;
@@ -80,6 +81,10 @@ class MainClientUsecases implements IMainClient {
     }
     FirebaseDeleteClientProfile(body: any, params: any, File: FilePhoto): Promise<ClientResponse> {
         return firebaseDeleteClientProfile(params)
+    }
+
+    async UpdateBid(data: Partial<IBid>, params: params): Promise<ClientResponse> {
+        return updateBid(params.bid_id, data);
     }
 
 }

@@ -32,4 +32,11 @@ router.post("/login", ApplyUseCase(mainClient.LoginClient))//testado
 router.post("/upload-client-profile", verifyToken, upload.single('aukt-client-profile'), ApplyUseCase(mainClient.FirebaseUploadClientProfile))
 router.delete("/delete-client-profile", verifyToken, ApplyUseCase(mainClient.FirebaseDeleteClientProfile))
 
+router.patch("/update-bid", verifyToken, ApplyUseCase(mainClient.UpdateBid))
+
+// Nova rota para verificar o token
+router.get("/verify-token", verifyToken, (req, res) => {
+    res.status(200).json({ message: "Token is valid" });
+});
+
 export default router;

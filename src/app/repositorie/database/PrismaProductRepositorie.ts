@@ -134,7 +134,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
 
         const { categorie, group, auct_id, bid_count_order, lote_order, initial_value_order, take, skip, creator_id } = params
 
-        let whereFiltered: any = { Winner: null };
+        let whereFiltered: any = { };
 
 
         if (creator_id) {

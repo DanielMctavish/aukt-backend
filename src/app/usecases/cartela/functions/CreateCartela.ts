@@ -4,7 +4,6 @@ import { ICartela } from "../../../entities/ICartela"
 import { CartelaResponse } from "../../IMainCartela"
 import { createTransaction } from "../../transactions/functions/CreateTransaction"
 
-
 const prismaCartela = new PrismaCartelaRepositorie()
 const prismaAdmin = new PrismaAdminRepositorie()
 
@@ -19,17 +18,17 @@ const createCartela = async (data: ICartela): Promise<CartelaResponse> => {
             }
 
             const newCartela = await prismaCartela.create(data)
+            const amount = data.amount;
+            const commission = amount * 0.06;
 
             await createTransaction({
                 advertiser_id: data.advertiser_id,
-                amount: data.amount,
+                amount: amount - commission,
                 cartela_id: newCartela.id,
                 payment_method: "Pix"
             })
 
-
-            const amount = data.amount;
-            const commission = amount * 0.05;
+            //TODO: lembrar de subtrair o valor da comissão do saldo do advertiser
 
             const currentAdmin = await prismaAdmin.find("cm1ka40so0000sabt4jmazeaz")
             currentAdmin && await prismaAdmin.update({

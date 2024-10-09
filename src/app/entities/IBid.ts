@@ -12,6 +12,7 @@ interface IBid {
     auct_id?: string | any
     product_id?: string | any
     Product?: IProduct[] | any
+    cover_auto?: boolean
     created_at: Date
     updated_at: Date
 }
