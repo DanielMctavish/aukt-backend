@@ -52,31 +52,34 @@ export const bidAuct = async (data: IBid): Promise<ClientResponse> => {
         const allBids = currentProduct.Bid || [];
         let highestBid = currentBid;
 
-        const tempRegisterClientsBid: IBid[] = []
+        const tempRegisterClientsBid: Set<string> = new Set();
 
         for (const bid of allBids) {
-            console.log("observando bid -> ", bid.cover_auto)
+            console.log("observando bid -> ", bid.cover_auto);
 
-            const isClientRepeated = tempRegisterClientsBid.find(bid => bid.client_id === bid.client_id)
-            if (isClientRepeated) {
-                continue
+            if (tempRegisterClientsBid.has(bid.client_id)) {
+                continue;
             }
 
-            if (bid.cover_auto) {
+            if (bid.cover_auto && bid.value < highestBid.value) {
                 // Cria um novo lance automático
                 const autoBidValue = highestBid.value + 20; // Incremento mínimo
                 const autoBidData: IBid = {
                     ...bid,
                     value: autoBidValue,
-                    product_id: data.product_id, // Garante que o product_id seja passado
+                    product_id: data.product_id,
                 };
 
                 try {
                     // Cria o lance automático no banco de dados
                     const newAutoBid = await prismaBid.CreateBid(autoBidData);
                     console.log("Lance automático criado com sucesso:", newAutoBid);
-                    highestBid = newAutoBid;
-                    tempRegisterClientsBid.push(newAutoBid)
+                    
+                    if (newAutoBid.value > highestBid.value) {
+                        highestBid = newAutoBid;
+                    }
+                    
+                    tempRegisterClientsBid.add(newAutoBid.client_id);
 
                     // Envia o lance automático para o WebSocket
                     await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${data.auct_id}-bid`, {
