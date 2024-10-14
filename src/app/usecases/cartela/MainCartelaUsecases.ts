@@ -6,6 +6,7 @@ import { findCartela } from "./functions/FindCartela";
 import { listCartela } from "./functions/ListCartela";
 import { listCartelaByClient } from "./functions/ListCartelaByClient";
 import { updateCartela } from "./functions/UpdateCartela";
+import { getGeneralAmountCartelas } from "./functions/GetGeneralAmountCartelas";
 
 class MainCartelaUsecases implements IMainCartela {
 
@@ -31,6 +32,10 @@ class MainCartelaUsecases implements IMainCartela {
 
     async DeleteCartela(data: any, params: paramsCartela): Promise<CartelaResponse> {
         return deleteCartela(params.cartela_id)
+    }
+
+    async GetGeneralAmountCartelas(): Promise<CartelaResponse> {
+        return getGeneralAmountCartelas();
     }
 
 }

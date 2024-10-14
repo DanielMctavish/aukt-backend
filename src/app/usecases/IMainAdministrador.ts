@@ -1,5 +1,7 @@
 import { FilePhoto } from "../../utils/Firebase/FirebaseOperations"
 import { IAdmin } from "../entities/IAdmin"
+import { IAdvertiser, PoliceStatus } from "../entities/IAdvertiser"
+import { IAuct } from "../entities/IAuct"
 
 
 export interface AdministratorResponse {
@@ -10,6 +12,8 @@ export interface AdministratorResponse {
 interface params {
     admin_id: string
     email: string
+    advertiserId: string
+    status: PoliceStatus
 }
 
 interface IMainAdministrador {
@@ -21,6 +25,10 @@ interface IMainAdministrador {
     FirebaseUploadPhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
     FirebaseDeletePhotoProfile(body: any, params: any, File: FilePhoto): Promise<AdministratorResponse>
     LoginAdm(data: Partial<IAdmin>): Promise<AdministratorResponse>
+    ListAllAdvertisers(): Promise<AdministratorResponse>
+    ListAllAuctions(): Promise<AdministratorResponse>
+    UpdateAdvertiserPoliceStatus(body: any, params: params): Promise<AdministratorResponse>
+    GetTotalCounts(): Promise<AdministratorResponse>
 }
 
 export default IMainAdministrador

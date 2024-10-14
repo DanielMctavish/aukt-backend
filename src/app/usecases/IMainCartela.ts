@@ -22,6 +22,7 @@ interface IMainCartela {
     ListCartela(data: any, params: paramsCartela): Promise<CartelaResponse>
     UpdateCartela(data: ICartela, params: paramsCartela): Promise<CartelaResponse>
     DeleteCartela(data: any, params: paramsCartela): Promise<CartelaResponse>
+    GetGeneralAmountCartelas(): Promise<CartelaResponse>
 }
 
 export { paramsCartela, CartelaResponse }

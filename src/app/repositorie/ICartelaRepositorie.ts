@@ -8,4 +8,5 @@ export interface ICartelaRepositorie {
     listByClient(client_id:string): Promise<ICartela[]>
     update(data: Partial<ICartela>, cartela_id: string): Promise<ICartela>
     delete(cartela_id: string): Promise<ICartela | null>
+    getTotalAmount(): Promise<number>
 }

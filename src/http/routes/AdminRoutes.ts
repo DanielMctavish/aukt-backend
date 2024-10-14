@@ -20,4 +20,10 @@ router.post("/login", ApplyUseCase(mainAdmin.LoginAdm))//testado
 router.post("/upload-admin-profile", verifyToken, upload.single('company-logo'), ApplyUseCase(mainAdmin.FirebaseUploadPhotoProfile))
 router.delete("/delete-admin-profile", verifyToken, ApplyUseCase(mainAdmin.FirebaseDeletePhotoProfile))
 
+//NEWS ........................................................................................testar
+router.get('/list-advertisers', verifyToken, ApplyUseCase(mainAdmin.ListAllAdvertisers)) //testado
+router.get('/list-auctions', verifyToken, ApplyUseCase(mainAdmin.ListAllAuctions)) //testado
+router.patch('/update-advertiser-status', verifyToken, ApplyUseCase(mainAdmin.UpdateAdvertiserPoliceStatus))//testado
+router.get('/total-counts', verifyToken, ApplyUseCase(mainAdmin.GetTotalCounts))//testado
+
 export default router;

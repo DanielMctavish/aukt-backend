@@ -53,6 +53,7 @@ model Advertiser {
   Cartela                        Cartela[]
   Transaction                    Transaction[]
   Clients                        Client[]
+  police_status                  PoliceStatus? @default(REGULAR)
   created_at                     DateTime      @default(now())
   updated_at                     DateTime      @updatedAt
 }
@@ -237,4 +238,12 @@ enum AuctStatus {
   finished
   paused
   pending
+}
+
+enum PoliceStatus {
+  REGULAR
+  WARNED
+  SUSPENDED
+  BANNED
+  UNDER_REVIEW
 }

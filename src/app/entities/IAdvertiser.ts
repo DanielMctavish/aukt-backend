@@ -3,7 +3,6 @@ import { IClient } from "./IClient"
 import { ICreditCard } from "./ICreditCard"
 import { IProduct } from "./IProduct"
 
-
 export interface IAdvertiser {
     id: string
     amount: number
@@ -22,6 +21,17 @@ export interface IAdvertiser {
     Aucts?: IAuct[]
     Products?: IProduct[]
     Clients?: IClient[]
+    police_status?: PoliceStatus
     created_at: Date
     updated_at: Date
 }
+
+export const PoliceStatus: { [x: string]: 'REGULAR' | 'WARNED' | 'SUSPENDED' | 'BANNED' | 'UNDER_REVIEW' } = {
+    REGULAR: 'REGULAR',
+    WARNED: 'WARNED',
+    SUSPENDED: 'SUSPENDED',
+    BANNED: 'BANNED',
+    UNDER_REVIEW: 'UNDER_REVIEW'
+}
+
+export type PoliceStatus = typeof PoliceStatus[keyof typeof PoliceStatus]

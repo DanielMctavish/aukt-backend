@@ -15,4 +15,6 @@ router.get("/list-cartelas-by-client", verifyToken, ApplyUseCase(prismaMainCarte
 router.patch("/update-cartela", verifyToken, ApplyUseCase(prismaMainCartela.UpdateCartela))
 router.delete("/delete-cartela", verifyToken, ApplyUseCase(prismaMainCartela.DeleteCartela))
 
+router.get("/general-amount-cartelas", verifyToken, ApplyUseCase(prismaMainCartela.GetGeneralAmountCartelas))
+
 export default router;

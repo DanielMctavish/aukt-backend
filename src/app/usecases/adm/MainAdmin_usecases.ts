@@ -1,5 +1,6 @@
 import { FilePhoto } from "../../../utils/Firebase/FirebaseOperations";
 import { IAdmin } from "../../entities/IAdmin";
+import { PoliceStatus } from "../../entities/IAdvertiser";
 import IMainAdministrador, { AdministratorResponse } from "../IMainAdministrador";
 import firebaseDeleteAdmProfile from "./firebase/FirebaseDeleteAdmProfile";
 import firebaseUploadAdmProfile from "./firebase/FirebaseUploadAdmProfile";
@@ -9,10 +10,16 @@ import { findAdmin } from "./functions/FindAdmin";
 import { findAdministratorByEmail } from "./functions/FindByEmail";
 import { loginAdministator } from "./functions/LoginAdministator";
 import { updateAdmin } from "./functions/UpdateAdmin";
+import { listAllAdvertisers } from "./functions/ListAllAdvertisers";
+import { listAllAuctions } from "./functions/ListAllAuctions";
+import { updateAdvertiserPoliceStatus } from "./functions/UpdateAdvertiserPoliceStatus";
+import { getTotalCounts } from "./functions/GetTotalCounts";
 
 interface params {
     admin_id: string
     email: string
+    advertiserId: string
+    status: PoliceStatus
 }
 
 class MainAdministrator_usecases implements IMainAdministrador {
@@ -46,6 +53,22 @@ class MainAdministrator_usecases implements IMainAdministrador {
 
     CounterAucts(): Promise<AdministratorResponse> {
         return counterAucts()
+    }
+
+    ListAllAdvertisers(): Promise<AdministratorResponse> {
+        return listAllAdvertisers();
+    }
+
+    ListAllAuctions(): Promise<AdministratorResponse> {
+        return listAllAuctions();
+    }
+
+    UpdateAdvertiserPoliceStatus(body: any, params: params): Promise<AdministratorResponse> {
+        return updateAdvertiserPoliceStatus(params.advertiserId, params.status);
+    }
+
+    GetTotalCounts(): Promise<AdministratorResponse> {
+        return getTotalCounts();
     }
 }
 

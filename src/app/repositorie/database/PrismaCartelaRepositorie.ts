@@ -131,6 +131,15 @@ class PrismaCartelaRepositorie implements ICartelaRepositorie {
         return result as ICartela;
     }
 
+    async getTotalAmount(): Promise<number> {
+        const result = await prisma.cartela.aggregate({
+            _sum: {
+                amount: true
+            }
+        });
+        return result._sum.amount || 0;
+    }
+
 }
 
 export default PrismaCartelaRepositorie;
