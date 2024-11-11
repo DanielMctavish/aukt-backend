@@ -29,6 +29,8 @@ interface IMainAdministrador {
     ListAllAuctions(): Promise<AdministratorResponse>
     UpdateAdvertiserPoliceStatus(body: any, params: params): Promise<AdministratorResponse>
     GetTotalCounts(): Promise<AdministratorResponse>
+
+    ListAllTransactions(data: any, params: params): Promise<AdministratorResponse>
 }
 
 export default IMainAdministrador

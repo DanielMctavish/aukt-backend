@@ -14,26 +14,25 @@ import { updateAdvertiser } from "./functions/UpdateAdvertiser";
 
 interface params {
     url: string
-    adv_id: string
+    advertiserId: string
     email: string
 }
 
-//data/query/file/files
 class MainAdvertiserUsecases implements IMainAdvertiser {
     CreateAdvertiser(data: IAdvertiser): Promise<AdvertiserResponse> {
         return createAdvertiser(data)
     }
     FindAdvertiser(data: any, params: params): Promise<AdvertiserResponse> {
-        return findAdvertiser(params.adv_id)
+        return findAdvertiser(params.advertiserId)
     }
     FindAdvertiserByEmail(data: any, params: params): Promise<AdvertiserResponse> {
         return findAdvertiserByEmail(params.email)
     }
     UpdateAdvertiser(data: IAdvertiser, params: params): Promise<AdvertiserResponse> {
-        return updateAdvertiser(data, params.adv_id)
+        return updateAdvertiser(data, params.advertiserId)
     }
     DeleteAdvertiser(data: any, params: params): Promise<AdvertiserResponse> {
-        return deleteAdvertiser(params.adv_id)
+        return deleteAdvertiser(params.advertiserId)
     }
 
     LoginAdvertiser(data: Partial<IAdvertiser>): Promise<AdvertiserResponse> {
@@ -42,13 +41,13 @@ class MainAdvertiserUsecases implements IMainAdvertiser {
 
     //FIREBASE USECASES
     FirebaseUploadLogoCompany(body: any, params: params, File: FilePhoto): Promise<AdvertiserResponse> {
-        return firebaseUploadCompanyLogo(params.adv_id, File)
+        return firebaseUploadCompanyLogo(params.advertiserId, File)
     }
     FirebaseDeleteLogoCompany(body: any, params: params, File: FilePhoto): Promise<AdvertiserResponse> {
         return firebaseDeleteLogoCompany(params)
     }
     FirebaseUploadPhotoProfile(body: any, params: params, File: FilePhoto): Promise<AdvertiserResponse> {
-        return firebaseUploadAdvertiserProfile(params.adv_id,File)
+        return firebaseUploadAdvertiserProfile(params.advertiserId, File)
     }
     FirebaseDeletePhotoProfile(body: any, params: params, File: FilePhoto): Promise<AdvertiserResponse> {
         return firebaseDeleteAdvertiserProfile(params)

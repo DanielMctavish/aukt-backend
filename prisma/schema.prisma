@@ -34,9 +34,9 @@ model Moderator {
 }
 
 model Advertiser {
-  id                             String        @id @default(cuid())
+  id                             String         @id @default(cuid())
   amount                         Float?
-  nano_id                        String        @unique
+  nano_id                        String         @unique
   name                           String
   CPF                            String
   company_name                   String
@@ -44,7 +44,7 @@ model Advertiser {
   url_profile_cover              String?
   url_profile_company_logo_cover String?
   company_adress                 String
-  email                          String        @unique
+  email                          String         @unique
   password                       String
   address                        String
   credit_cards                   CreditCard[]
@@ -53,9 +53,10 @@ model Advertiser {
   Cartela                        Cartela[]
   Transaction                    Transaction[]
   Clients                        Client[]
-  police_status                  PoliceStatus? @default(REGULAR)
-  created_at                     DateTime      @default(now())
-  updated_at                     DateTime      @updatedAt
+  SiteTemplate                   SiteTemplate[]
+  police_status                  PoliceStatus?  @default(REGULAR)
+  created_at                     DateTime       @default(now())
+  updated_at                     DateTime       @updatedAt
 }
 
 model Client {
@@ -246,4 +247,210 @@ enum PoliceStatus {
   SUSPENDED
   BANNED
   UNDER_REVIEW
+}
+
+// TEMPLATE MODELS AND ENUMS .............................................................
+
+model SiteTemplate {
+  id           String            @id @default(uuid())
+  advertiser   Advertiser        @relation(fields: [advertiserId], references: [id])
+  advertiserId String
+  colorPalette ColorPalette
+  fontStyle    String
+  header       TemplateHeader?   @relation(fields: [headerId], references: [id], onDelete: Cascade)
+  headerId     String?           @unique
+  sections     TemplateSection[]
+  footer       TemplateFooter?   @relation(fields: [footerId], references: [id], onDelete: Cascade)
+  footerId     String            @unique
+  created_at   DateTime          @default(now())
+  updated_at   DateTime          @updatedAt
+}
+
+enum HeaderModel {
+  MODEL_1
+  MODEL_2
+  MODEL_3
+  MODEL_4
+  MODEL_5
+  MODEL_6
+  MODEL_7
+  MODEL_8
+}
+
+model TemplateHeader {
+  id                        String          @id @default(uuid())
+  color                     String
+  sizeType                  SizeType
+  model                     HeaderModel     @default(MODEL_1)
+  backgroundImage           String?
+  backgroundImageOpacity    Float
+  backgroundImageBlur       Int
+  backgroundImageBrightness Int
+  elementsOpacity           Float
+  texts                     HeaderText[]
+  carousel                  HeaderCarousel?
+  siteTemplate             SiteTemplate?
+  created_at               DateTime        @default(now())
+  updated_at               DateTime        @updatedAt
+}
+
+model HeaderText {
+  id                String         @id @default(uuid())
+  title             String
+  content           String
+  positionTop       String
+  positionLeft      String
+  positionWidth     String
+  titleBackground   String
+  titleColor        String
+  contentColor      String
+  titleSize         String
+  titleBorderRadius String
+  visible           Boolean
+  header            TemplateHeader @relation(fields: [headerId], references: [id], onDelete: Cascade)
+  headerId          String
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @updatedAt
+}
+
+model HeaderCarousel {
+  id                String         @id @default(uuid())
+  enabled           Boolean
+  title             String
+  selectedAuctId    String?
+  sizeWidth         String
+  sizeHeight        String
+  itemsToShow       Int
+  speed             Int
+  positionTop       String
+  positionLeft      String
+  showTitle         Boolean
+  showPrice         Boolean
+  showCarouselTitle Boolean
+  showNavigation    Boolean
+  header            TemplateHeader @relation(fields: [headerId], references: [id], onDelete: Cascade)
+  headerId          String         @unique
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @updatedAt
+}
+
+model TemplateFooter {
+  id              String          @id @default(uuid())
+  color           String
+  sizeType        SizeType
+  sections        FooterSection[]
+  socialLinks     SocialLinks?
+  companyName     String
+  showSocialLinks Boolean
+  textColor       String
+  borderColor     String
+  elementsOpacity Float
+  siteTemplate    SiteTemplate?
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
+}
+
+model FooterSection {
+  id         String         @id @default(uuid())
+  title      String
+  links      FooterLink[]
+  footer     TemplateFooter @relation(fields: [footerId], references: [id], onDelete: Cascade)
+  footerId   String
+  created_at DateTime       @default(now())
+  updated_at DateTime       @updatedAt
+}
+
+model FooterLink {
+  id              String        @id @default(uuid())
+  label           String
+  url             String
+  footerSection   FooterSection @relation(fields: [footerSectionId], references: [id], onDelete: Cascade)
+  footerSectionId String
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+}
+
+model SocialLinks {
+  id         String         @id @default(uuid())
+  facebook   String
+  twitter    String
+  instagram  String
+  linkedin   String
+  footer     TemplateFooter @relation(fields: [footerId], references: [id], onDelete: Cascade)
+  footerId   String         @unique
+  created_at DateTime       @default(now())
+  updated_at DateTime       @updatedAt
+}
+
+model TemplateSection {
+  id             String       @id @default(uuid())
+  type           SectionType
+  color          String
+  sizeType       SizeType
+  config         Json?
+  siteTemplate   SiteTemplate @relation(fields: [siteTemplateId], references: [id], onDelete: Cascade)
+  siteTemplateId String
+  created_at     DateTime     @default(now())
+  updated_at     DateTime     @updatedAt
+}
+
+model ConfigSection {
+  id                 String           @id @default(uuid())
+  selectedAuctId     String?
+  layout             LayoutType?
+  itemsPerRow        Int?
+  showPrice          Boolean?
+  showTitle          Boolean?
+  autoplay           Boolean?
+  speed              Int?
+  content            String?
+  alignment          AlignmentType?
+  fontSize           String?
+  textColor          String?
+  preserveLineBreaks Boolean?
+  destination        DestinationType?
+  whatsappNumber     String?
+  email              String?
+  buttonText         String?
+  successMessage     String?
+  fields             Json[]
+  created_at         DateTime         @default(now())
+  updated_at         DateTime         @updatedAt
+}
+
+enum SectionType {
+  GALLERY
+  TEXT
+  FORM
+  AUCT_LIST
+}
+
+enum SizeType {
+  SMALL
+  MEDIUM
+  FULL
+}
+
+enum ColorPalette {
+  CLEAN
+  CANDY
+  DARK
+  MONOCHROMATIC
+}
+
+enum LayoutType {
+  GRID
+  CAROUSEL
+  LIST
+}
+
+enum AlignmentType {
+  LEFT
+  CENTER
+  RIGHT
+}
+
+enum DestinationType {
+  WHATSAPP
+  EMAIL
 }

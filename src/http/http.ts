@@ -6,13 +6,14 @@ import '../aukontroller/MainAukController'
 import adminRoutes from './routes/AdminRoutes'
 import advertiserRoutes from './routes/AdvertiserRoutes'
 import auctRoutes from './routes/AuctRoutes'
-import auctDatesRoutes from './routes/AuctDatesRoutes'; // Importando as rotas de AuctDates
+import auctDatesRoutes from './routes/AuctDatesRoutes';
 import clientRoutes from './routes/ClientRoutes'
 import creditRoutes from './routes/CreditCardRoutes'
 import productRoutes from './routes/ProductRoutes'
 import moderatorRoutes from "./routes/ModeratorRoutes"
 import cartelaRoutes from "./routes/CartelaRoutes"
 import transactionRoutes from "./routes/TransactionRoutes"
+import templateRoutes from "./routes/TemplateRoutes" 
 import { currentCategorieData } from '../categories/categoriesLibrary'
 
 const app = express()
@@ -40,6 +41,7 @@ app.use('/products', productRoutes)
 app.use('/moderator', moderatorRoutes)
 app.use('/cartela', cartelaRoutes)
 app.use('/transaction', transactionRoutes)
+app.use('/template', templateRoutes) 
 
 app.get('/', (req, res) => {
     res.send('AUKT API version 1.0 - changes')

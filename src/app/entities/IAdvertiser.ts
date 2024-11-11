@@ -2,6 +2,7 @@ import { IAuct } from "./IAuct"
 import { IClient } from "./IClient"
 import { ICreditCard } from "./ICreditCard"
 import { IProduct } from "./IProduct"
+import { ISiteTemplate } from "./ISiteTemplate"
 
 export interface IAdvertiser {
     id: string
@@ -21,6 +22,7 @@ export interface IAdvertiser {
     Aucts?: IAuct[]
     Products?: IProduct[]
     Clients?: IClient[]
+    SiteTemplate?: ISiteTemplate[]
     police_status?: PoliceStatus
     created_at: Date
     updated_at: Date

@@ -1,14 +1,13 @@
 import { FilePhoto } from "../../utils/Firebase/FirebaseOperations"
 import { IAdvertiser } from "../entities/IAdvertiser"
 
-
 export interface AdvertiserResponse {
     status_code: number
     body: Object
 }
 
 interface params {
-    adv_id: string
+    advertiserId: string
     email: string
 }
 

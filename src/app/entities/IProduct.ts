@@ -34,6 +34,3 @@ export interface IProduct {
     created_at: Date
     updated_at: Date
 }
-
-
-//pendente

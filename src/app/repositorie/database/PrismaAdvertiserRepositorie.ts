@@ -8,12 +8,10 @@ import { IClient } from "../../entities/IClient"
 
 const prisma = new PrismaClient()
 
-
 class PrismaAdvertiserRepositorie implements IAdvertiserRepositorie {
 
     async create(data: IAdvertiser): Promise<IAdvertiser> {
-
-        const { credit_cards, Aucts, Products, Clients, amount, ...restData } = data
+        const { credit_cards, Aucts, Products, Clients, SiteTemplate, amount, ...restData } = data
 
         const currentAdvertiser = await prisma.advertiser.create({
             data: {
@@ -38,21 +36,33 @@ class PrismaAdvertiserRepositorie implements IAdvertiserRepositorie {
                     connect: Clients?.map((client: IClient) => ({
                         id: client.id
                     })) || []
-                }
+                },
+                SiteTemplate: SiteTemplate ? {
+                    connect: SiteTemplate.map(template => ({
+                        id: template.id
+                    }))
+                } : undefined
             }
         })
 
         return currentAdvertiser as IAdvertiser;
     }
 
-    async find(advertiser_id: string): Promise<IAdvertiser | null> {
-        const currentAdvertiser = await prisma.advertiser.findFirst({
+    async find(advertiserId: string): Promise<IAdvertiser | null> {
+        const currentAdvertiser = await prisma.advertiser.findUnique({
             where: {
-                id: advertiser_id
+                id: advertiserId
+            },
+            include: {
+                credit_cards: true,
+                Aucts: true,
+                Products: true,
+                Clients: true,
+                SiteTemplate: true
             }
         })
 
-        return currentAdvertiser as IAdvertiser
+        return currentAdvertiser as IAdvertiser;
     }
 
     async findByEmail(email: string): Promise<IAdvertiser | null> {
@@ -66,7 +76,7 @@ class PrismaAdvertiserRepositorie implements IAdvertiserRepositorie {
         return currentAdvertiser as IAdvertiser
     }
 
-    async update(advertiser_id: string, data: Partial<IAdvertiser>): Promise<IAdvertiser> {
+    async update(advertiserId: string, data: Partial<IAdvertiser>): Promise<IAdvertiser> {
         const {
             CNPJ,
             email,
@@ -105,7 +115,7 @@ class PrismaAdvertiserRepositorie implements IAdvertiserRepositorie {
 
         const updatedAdvertiser = await prisma.advertiser.update({
             where: {
-                id: advertiser_id,
+                id: advertiserId,
             },
             data: newData,
         });
@@ -114,19 +124,19 @@ class PrismaAdvertiserRepositorie implements IAdvertiserRepositorie {
     }
 
 
-    async delete(advertiser_id: string): Promise<IAdvertiser | null> {
+    async delete(advertiserId: string): Promise<IAdvertiser | null> {
         try {
             
             const deletedAdvertiser = await prisma.advertiser.delete({
                 where: {
-                    id: advertiser_id
+                    id: advertiserId
                 }
             });
 
             return deletedAdvertiser as IAdvertiser;
         } catch (error) {
             // Se o registro não for encontrado, você pode lidar com isso aqui
-            console.error(`Erro ao excluir o anunciante com ID ${advertiser_id}:`, error);
+            console.error(`Erro ao excluir o anunciante com ID ${advertiserId}:`, error);
             return null;
         }
     }

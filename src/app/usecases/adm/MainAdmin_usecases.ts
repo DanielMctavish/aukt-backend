@@ -14,6 +14,7 @@ import { listAllAdvertisers } from "./functions/ListAllAdvertisers";
 import { listAllAuctions } from "./functions/ListAllAuctions";
 import { updateAdvertiserPoliceStatus } from "./functions/UpdateAdvertiserPoliceStatus";
 import { getTotalCounts } from "./functions/GetTotalCounts";
+import listAllTransactions from "./functions/ListAllTransactions";
 
 interface params {
     admin_id: string
@@ -69,6 +70,10 @@ class MainAdministrator_usecases implements IMainAdministrador {
 
     GetTotalCounts(): Promise<AdministratorResponse> {
         return getTotalCounts();
+    }
+
+    ListAllTransactions(data: any, params: params): Promise<AdministratorResponse> {
+        return listAllTransactions(params.advertiserId)
     }
 }
 

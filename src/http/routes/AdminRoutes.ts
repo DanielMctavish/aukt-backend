@@ -26,4 +26,6 @@ router.get('/list-auctions', verifyToken, ApplyUseCase(mainAdmin.ListAllAuctions
 router.patch('/update-advertiser-status', verifyToken, ApplyUseCase(mainAdmin.UpdateAdvertiserPoliceStatus))//testado
 router.get('/total-counts', verifyToken, ApplyUseCase(mainAdmin.GetTotalCounts))//testado
 
+// transactions
+router.get('/list-transactions', verifyToken, ApplyUseCase(mainAdmin.ListAllTransactions))
 export default router;
