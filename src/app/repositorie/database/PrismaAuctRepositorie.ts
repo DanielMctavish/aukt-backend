@@ -19,6 +19,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
             const createdAuct = await prisma.auct.create({
                 data: {
                     ...restData,
+                    public: data.public ?? false,
                     ...(advertiser_id && { advertiser_id }),
 
                     auct_dates: {
@@ -141,14 +142,18 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
         try {
             const aucts = await prisma.auct.findMany({
                 where: {
-                    status: status
-                }, include: {
+                    status: status,
+                    public: true
+                },
+                include: {
                     product_list: true,
                     Advertiser: true,
                     auct_dates: true
-                }, orderBy: {
+                },
+                orderBy: {
                     created_at: "desc"
-                }, take: 12
+                },
+                take: 12
             });
             return aucts as IAuct[];
         } catch (error) {
@@ -177,6 +182,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                     title,
                     categorie,
                     status,
+                    public: isPublic,
                 } = data;
 
                 return prisma.auct.update({
@@ -190,7 +196,8 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                         title,
                         terms_conditions,
                         categorie,
-                        status
+                        status,
+                        public: isPublic,
                     },
                 });
             }).then(updatedAuct => {

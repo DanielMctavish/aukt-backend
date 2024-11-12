@@ -113,6 +113,7 @@ model Auct {
   value                     String
   status                    AuctStatus
   product_timer_seconds     Int
+  public                    Boolean?         @default(false)
   created_at                DateTime         @default(now())
   updated_at                DateTime         @updatedAt
 }
@@ -289,9 +290,9 @@ model TemplateHeader {
   elementsOpacity           Float
   texts                     HeaderText[]
   carousel                  HeaderCarousel?
-  siteTemplate             SiteTemplate?
-  created_at               DateTime        @default(now())
-  updated_at               DateTime        @updatedAt
+  siteTemplate              SiteTemplate?
+  created_at                DateTime        @default(now())
+  updated_at                DateTime        @updatedAt
 }
 
 model HeaderText {
@@ -338,7 +339,7 @@ model TemplateFooter {
   id              String          @id @default(uuid())
   color           String
   sizeType        SizeType
-  sections        FooterSection[]
+  sections        Json[]           
   socialLinks     SocialLinks?
   companyName     String
   showSocialLinks Boolean
@@ -349,27 +350,6 @@ model TemplateFooter {
   created_at      DateTime        @default(now())
   updated_at      DateTime        @updatedAt
 }
-
-model FooterSection {
-  id         String         @id @default(uuid())
-  title      String
-  links      FooterLink[]
-  footer     TemplateFooter @relation(fields: [footerId], references: [id], onDelete: Cascade)
-  footerId   String
-  created_at DateTime       @default(now())
-  updated_at DateTime       @updatedAt
-}
-
-model FooterLink {
-  id              String        @id @default(uuid())
-  label           String
-  url             String
-  footerSection   FooterSection @relation(fields: [footerSectionId], references: [id], onDelete: Cascade)
-  footerSectionId String
-  created_at      DateTime      @default(now())
-  updated_at      DateTime      @updatedAt
-}
-
 model SocialLinks {
   id         String         @id @default(uuid())
   facebook   String

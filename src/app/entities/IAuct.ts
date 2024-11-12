@@ -38,6 +38,7 @@ export interface IAuct {
     value: string
     status: AuctStatus
     product_timer_seconds: number
+    public?: boolean
     created_at: Date
     updated_at: Date
 }

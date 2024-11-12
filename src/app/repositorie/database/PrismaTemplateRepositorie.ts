@@ -26,19 +26,7 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                         backgroundImageBrightness: data.header.backgroundImageBrightness,
                         elementsOpacity: data.header.elementsOpacity,
                         texts: {
-                            create: data.header.texts.map(text => ({
-                                title: text.title,
-                                content: text.content,
-                                positionTop: text.positionTop,
-                                positionLeft: text.positionLeft,
-                                positionWidth: text.positionWidth,
-                                titleBackground: text.titleBackground,
-                                titleColor: text.titleColor,
-                                contentColor: text.contentColor,
-                                titleSize: text.titleSize,
-                                titleBorderRadius: text.titleBorderRadius,
-                                visible: text.visible
-                            }))
+                            create: data.header.texts
                         },
                         carousel: data.header.carousel ? {
                             create: {
@@ -67,26 +55,19 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                 data: {
                     color: data.footer.color,
                     sizeType: data.footer.sizeType,
+                    sections: data.footer.sections as any[],
                     companyName: data.footer.companyName,
                     showSocialLinks: data.footer.showSocialLinks,
                     textColor: data.footer.textColor,
                     borderColor: data.footer.borderColor,
                     elementsOpacity: data.footer.elementsOpacity,
-                    sections: {
-                        create: data.footer.sections.map(section => ({
-                            title: section.title,
-                            links: {
-                                create: section.links
-                            }
-                        }))
-                    },
                     socialLinks: {
                         create: data.footer.socialLinks
                     }
                 }
             });
 
-            // Criar o Template com as referências
+            // Criar o Template
             const result = await prisma.siteTemplate.create({
                 data: {
                     advertiserId: data.advertiserId,
@@ -114,11 +95,6 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                     },
                     footer: {
                         include: {
-                            sections: {
-                                include: {
-                                    links: true
-                                }
-                            },
                             socialLinks: true
                         }
                     }
@@ -132,10 +108,10 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
         }
     }
 
-    async Find(advertiser_id: string): Promise<ISiteTemplate[]> {
+    async Find(advertiserId: string): Promise<ISiteTemplate[]> {
         const templates = await prisma.siteTemplate.findMany({
             where: {
-                advertiserId: advertiser_id
+                advertiserId: advertiserId
             },
             include: {
                 sections: true,
@@ -148,11 +124,6 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                 },
                 footer: {
                     include: {
-                        sections: {
-                            include: {
-                                links: true
-                            }
-                        },
                         socialLinks: true
                     }
                 }
@@ -178,11 +149,6 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                 },
                 footer: {
                     include: {
-                        sections: {
-                            include: {
-                                links: true
-                            }
-                        },
                         socialLinks: true
                     }
                 }
@@ -219,19 +185,7 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                             elementsOpacity: data.header.elementsOpacity,
                             texts: {
                                 deleteMany: {},
-                                create: data.header.texts.map(text => ({
-                                    title: text.title,
-                                    content: text.content,
-                                    positionTop: text.positionTop,
-                                    positionLeft: text.positionLeft,
-                                    positionWidth: text.positionWidth,
-                                    titleBackground: text.titleBackground,
-                                    titleColor: text.titleColor,
-                                    contentColor: text.contentColor,
-                                    titleSize: text.titleSize,
-                                    titleBorderRadius: text.titleBorderRadius,
-                                    visible: text.visible
-                                }))
+                                create: data.header.texts
                             },
                             carousel: data.header.carousel ? {
                                 upsert: {
@@ -285,20 +239,12 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                         data: {
                             color: data.footer.color,
                             sizeType: data.footer.sizeType,
+                            sections: data.footer.sections as any[],
                             companyName: data.footer.companyName,
                             showSocialLinks: data.footer.showSocialLinks,
                             textColor: data.footer.textColor,
                             borderColor: data.footer.borderColor,
                             elementsOpacity: data.footer.elementsOpacity,
-                            sections: {
-                                deleteMany: {},
-                                create: data.footer.sections.map(section => ({
-                                    title: section.title,
-                                    links: {
-                                        create: section.links
-                                    }
-                                }))
-                            },
                             socialLinks: data.footer.socialLinks ? {
                                 upsert: {
                                     create: data.footer.socialLinks,
@@ -339,11 +285,6 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                     },
                     footer: {
                         include: {
-                            sections: {
-                                include: {
-                                    links: true
-                                }
-                            },
                             socialLinks: true
                         }
                     }
@@ -371,11 +312,6 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                     },
                     footer: {
                         include: {
-                            sections: {
-                                include: {
-                                    links: true
-                                }
-                            },
                             socialLinks: true
                         }
                     }

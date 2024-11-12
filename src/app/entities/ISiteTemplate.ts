@@ -136,15 +136,8 @@ interface ITemplateHeader {
     carousel?: IHeaderCarousel;
 }
 
-interface IFooterLink {
-    label: string;
-    url: string;
-}
 
-interface IFooterSection {
-    title: string;
-    links: IFooterLink[];
-}
+
 
 interface ISocialLinks {
     facebook: string;
@@ -156,7 +149,7 @@ interface ISocialLinks {
 interface ITemplateFooter {
     color: string;
     sizeType: SizeType;
-    sections: IFooterSection[];
+    sections: JSON[];
     socialLinks: ISocialLinks;
     companyName: string;
     showSocialLinks: boolean;
@@ -187,7 +180,5 @@ export {
     ITemplateFooter,
     IHeaderText,
     IHeaderCarousel,
-    IFooterSection,
-    IFooterLink,
     ISocialLinks 
 };
