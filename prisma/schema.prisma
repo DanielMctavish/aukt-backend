@@ -282,7 +282,7 @@ model TemplateHeader {
   id                        String          @id @default(uuid())
   color                     String
   sizeType                  SizeType
-  model                     HeaderModel     @default(MODEL_1)
+  model                     HeaderModel     
   backgroundImage           String?
   backgroundImageOpacity    Float
   backgroundImageBlur       Int
@@ -339,7 +339,7 @@ model TemplateFooter {
   id              String          @id @default(uuid())
   color           String
   sizeType        SizeType
-  sections        Json[]           
+  sections        Json?           
   socialLinks     SocialLinks?
   companyName     String
   showSocialLinks Boolean

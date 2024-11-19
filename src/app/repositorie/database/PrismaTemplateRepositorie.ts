@@ -55,7 +55,7 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                 data: {
                     color: data.footer.color,
                     sizeType: data.footer.sizeType,
-                    sections: data.footer.sections as any[],
+                    sections: JSON.stringify(data.footer.sections || {}),
                     companyName: data.footer.companyName,
                     showSocialLinks: data.footer.showSocialLinks,
                     textColor: data.footer.textColor,
@@ -172,55 +172,72 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                 });
 
                 if (currentTemplate?.headerId) {
+                    // Log para debug
+                    console.log("Header model being updated to:", data.header.model);
+                    
                     await prisma.templateHeader.update({
                         where: { id: currentTemplate.headerId },
                         data: {
-                            color: data.header.color,
-                            sizeType: data.header.sizeType,
-                            model: data.header.model,
-                            backgroundImage: data.header.backgroundImage,
-                            backgroundImageOpacity: data.header.backgroundImageOpacity,
-                            backgroundImageBlur: data.header.backgroundImageBlur,
-                            backgroundImageBrightness: data.header.backgroundImageBrightness,
-                            elementsOpacity: data.header.elementsOpacity,
-                            texts: {
-                                deleteMany: {},
-                                create: data.header.texts
-                            },
-                            carousel: data.header.carousel ? {
-                                upsert: {
-                                    create: {
-                                        enabled: data.header.carousel.enabled,
-                                        title: data.header.carousel.title,
-                                        selectedAuctId: data.header.carousel.selectedAuctId,
-                                        sizeWidth: data.header.carousel.sizeWidth,
-                                        sizeHeight: data.header.carousel.sizeHeight,
-                                        itemsToShow: data.header.carousel.itemsToShow,
-                                        speed: data.header.carousel.speed,
-                                        positionTop: data.header.carousel.positionTop,
-                                        positionLeft: data.header.carousel.positionLeft,
-                                        showTitle: data.header.carousel.showTitle,
-                                        showPrice: data.header.carousel.showPrice,
-                                        showCarouselTitle: data.header.carousel.showCarouselTitle,
-                                        showNavigation: data.header.carousel.showNavigation
-                                    },
-                                    update: {
-                                        enabled: data.header.carousel.enabled,
-                                        title: data.header.carousel.title,
-                                        selectedAuctId: data.header.carousel.selectedAuctId,
-                                        sizeWidth: data.header.carousel.sizeWidth,
-                                        sizeHeight: data.header.carousel.sizeHeight,
-                                        itemsToShow: data.header.carousel.itemsToShow,
-                                        speed: data.header.carousel.speed,
-                                        positionTop: data.header.carousel.positionTop,
-                                        positionLeft: data.header.carousel.positionLeft,
-                                        showTitle: data.header.carousel.showTitle,
-                                        showPrice: data.header.carousel.showPrice,
-                                        showCarouselTitle: data.header.carousel.showCarouselTitle,
-                                        showNavigation: data.header.carousel.showNavigation
+                            ...(data.header.color && { color: data.header.color }),
+                            ...(data.header.sizeType && { sizeType: data.header.sizeType }),
+                            ...(data.header.model && { model: data.header.model }),
+                            ...(data.header.backgroundImage !== undefined && { 
+                                backgroundImage: data.header.backgroundImage 
+                            }),
+                            ...(data.header.backgroundImageOpacity !== undefined && { 
+                                backgroundImageOpacity: data.header.backgroundImageOpacity 
+                            }),
+                            ...(data.header.backgroundImageBlur !== undefined && { 
+                                backgroundImageBlur: data.header.backgroundImageBlur 
+                            }),
+                            ...(data.header.backgroundImageBrightness !== undefined && { 
+                                backgroundImageBrightness: data.header.backgroundImageBrightness 
+                            }),
+                            ...(data.header.elementsOpacity !== undefined && { 
+                                elementsOpacity: data.header.elementsOpacity 
+                            }),
+                            ...(data.header.texts && {
+                                texts: {
+                                    deleteMany: {},
+                                    create: data.header.texts
+                                }
+                            }),
+                            ...(data.header.carousel && {
+                                carousel: {
+                                    upsert: {
+                                        create: {
+                                            enabled: data.header.carousel.enabled,
+                                            title: data.header.carousel.title,
+                                            selectedAuctId: data.header.carousel.selectedAuctId,
+                                            sizeWidth: data.header.carousel.sizeWidth,
+                                            sizeHeight: data.header.carousel.sizeHeight,
+                                            itemsToShow: data.header.carousel.itemsToShow,
+                                            speed: data.header.carousel.speed,
+                                            positionTop: data.header.carousel.positionTop,
+                                            positionLeft: data.header.carousel.positionLeft,
+                                            showTitle: data.header.carousel.showTitle,
+                                            showPrice: data.header.carousel.showPrice,
+                                            showCarouselTitle: data.header.carousel.showCarouselTitle,
+                                            showNavigation: data.header.carousel.showNavigation
+                                        },
+                                        update: {
+                                            enabled: data.header.carousel.enabled,
+                                            title: data.header.carousel.title,
+                                            selectedAuctId: data.header.carousel.selectedAuctId,
+                                            sizeWidth: data.header.carousel.sizeWidth,
+                                            sizeHeight: data.header.carousel.sizeHeight,
+                                            itemsToShow: data.header.carousel.itemsToShow,
+                                            speed: data.header.carousel.speed,
+                                            positionTop: data.header.carousel.positionTop,
+                                            positionLeft: data.header.carousel.positionLeft,
+                                            showTitle: data.header.carousel.showTitle,
+                                            showPrice: data.header.carousel.showPrice,
+                                            showCarouselTitle: data.header.carousel.showCarouselTitle,
+                                            showNavigation: data.header.carousel.showNavigation
+                                        }
                                     }
                                 }
-                            } : undefined
+                            })
                         }
                     });
                 }
@@ -239,7 +256,7 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                         data: {
                             color: data.footer.color,
                             sizeType: data.footer.sizeType,
-                            sections: data.footer.sections as any[],
+                            sections: JSON.stringify(data.footer.sections || {}),
                             companyName: data.footer.companyName,
                             showSocialLinks: data.footer.showSocialLinks,
                             textColor: data.footer.textColor,

@@ -6,7 +6,7 @@ const prismaTemplate = new PrismaTemplateRepositorie();
 
 export const createSiteTemplate = (data: ISiteTemplate): Promise<TemplateResponse> => {
 
-    // console.log("observando o data -> ", data.sections)
+    console.log("observando o data -> ", data.header)
 
     return new Promise(async (resolve, reject) => {
         try {

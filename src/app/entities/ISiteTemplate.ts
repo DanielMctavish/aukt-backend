@@ -1,4 +1,15 @@
-// Enums alinhados com o Prisma (UPPERCASE)
+// Primeiro definimos os objetos de enum
+export const HeaderModel = {
+    MODEL_1: 'MODEL_1',
+    MODEL_2: 'MODEL_2',
+    MODEL_3: 'MODEL_3',
+    MODEL_4: 'MODEL_4',
+    MODEL_5: 'MODEL_5',
+    MODEL_6: 'MODEL_6',
+    MODEL_7: 'MODEL_7',
+    MODEL_8: 'MODEL_8'
+} as const;
+
 export const SectionType = {
     GALLERY: 'GALLERY',
     TEXT: 'TEXT',
@@ -36,21 +47,8 @@ export const DestinationType = {
     EMAIL: 'EMAIL'
 } as const;
 
-// Adicionar novo enum para HeaderModel
-export const HeaderModel = {
-    MODEL_1: 'MODEL_1',
-    MODEL_2: 'MODEL_2',
-    MODEL_3: 'MODEL_3',
-    MODEL_4: 'MODEL_4',
-    MODEL_5: 'MODEL_5',
-    MODEL_6: 'MODEL_6',
-    MODEL_7: 'MODEL_7',
-    MODEL_8: 'MODEL_8'
-} as const;
-
+// Depois definimos os tipos baseados nos objetos
 export type HeaderModel = typeof HeaderModel[keyof typeof HeaderModel];
-
-// Types
 export type SectionType = typeof SectionType[keyof typeof SectionType];
 export type SizeType = typeof SizeType[keyof typeof SizeType];
 export type ColorPalette = typeof ColorPalette[keyof typeof ColorPalette];
@@ -136,9 +134,6 @@ interface ITemplateHeader {
     carousel?: IHeaderCarousel;
 }
 
-
-
-
 interface ISocialLinks {
     facebook: string;
     twitter: string;
@@ -146,10 +141,19 @@ interface ISocialLinks {
     linkedin: string;
 }
 
+// Adicionando interface para seções do footer
+interface IFooterSection {
+    title: string;
+    links: Array<{
+        label: string;
+        url: string;
+    }>;
+}
+
 interface ITemplateFooter {
     color: string;
     sizeType: SizeType;
-    sections: JSON[];
+    sections?: Record<string, IFooterSection>; // Mudando para um objeto de seções
     socialLinks: ISocialLinks;
     companyName: string;
     showSocialLinks: boolean;
@@ -180,5 +184,6 @@ export {
     ITemplateFooter,
     IHeaderText,
     IHeaderCarousel,
-    ISocialLinks 
+    ISocialLinks,
+    IFooterSection // Exportando nova interface
 };

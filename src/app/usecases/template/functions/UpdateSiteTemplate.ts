@@ -5,6 +5,12 @@ import { ISiteTemplate } from "../../../entities/ISiteTemplate";
 const prismaTemplate = new PrismaTemplateRepositorie();
 
 export const updateSiteTemplate = (data: Partial<ISiteTemplate>, template_id: string): Promise<TemplateResponse> => {
+    console.log("Update template data:", JSON.stringify(data, null, 2));
+    
+    if (data.header) {
+        console.log("Header model being sent:", data.header.model);
+    }
+
     return new Promise(async (resolve, reject) => {
         try {
             const currentTemplate = await prismaTemplate.Update(data, template_id);
