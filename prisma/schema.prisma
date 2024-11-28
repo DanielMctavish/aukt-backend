@@ -339,27 +339,16 @@ model TemplateFooter {
   id              String          @id @default(uuid())
   color           String
   sizeType        SizeType
-  sections        Json?           
-  socialLinks     SocialLinks?
   companyName     String
   showSocialLinks Boolean
   textColor       String
   borderColor     String
   elementsOpacity Float
+  sections        Json[]          // Alterado para array de seções
+  socialMedia     Json[]          // Novo campo para redes sociais
   siteTemplate    SiteTemplate?
   created_at      DateTime        @default(now())
   updated_at      DateTime        @updatedAt
-}
-model SocialLinks {
-  id         String         @id @default(uuid())
-  facebook   String
-  twitter    String
-  instagram  String
-  linkedin   String
-  footer     TemplateFooter @relation(fields: [footerId], references: [id], onDelete: Cascade)
-  footerId   String         @unique
-  created_at DateTime       @default(now())
-  updated_at DateTime       @updatedAt
 }
 
 model TemplateSection {

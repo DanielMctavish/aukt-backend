@@ -8,3 +8,4 @@ exports.PoliceStatus = {
     BANNED: 'BANNED',
     UNDER_REVIEW: 'UNDER_REVIEW'
 };
+//# sourceMappingURL=IAdvertiser.js.map

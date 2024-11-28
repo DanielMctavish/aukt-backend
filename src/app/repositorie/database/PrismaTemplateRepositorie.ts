@@ -12,7 +12,7 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                 throw new Error("Footer company name is required");
             }
 
-            // Primeiro criar o Header se existir
+            // Criar o Header se existir
             let headerId: string | undefined;
             if (data.header) {
                 const header = await prisma.templateHeader.create({
@@ -55,15 +55,22 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                 data: {
                     color: data.footer.color,
                     sizeType: data.footer.sizeType,
-                    sections: JSON.stringify(data.footer.sections || {}),
+                    sections: data.footer.sections.map(section => ({
+                        title: section.title,
+                        links: section.links.map(link => ({
+                            name: link.name,
+                            url: link.url
+                        }))
+                    })),
                     companyName: data.footer.companyName,
                     showSocialLinks: data.footer.showSocialLinks,
                     textColor: data.footer.textColor,
                     borderColor: data.footer.borderColor,
                     elementsOpacity: data.footer.elementsOpacity,
-                    socialLinks: {
-                        create: data.footer.socialLinks
-                    }
+                    socialMedia: data.footer.socialMedia.map(social => ({
+                        type: social.type,
+                        url: social.url
+                    }))
                 }
             });
 
@@ -93,11 +100,7 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                             carousel: true
                         }
                     },
-                    footer: {
-                        include: {
-                            socialLinks: true
-                        }
-                    }
+                    footer: true
                 }
             });
 
@@ -122,11 +125,7 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                         carousel: true
                     }
                 },
-                footer: {
-                    include: {
-                        socialLinks: true
-                    }
-                }
+                footer: true
             }
         });
 
@@ -147,11 +146,7 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                         carousel: true
                     }
                 },
-                footer: {
-                    include: {
-                        socialLinks: true
-                    }
-                }
+                footer: true
             }
         });
 
@@ -172,9 +167,6 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                 });
 
                 if (currentTemplate?.headerId) {
-                    // Log para debug
-                    console.log("Header model being updated to:", data.header.model);
-                    
                     await prisma.templateHeader.update({
                         where: { id: currentTemplate.headerId },
                         data: {
@@ -205,36 +197,8 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                             ...(data.header.carousel && {
                                 carousel: {
                                     upsert: {
-                                        create: {
-                                            enabled: data.header.carousel.enabled,
-                                            title: data.header.carousel.title,
-                                            selectedAuctId: data.header.carousel.selectedAuctId,
-                                            sizeWidth: data.header.carousel.sizeWidth,
-                                            sizeHeight: data.header.carousel.sizeHeight,
-                                            itemsToShow: data.header.carousel.itemsToShow,
-                                            speed: data.header.carousel.speed,
-                                            positionTop: data.header.carousel.positionTop,
-                                            positionLeft: data.header.carousel.positionLeft,
-                                            showTitle: data.header.carousel.showTitle,
-                                            showPrice: data.header.carousel.showPrice,
-                                            showCarouselTitle: data.header.carousel.showCarouselTitle,
-                                            showNavigation: data.header.carousel.showNavigation
-                                        },
-                                        update: {
-                                            enabled: data.header.carousel.enabled,
-                                            title: data.header.carousel.title,
-                                            selectedAuctId: data.header.carousel.selectedAuctId,
-                                            sizeWidth: data.header.carousel.sizeWidth,
-                                            sizeHeight: data.header.carousel.sizeHeight,
-                                            itemsToShow: data.header.carousel.itemsToShow,
-                                            speed: data.header.carousel.speed,
-                                            positionTop: data.header.carousel.positionTop,
-                                            positionLeft: data.header.carousel.positionLeft,
-                                            showTitle: data.header.carousel.showTitle,
-                                            showPrice: data.header.carousel.showPrice,
-                                            showCarouselTitle: data.header.carousel.showCarouselTitle,
-                                            showNavigation: data.header.carousel.showNavigation
-                                        }
+                                        create: data.header.carousel,
+                                        update: data.header.carousel
                                     }
                                 }
                             })
@@ -254,20 +218,32 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                     await prisma.templateFooter.update({
                         where: { id: currentTemplate.footerId },
                         data: {
-                            color: data.footer.color,
-                            sizeType: data.footer.sizeType,
-                            sections: JSON.stringify(data.footer.sections || {}),
-                            companyName: data.footer.companyName,
-                            showSocialLinks: data.footer.showSocialLinks,
-                            textColor: data.footer.textColor,
-                            borderColor: data.footer.borderColor,
-                            elementsOpacity: data.footer.elementsOpacity,
-                            socialLinks: data.footer.socialLinks ? {
-                                upsert: {
-                                    create: data.footer.socialLinks,
-                                    update: data.footer.socialLinks
-                                }
-                            } : undefined
+                            ...(data.footer.color && { color: data.footer.color }),
+                            ...(data.footer.sizeType && { sizeType: data.footer.sizeType }),
+                            ...(data.footer.sections && { 
+                                sections: data.footer.sections.map(section => ({
+                                    title: section.title,
+                                    links: section.links.map(link => ({
+                                        name: link.name,
+                                        url: link.url
+                                    }))
+                                }))
+                            }),
+                            ...(data.footer.companyName && { companyName: data.footer.companyName }),
+                            ...(data.footer.showSocialLinks !== undefined && { 
+                                showSocialLinks: data.footer.showSocialLinks 
+                            }),
+                            ...(data.footer.textColor && { textColor: data.footer.textColor }),
+                            ...(data.footer.borderColor && { borderColor: data.footer.borderColor }),
+                            ...(data.footer.elementsOpacity !== undefined && { 
+                                elementsOpacity: data.footer.elementsOpacity 
+                            }),
+                            ...(data.footer.socialMedia && { 
+                                socialMedia: data.footer.socialMedia.map(social => ({
+                                    type: social.type,
+                                    url: social.url
+                                }))
+                            })
                         }
                     });
                 }
@@ -279,17 +255,19 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                     id: template_id
                 },
                 data: {
-                    colorPalette: data.colorPalette,
-                    fontStyle: data.fontStyle,
-                    sections: data.sections ? {
-                        deleteMany: {},
-                        create: data.sections.map(section => ({
-                            type: section.type,
-                            color: section.color,
-                            sizeType: section.sizeType,
-                            config: section.config as any
-                        }))
-                    } : undefined
+                    ...(data.colorPalette && { colorPalette: data.colorPalette }),
+                    ...(data.fontStyle && { fontStyle: data.fontStyle }),
+                    ...(data.sections && {
+                        sections: {
+                            deleteMany: {},
+                            create: data.sections.map(section => ({
+                                type: section.type,
+                                color: section.color,
+                                sizeType: section.sizeType,
+                                config: section.config as any
+                            }))
+                        }
+                    })
                 },
                 include: {
                     sections: true,
@@ -300,11 +278,7 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                             carousel: true
                         }
                     },
-                    footer: {
-                        include: {
-                            socialLinks: true
-                        }
-                    }
+                    footer: true
                 }
             });
 
@@ -327,11 +301,7 @@ class PrismaTemplateRepositorie implements ITemplateRepositorie {
                             carousel: true
                         }
                     },
-                    footer: {
-                        include: {
-                            socialLinks: true
-                        }
-                    }
+                    footer: true
                 }
             });
 

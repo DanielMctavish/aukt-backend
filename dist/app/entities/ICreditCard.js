@@ -8,3 +8,4 @@ const CardType = {
     Elo: 'Elo',
     DEFAULT: 'DEFAULT'
 };
+//# sourceMappingURL=ICreditCard.js.map

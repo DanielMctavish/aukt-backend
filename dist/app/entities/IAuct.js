@@ -15,3 +15,4 @@ const PaymentMethod = {
     Pix: 'Pix',
     Ticket: 'Ticket'
 };
+//# sourceMappingURL=IAuct.js.map

@@ -8,9 +8,9 @@ export interface TemplateResponse {
 interface IMainTemplate {
     CreateSiteTemplate(data: ISiteTemplate): Promise<TemplateResponse>;
     FindSiteTemplate(data: any, params: { advertiserId: string }): Promise<TemplateResponse>;
-    FindTemplateById(data: any, params: { template_id: string }): Promise<TemplateResponse>;
-    UpdateSiteTemplate(data: Partial<ISiteTemplate>, params: { template_id: string }): Promise<TemplateResponse>;
-    DeleteSiteTemplate(data: any, params: { template_id: string }): Promise<TemplateResponse>;
+    FindTemplateById(data: any, params: { templateId: string }): Promise<TemplateResponse>;
+    UpdateSiteTemplate(data: Partial<ISiteTemplate>, params: { templateId: string }): Promise<TemplateResponse>;
+    DeleteSiteTemplate(data: any, params: { templateId: string }): Promise<TemplateResponse>;
 }
 
 export default IMainTemplate; 

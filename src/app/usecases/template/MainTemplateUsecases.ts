@@ -7,8 +7,8 @@ import { findTemplateById } from "./functions/FindTemplateById";
 import { updateSiteTemplate } from "./functions/UpdateSiteTemplate";
 
 interface params {
-    template_id?: string;
-    advertiserId?: string;
+    templateId: string;
+    advertiserId: string;
 }
 
 class MainTemplateUsecases implements IMainTemplate {
@@ -17,31 +17,25 @@ class MainTemplateUsecases implements IMainTemplate {
     }
 
     FindSiteTemplate(data: any, params: params): Promise<TemplateResponse> {
-        if (!params.advertiserId) {
-            throw new Error("Advertiser ID is required");
-        }
         return findSiteTemplate(params.advertiserId);
     }
 
     FindTemplateById(data: any, params: params): Promise<TemplateResponse> {
-        if (!params.template_id) {
+        if (!params.templateId) {
             throw new Error("Template ID is required");
         }
-        return findTemplateById(params.template_id);
+        return findTemplateById(params.templateId);
     }
 
     UpdateSiteTemplate(data: Partial<ISiteTemplate>, params: params): Promise<TemplateResponse> {
-        if (!params.template_id) {
-            throw new Error("Template ID is required");
-        }
-        return updateSiteTemplate(data, params.template_id);
+        return updateSiteTemplate(data, params.templateId);
     }
 
     DeleteSiteTemplate(data: any, params: params): Promise<TemplateResponse> {
-        if (!params.template_id) {
+        if (!params.templateId) {
             throw new Error("Template ID is required");
         }
-        return deleteSiteTemplate(params.template_id);
+        return deleteSiteTemplate(params.templateId);
     }
 }
 

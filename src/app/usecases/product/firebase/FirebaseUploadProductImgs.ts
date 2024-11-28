@@ -4,48 +4,52 @@ import PrismaProductRepositorie from "../../../repositorie/database/PrismaProduc
 
 const prismaProduct = new PrismaProductRepositorie()
 
-
-
-const firebaseUploadProductsImgs = (product_id: string, Files: Array<FilePhoto>): Promise<ProductResponse> => {
-
-    return new Promise(async (resolve, reject) => {
-
-        try {
-
-            if (!File) return reject({ status_code: 404, body: "Nenhum arquivo enviado" })
-            if (!product_id) return reject({ status_code: 403, body: "Nenhum parametro ID foi enviado" })
-
-            const currentProduct = await prismaProduct.find({product_id})
-            if (!currentProduct) {
-                return reject({ status_code: 404, body: "produto não encontrado" })
-            }
-
-            Files.forEach(async (file) => {
-                if (file.mimetype !== 'image/png'
-                    && file.mimetype !== 'image/jpg'
-                    && file.mimetype !== 'image/jpeg') return reject({ status_code: 500, body: "o arquivo precisa ser uma foto" })
-
-                const fileSizeInMB = file.size / (1024 * 1024);
-                if (fileSizeInMB > 2) {
-                    return reject({ status_code: 500, body: "O arquivo é muito grande, máximo 2MB" })
-                }
-            })
-
-            await uploadMultipleImages('aukt-product-imgs', Files).then(async (images) => {
-
-                console.log("observando Images: ", images)
-
-                await prismaProduct.update({ group_imgs_url: images }, product_id)
-                resolve({ status_code: 201, body: { images } })
-
-            })
-
-        } catch (error: any) {
-            reject({ status_code: 500, body: error.message })
+const firebaseUploadProductsImgs = async (product_id: string, files: Array<FilePhoto>): Promise<ProductResponse> => {
+    try {
+        // Validações iniciais
+        if (!files || files.length === 0) {
+            throw { status_code: 404, body: "Nenhum arquivo enviado" };
         }
 
-    })
+        if (!product_id) {
+            throw { status_code: 403, body: "Nenhum parametro ID foi enviado" };
+        }
 
-}
+        // Verifica se o produto existe
+        const currentProduct = await prismaProduct.find({ product_id });
+        if (!currentProduct) {
+            throw { status_code: 404, body: "Produto não encontrado" };
+        }
+
+        // Valida cada arquivo
+        for (const file of files) {
+            if (file.mimetype !== 'image/png' && 
+                file.mimetype !== 'image/jpg' && 
+                file.mimetype !== 'image/jpeg') {
+                throw { status_code: 500, body: "O arquivo precisa ser uma foto" };
+            }
+
+            const fileSizeInMB = file.size / (1024 * 1024);
+            if (fileSizeInMB > 2) {
+                throw { status_code: 500, body: "O arquivo é muito grande, máximo 2MB" };
+            }
+        }
+
+        // Upload das imagens
+        const images = await uploadMultipleImages('aukt-product-imgs', files);
+        console.log("Imagens enviadas:", images);
+
+        // Atualiza o produto com as novas URLs
+        await prismaProduct.update({ group_imgs_url: images }, product_id);
+        
+        return { status_code: 201, body: { images } };
+
+    } catch (error: any) {
+        return { 
+            status_code: error.status_code || 500, 
+            body: error.message || error.body || "Erro interno do servidor" 
+        };
+    }
+};
 
 export default firebaseUploadProductsImgs;

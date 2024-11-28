@@ -134,32 +134,29 @@ interface ITemplateHeader {
     carousel?: IHeaderCarousel;
 }
 
-interface ISocialLinks {
-    facebook: string;
-    twitter: string;
-    instagram: string;
-    linkedin: string;
-}
-
-// Adicionando interface para seções do footer
 interface IFooterSection {
     title: string;
     links: Array<{
-        label: string;
+        name: string;  // Mudando de label para name
         url: string;
     }>;
+}
+
+interface ISocialMedia {
+    type: string;     // tipo da rede social (facebook, instagram, etc)
+    url: string;      // URL do perfil
 }
 
 interface ITemplateFooter {
     color: string;
     sizeType: SizeType;
-    sections?: Record<string, IFooterSection>; // Mudando para um objeto de seções
-    socialLinks: ISocialLinks;
     companyName: string;
     showSocialLinks: boolean;
     textColor: string;
     borderColor: string;
     elementsOpacity: number;
+    sections: IFooterSection[];  // Mudando para array ao invés de Record
+    socialMedia: ISocialMedia[]; // Adicionando array de redes sociais
 }
 
 interface ISiteTemplate {
@@ -184,6 +181,5 @@ export {
     ITemplateFooter,
     IHeaderText,
     IHeaderCarousel,
-    ISocialLinks,
-    IFooterSection // Exportando nova interface
+    IFooterSection 
 };

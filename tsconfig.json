@@ -2,7 +2,8 @@
   "compilerOptions": {
     /* Language and Environment */
     "resolveJsonModule": true,
-    "target": "es2016",
+    "target": "es2017",
+    "lib": ["es2017", "esnext.asynciterable"],
     /* Modules */
     "module": "commonjs",
     "outDir": "./dist",
@@ -10,7 +11,22 @@
     "forceConsistentCasingInFileNames": true,
     /* Type Checking */
     "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    /* Module Resolution */
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "*": ["node_modules/*", "src/types/*"]
+    },
+    /* Experimental Features */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     /* Completeness */
-    "skipLibCheck": true /* Skip type checking all .d.ts files. */
-  }
+    "skipLibCheck": true,
+    /* Source Maps */
+    "sourceMap": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
