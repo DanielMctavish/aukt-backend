@@ -24,9 +24,9 @@ const firebaseUploadProductCover = (product_id: string, File: FilePhoto): Promis
                 return reject({ status_code: 404, body: "produto não encontrado" })
             }
 
-            const fileSizeInMB = File.size / (1024 * 1024);
+            const fileSizeInMB = File.size / (2048 * 2048);
             if (fileSizeInMB > 2) {
-                return reject({ status_code: 500, body: "O arquivo é muito grande, máximo 2MB" })
+                return reject({ status_code: 500, body: "O arquivo é muito grande, máximo 4MB" })
             }
 
             const currentImage = await uploadSingleImage('aukt-product-cover', File)

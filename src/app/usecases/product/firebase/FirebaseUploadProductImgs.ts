@@ -29,9 +29,9 @@ const firebaseUploadProductsImgs = async (product_id: string, files: Array<FileP
                 throw { status_code: 500, body: "O arquivo precisa ser uma foto" };
             }
 
-            const fileSizeInMB = file.size / (1024 * 1024);
+            const fileSizeInMB = file.size / (2048 * 2048);
             if (fileSizeInMB > 2) {
-                throw { status_code: 500, body: "O arquivo é muito grande, máximo 2MB" };
+                throw { status_code: 500, body: "O arquivo é muito grande, máximo 4MB" };
             }
         }
 
