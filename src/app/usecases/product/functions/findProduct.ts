@@ -8,6 +8,9 @@ export const findProduct = (params: IParams): Promise<ProductResponse> => {
     return new Promise(async (resolve, reject) => {
 
         try {
+            if (!params.product_id) {
+                return reject({ status_code: 400, body: 'product_id is required' })
+            }
 
             const currentProduct = await prismaProducts.find(params)
 

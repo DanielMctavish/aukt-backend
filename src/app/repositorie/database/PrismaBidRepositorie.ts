@@ -29,7 +29,18 @@ class PrismaBidRepositorie implements IBidRepositorie {
         const currentBid = await prisma.bid.create({
             data: baseData,
             include: {
-                Product: true,
+                Product: {
+                    include:{
+                        Bid: {
+                            orderBy: {
+                                created_at: "desc"
+                            },
+                            include: {
+                                Client: true
+                            }
+                        }
+                    }
+                },
                 Auct: true,
                 Client: true
             }
