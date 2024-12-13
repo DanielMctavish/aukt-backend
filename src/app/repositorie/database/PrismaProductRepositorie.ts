@@ -123,7 +123,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
             orderBy: [
                 { created_at: "asc" },
                 { lote: "asc" },
-            ], take: 3
+            ], take: 60
         });
 
         return products.map((product) => product as IProduct);
