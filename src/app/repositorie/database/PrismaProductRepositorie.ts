@@ -123,7 +123,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
             orderBy: [
                 { created_at: "asc" },
                 { lote: "asc" },
-            ], take: 60
+            ], take: 70
         });
 
         return products.map((product) => product as IProduct);
@@ -131,54 +131,159 @@ class PrismaProductRepositorie implements IProductRepositorie {
     }
 
     async list(params: Partial<IParams>): Promise<IProduct[]> {
+        try {
+            const {
+                categorie,
+                group,
+                auct_id,
+                advertiser_id,
+                bid_count_order,
+                lote_order,
+                initial_value_order,
+                created_at_order,
+                take,
+                skip,
+                min_initial_value,
+                max_initial_value,
+                has_winner,
+                has_bids,
+                highlight_only,
+                min_width,
+                max_width,
+                description_contains,
+                created_after,
+                created_before,
+                categories,
+                groups
+            } = params;
 
-        const { categorie, group, auct_id, bid_count_order, lote_order, initial_value_order, take, skip, creator_id } = params
+            let whereFiltered: any = {};
 
-        let whereFiltered: any = { };
+            // Filtros existentes
+            
+            if (advertiser_id) {
+                whereFiltered.advertiser_id = advertiser_id;
+            }
+            if (categorie) {
+                whereFiltered.categorie = categorie;
+            }
+            if (group) {
+                whereFiltered.group = group;
+            }
+            if (auct_id) {
+                whereFiltered.auct_id = auct_id;
+            }
 
+            // Novos filtros
+            if (min_initial_value !== undefined) {
+                whereFiltered.initial_value = {
+                    ...whereFiltered.initial_value,
+                    gte: Number(min_initial_value)
+                };
+            }
+            if (max_initial_value !== undefined) {
+                whereFiltered.initial_value = {
+                    ...whereFiltered.initial_value,
+                    lte: Number(max_initial_value)
+                };
+            }
 
-        if (creator_id) {
-            whereFiltered.advertiser_id = creator_id
-        }
+            // Filtro de vencedor
+            if (has_winner !== undefined) {
+                whereFiltered.winner_id = has_winner ? { not: null } : null;
+            }
 
-        if (categorie) {
-            whereFiltered.categorie = categorie;
-        }
+            // Filtro de lances
+            if (has_bids !== undefined) {
+                whereFiltered.Bid = has_bids ? { some: {} } : { none: {} };
+            }
 
-        if (group) {
-            whereFiltered.group = group;
-        }
+            // Filtro de destaque
+            if (highlight_only) {
+                whereFiltered.highlight_product = true;
+            }
 
-        if (auct_id) {
-            whereFiltered.auct_id = auct_id;
-        }
+            // Filtros de dimensões
+            if (min_width !== undefined) {
+                whereFiltered.width = { gte: min_width };
+            }
+            if (max_width !== undefined) {
+                whereFiltered.width = { ...whereFiltered.width, lte: max_width };
+            }
 
-        let orderBy: any = undefined;
+            // Filtro de descrição
+            if (description_contains) {
+                whereFiltered.description = {
+                    contains: description_contains,
+                    mode: 'insensitive'
+                };
+            }
 
-        if (bid_count_order !== undefined) {
-            orderBy = {
-                Bid: {
-                    _count: bid_count_order.toString() === "true" ? 'desc' : 'asc'
+            // Filtros de data
+            if (created_after) {
+                whereFiltered.created_at = {
+                    ...whereFiltered.created_at,
+                    gte: new Date(created_after)
+                };
+            }
+            if (created_before) {
+                whereFiltered.created_at = {
+                    ...whereFiltered.created_at,
+                    lte: new Date(created_before)
+                };
+            }
+
+            // Filtros de múltiplos valores
+            if (categories?.length) {
+                whereFiltered.categorie = { in: categories };
+            }
+            if (groups?.length) {
+                whereFiltered.group = { in: groups };
+            }
+
+            // Ordenação
+            let orderBy: any = { created_at: 'desc' };
+
+            if (initial_value_order) {
+                orderBy = { 
+                    initial_value: initial_value_order.toLowerCase()
+                };
+            } else if (bid_count_order) {
+                orderBy = {
+                    Bid: {
+                        _count: bid_count_order.toLowerCase()
+                    }
+                };
+            } else if (lote_order) {
+                orderBy = { 
+                    lote: lote_order.toLowerCase() 
+                };
+            } else if (created_at_order) {
+                orderBy = { 
+                    created_at: created_at_order.toLowerCase() 
+                };
+            }
+
+            console.log('Ordenação aplicada:', orderBy);
+
+            const products = await prisma.product.findMany({
+                where: whereFiltered,
+                orderBy,
+                take: take ? parseInt(take) : 12,
+                skip: skip ? parseInt(skip) : 0,
+                include: {
+                    Advertiser: true,
+                    Auct: true,
+                    Bid: true,
+                    Winner: true
                 }
-            };
-        } else if (lote_order) {
-            orderBy = { lote: lote_order };
-        } else if (initial_value_order) {
-            orderBy = { initial_value: initial_value_order };
-        } else {
-            orderBy = { created_at: 'desc' };
+            });
+
+            return products.map((product) => product as IProduct);
+        } catch (error) {
+            console.error("Error in list products:", error);
+            throw error;
         }
-
-        const isTake = take ? parseInt(take) : 12
-
-        const products = await prisma.product.findMany({
-            where: whereFiltered,
-            orderBy: orderBy,
-            take: isTake,
-            skip: skip ? parseInt(skip) : 0
-        });
-
-        return products.map((product) => product as IProduct);
     }
 
 
