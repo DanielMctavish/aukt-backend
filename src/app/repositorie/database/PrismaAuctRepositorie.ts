@@ -155,7 +155,11 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                     public: true
                 },
                 include: {
-                    product_list: true,
+                    product_list: {
+                        include: {
+                            Bid: true
+                        }
+                    },
                     Advertiser: true,
                     auct_dates: true
                 },
