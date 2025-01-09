@@ -17,12 +17,14 @@ import { subscribedAuct } from "./functions/SubscribedAuct";
 import { updateClient } from "./functions/UpdateClient";
 import { updateBid } from "./functions/UpdateBid";
 
+
 interface params {
     bid_id: string;
     auct_id: string
     client_id: string
     email: string
     value: number
+    bidInCataloge?:boolean
 }
 
 class MainClientUsecases implements IMainClient {
@@ -53,8 +55,8 @@ class MainClientUsecases implements IMainClient {
 
     // AUCT OPERATIONS..................................................................
 
-    async BidAuct(data: IBid): Promise<ClientResponse> {
-        return bidAuct(data)
+    async BidAuct(data: IBid, params?:params): Promise<ClientResponse> {
+        return bidAuct(data, params?.bidInCataloge)
     }
 
     async FindBid(data: any, params: params): Promise<ClientResponse> {

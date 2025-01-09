@@ -370,6 +370,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
         });
         return count;
     }
+
 }
 
 export default PrismaProductRepositorie

@@ -10,6 +10,7 @@ export interface AuctResponse {
 interface params {
     auct_id: string
     creator_id: string
+    client_id:string
     nano_id: string
     status: any
 }

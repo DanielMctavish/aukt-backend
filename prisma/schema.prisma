@@ -152,6 +152,7 @@ model Product {
   categorie         String
   initial_value     Int
   reserve_value     Int
+  real_value        Int
   width             Int
   height            Int
   weight            Float

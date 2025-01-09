@@ -4,6 +4,15 @@ import { IAuct } from "../../entities/IAuct";
 
 const prisma = new PrismaClient();
 
+interface params {
+    auct_id: string
+    creator_id?: string
+    client_id: string
+    url: string
+    nano_id: string
+    status: any
+}
+
 class PrismaAuctRepositorie implements IAuctRepositorie {
 
     async create(data: IAuct): Promise<IAuct | null> {
@@ -104,19 +113,43 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
 
     }
 
-    async list(creator_id: string): Promise<IAuct[]> {
+
+    async list(params: params): Promise<IAuct[]> {
 
         try {
+            // Construindo o objeto where dinamicamente
+            const where: any = {};
+
+            if (params.client_id) {
+                where.product_list = {
+                    some: {
+                        Bid: {
+                            some: {
+                                client_id: params.client_id
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Adiciona creator_id ao where apenas se ele existir
+            if (params.creator_id) {
+                where.advertiser_id = params.creator_id;
+            }
+
             const aucts = await prisma.auct.findMany({
-                where: {
-                    advertiser_id: creator_id
-                }, include: {
+                where,
+                include: {
                     product_list: {
                         select: {
                             Winner: true,
                             title: true,
                             auct_nanoid: true,
-                            Bid: true,
+                            Bid: {
+                                include: {
+                                    Client: true
+                                }
+                            },
                             group: true,
                             group_imgs_url: true,
                             lote: true,
@@ -135,15 +168,16 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                     },
                     Advertiser: true,
                     auct_dates: true
-                }, orderBy: {
+                },
+                orderBy: {
                     created_at: "asc"
                 }
             });
             return aucts as IAuct[];
         } catch (error) {
+            console.error("Erro ao listar leilões:", error);
             return [];
         }
-
     }
 
     async listByStatus(status: any): Promise<IAuct[]> {

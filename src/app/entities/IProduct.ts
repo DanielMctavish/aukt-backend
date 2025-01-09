@@ -20,6 +20,7 @@ export interface IProduct {
     title: string
     description: string
     categorie: string
+    real_value:number
     initial_value: number
     reserve_value: number
     width: number

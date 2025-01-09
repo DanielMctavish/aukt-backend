@@ -15,6 +15,7 @@ import firebaseUploadAuctCover from "./functions/firebase/FirebaseUploadAuctCove
 interface params {
     auct_id: string
     creator_id: string
+    client_id:string
     url: string
     nano_id: string
     status: any
@@ -31,7 +32,7 @@ class MainAuctUsecases implements IMainAuct {
         return findAuctByNanoId(params.nano_id)
     }
     ListAuct(data: any, params: params): Promise<AuctResponse> {
-        return listAuct(params.creator_id)
+        return listAuct(params)
     }
     ListAuctByStatus(data: any, params: params): Promise<AuctResponse> {
         return listAuctByStatus(params.status)

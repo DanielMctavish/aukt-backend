@@ -30,7 +30,7 @@ const createCartela = async (data: ICartela): Promise<CartelaResponse> => {
 
             //TODO: lembrar de subtrair o valor da comissão do saldo do advertiser
 
-            const currentAdmin = await prismaAdmin.find("cm1ka40so0000sabt4jmazeaz")
+            const currentAdmin = await prismaAdmin.find("cm5l2af0e0000unb30anlp8xm")
             currentAdmin && await prismaAdmin.update({
                 balance: (currentAdmin.balance ? currentAdmin.balance : 0) + commission
             }, currentAdmin?.id);
