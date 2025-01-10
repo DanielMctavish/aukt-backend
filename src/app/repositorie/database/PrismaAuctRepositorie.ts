@@ -157,6 +157,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                             categorie: true,
                             created_at: true,
                             description: true,
+                            real_value:true,
                             initial_value: true,
                             reserve_value: true,
                             cover_img_url: true,
