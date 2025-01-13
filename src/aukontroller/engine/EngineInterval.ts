@@ -93,7 +93,7 @@ export const EngineInterval = async (
             console.log("Lance recebido no intervalEngine: ", data);
 
             const timerRemainings = currentAuct.product_timer_seconds - localCount;
-            if (timerRemainings <= 5) {
+            if (timerRemainings <= 6) {
                 localCount -= 3;
                 await setAukSocket({ timer: localCount });
             }

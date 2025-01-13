@@ -18,8 +18,6 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
     // Garantindo que bidInCataloge seja sempre um booleano, mesmo quando vier como string
     const isBidInCataloge = bidInCataloge === true || bidInCataloge === 'true';
 
-    console.log("observando produto atual -> ", data.product_id)
-
     return new Promise(async (resolve, reject) => {
         try {
             if (!currentProduct) {
@@ -31,24 +29,23 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
             }
 
             // Buscar o último lance para ter o valor mais atualizado
-            const lastBid = currentProduct.Bid?.[0];
-            const currentValue = lastBid ? lastBid.value : currentProduct.real_value;
+
             const dataValue = data.value;
             const initialValue = currentProduct.initial_value;
 
             // Verificação do valor inicial primeiro (esse valor nunca muda)
-            if (dataValue <= initialValue) {
+            if (!currentProduct.real_value && dataValue < initialValue) {
                 return resolve({
                     status_code: 400,
-                    body: `value must be > ${initialValue} (initial value)`
+                    body: `value must be = or > ${initialValue} (initial value)`
                 });
             }
 
             // Depois verifica o valor atual (real_value ou último lance)
-            if (dataValue <= currentValue) {
+            if (dataValue <= currentProduct.real_value) {
                 return resolve({
                     status_code: 400,
-                    body: `value must be > ${currentValue} (current value)`
+                    body: `value must be > ${currentProduct.real_value} (current value/real_value)`
                 });
             }
 
