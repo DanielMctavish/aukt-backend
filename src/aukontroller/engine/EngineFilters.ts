@@ -21,12 +21,10 @@ export const EngineFilters = async (
     await prismaAuct.update({ status: "live" }, currentAuct.id);
 
     if (!filteredProducts || filteredProducts.length === 0) {
-        console.log("No filtered products found.");
         return resolve(null);
     }
 
     // Logs para verificar o que está acontecendo
-    console.log("01 - Current Product Index: ", currentProductIndex);
 
     async function findIndexAsync<T>(
         array: T[],
@@ -44,8 +42,6 @@ export const EngineFilters = async (
         const index = await findIndexAsync(filteredProducts, async (product) => {
             return product.id === resume_product_id;
         }) + 1;
-
-        console.log("02 Observando INDEX -> ", index);
 
         await setAukSocket({
             nextProductIndex: index

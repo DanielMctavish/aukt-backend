@@ -6,8 +6,7 @@ import { IAdvertiser } from "../../../entities/IAdvertiser";
 const prismaAdvertiser = new PrismaAdvertiserRepositorie();
 
 export const updateAdvertiser = (data: Partial<IAdvertiser>, advertiserId: string): Promise<AdvertiserResponse> => {
-    console.log("update advertiser --> ", data, advertiserId);
-
+    
     return new Promise(async (resolve, reject) => {
         try {
             // Validar se o ID foi fornecido

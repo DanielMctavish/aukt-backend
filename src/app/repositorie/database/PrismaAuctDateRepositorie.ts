@@ -18,6 +18,14 @@ class PrismaAuctDateRepositorie {
         return updatedGroupDate as AuctDateGroups
     }
 
+    async deleteMany(auct_id: string): Promise<void> {
+        await prisma.auctDateGroups.deleteMany({
+            where: {
+                auctId: auct_id
+            }
+        })
+    }
+
 }
 
 export default PrismaAuctDateRepositorie;

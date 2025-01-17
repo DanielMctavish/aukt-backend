@@ -8,9 +8,6 @@ export const updateAdmin = (data: IAdmin, admin_id: string): Promise<Administrat
 
     return new Promise(async (resolve, reject) => {
 
-        console.log('dentro do usecase -> ', data, admin_id);
-
-
         try {
 
             const currentAdm = await prismaAdm.update(data, admin_id)

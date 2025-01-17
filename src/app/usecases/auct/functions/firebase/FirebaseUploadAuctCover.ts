@@ -3,7 +3,6 @@ import { AuctResponse } from "../../../IMainAuct"
 
 
 const firebaseUploadAuctCover = (user_id: string, File: FilePhoto): Promise<AuctResponse> => {
-    //console.log('dentro da função de upload --> ', File);
 
     return new Promise(async (resolve, reject) => {
         try {

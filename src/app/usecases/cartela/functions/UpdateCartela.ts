@@ -18,7 +18,6 @@ const updateCartela = async (data: ICartela, cartela_id: string): Promise<Cartel
             })
 
         } catch (error: any) {
-            console.log("error at try... ", error.message)
             reject({
                 status_code: 500,
                 body: {

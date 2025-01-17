@@ -40,7 +40,6 @@ export const createAuct = (data: IAuct): Promise<AuctResponse> => {
             resolve({ status_code: 201, body: { ...currentAuct } });
 
         } catch (error: any) {
-            console.log("Erro na função createAuct:", error);
             reject({ status_code: 500, body: error.message });
         }
     });

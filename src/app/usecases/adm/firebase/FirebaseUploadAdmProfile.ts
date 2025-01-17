@@ -5,7 +5,6 @@ const prismaAdm = new PrismaAdminRepositorie()
 
 
 const firebaseUploadAdmProfile = (admin_id: string, File: FilePhoto): Promise<AdvertiserResponse> => {
-    //console.log('dentro da função de upload --> ', File);
 
     return new Promise(async (resolve, reject) => {
 

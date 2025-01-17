@@ -49,6 +49,13 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
                 });
             }
 
+            if(currentProduct.winner_id){
+                return resolve({
+                    status_code: 400,
+                    body: `Product already has a winner`
+                });
+            }
+
             // Verificação e atualização do anunciante
             const currentAdvertiser = currentProduct.advertiser_id
                 ? await prismaAdvertiser.find(currentProduct.advertiser_id)
@@ -77,7 +84,6 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
                 // Processamento dos lances automáticos
                 const allBids = currentProduct.Bid || [];
 
-                console.log("observando cover_auto -> ", data.cover_auto)
 
                 if (data.cover_auto) {
                     for (const bid of allBids) {

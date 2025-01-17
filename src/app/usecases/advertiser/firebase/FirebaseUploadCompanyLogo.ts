@@ -4,7 +4,7 @@ import PrismaAdvertiserRepositorie from "../../../repositorie/database/PrismaAdv
 const prismaAdvertiser = new PrismaAdvertiserRepositorie()
 
 const firebaseUploadCompanyLogo = (advertiser_id: string, File: FilePhoto): Promise<AdvertiserResponse> => {
-    //console.log('dentro da função de upload --> ', File);
+  
     return new Promise(async (resolve, reject) => {
         try {
             if (!File) return reject({ status_code: 404, body: "Nenhum arquivo enviado" })

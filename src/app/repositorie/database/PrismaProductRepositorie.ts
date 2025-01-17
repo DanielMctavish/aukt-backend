@@ -111,8 +111,6 @@ class PrismaProductRepositorie implements IProductRepositorie {
 
     async findByTitle(title: string): Promise<IProduct[]> {
 
-        console.log("obs param title -> ", title)
-
         const products = await prisma.product.findMany({
             where: {
                 title: {
@@ -264,7 +262,6 @@ class PrismaProductRepositorie implements IProductRepositorie {
                 };
             }
 
-            console.log('Ordenação aplicada:', orderBy);
 
             const products = await prisma.product.findMany({
                 where: whereFiltered,

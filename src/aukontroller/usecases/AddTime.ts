@@ -9,7 +9,6 @@ async function addTime(auct_id: string, time_seconds: number)
 
     return new Promise(async (resolve) => {
 
-        console.log("observando socket -> ", auk_sockets)
 
         const currentCount = auk_sockets?.timer
         const currentProductId = auk_sockets?.product_id

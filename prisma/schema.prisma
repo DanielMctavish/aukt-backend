@@ -99,7 +99,7 @@ model Auct {
   client_id                 String?
   subscribed_clients        Client[]
   Bids                      Bid[]
-  Cartelas                  Cartela[]
+  Cartelas                  Cartela[] 
   title                     String
   tags                      String[]
   auct_cover_img            String
@@ -198,15 +198,17 @@ model Cartela {
 }
 
 model Transaction {
-  id              String        @id @default(cuid())
-  amount          Float
-  Advertiser      Advertiser    @relation(fields: [advertiser_id], references: [id])
-  advertiser_id   String
-  auction_cartela Cartela?      @relation("CartelaToTransaction", fields: [cartela_id], references: [id])
-  cartela_id      String?       @unique
-  payment_method  PaymentMethod
-  created_at      DateTime      @default(now())
-  updated_at      DateTime      @updatedAt
+  id                  String        @id @default(cuid())
+  amount              Float
+  advertiser_earnings Float?
+  admin_earnings      Float?
+  Advertiser          Advertiser    @relation(fields: [advertiser_id], references: [id])
+  advertiser_id       String
+  auction_cartela     Cartela?      @relation("CartelaToTransaction", fields: [cartela_id], references: [id])
+  cartela_id          String?       @unique
+  payment_method      PaymentMethod
+  created_at          DateTime      @default(now())
+  updated_at          DateTime      @updatedAt
 }
 
 enum CartelaStatus {
@@ -283,7 +285,7 @@ model TemplateHeader {
   id                        String          @id @default(uuid())
   color                     String
   sizeType                  SizeType
-  model                     HeaderModel     
+  model                     HeaderModel
   backgroundImage           String?
   backgroundImageOpacity    Float
   backgroundImageBlur       Int
@@ -337,7 +339,7 @@ model HeaderCarousel {
 }
 
 model TemplateFooter {
-  id              String          @id @default(uuid())
+  id              String        @id @default(uuid())
   color           String
   sizeType        SizeType
   companyName     String
@@ -345,11 +347,11 @@ model TemplateFooter {
   textColor       String
   borderColor     String
   elementsOpacity Float
-  sections        Json[]          // Alterado para array de seções
-  socialMedia     Json[]          // Novo campo para redes sociais
+  sections        Json[] // Alterado para array de seções
+  socialMedia     Json[] // Novo campo para redes sociais
   siteTemplate    SiteTemplate?
-  created_at      DateTime        @default(now())
-  updated_at      DateTime        @updatedAt
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
 }
 
 model TemplateSection {

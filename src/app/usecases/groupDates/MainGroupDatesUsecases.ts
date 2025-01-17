@@ -8,7 +8,6 @@ interface params {
 
 class MainGroupDatesUsecases implements IMainGroupDates {
     ChangeGroupDatesStatus(data: AuctDateGroups, params: params): Promise<GroupDatesResponse> {
-        console.log("observando ID -> ", params.auct_date_id)
         return ChangeGroupDatesStatus(data, params.auct_date_id);
     }
 }

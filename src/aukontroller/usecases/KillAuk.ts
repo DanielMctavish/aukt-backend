@@ -7,7 +7,6 @@ const prismaAuct = new PrismaAuctRepositorie();
 
 async function killAuk(auct_id: string): Promise<Partial<IEngineFloorStatus>> {
     return new Promise(async (resolve) => {
-        console.log("Received auct_id:", auct_id);
 
         const currentSocketAuk = getAukSocket();
         clearInterval(currentSocketAuk.interval);

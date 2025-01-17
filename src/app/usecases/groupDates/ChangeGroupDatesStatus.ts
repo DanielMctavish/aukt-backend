@@ -32,7 +32,6 @@ const ChangeGroupDatesStatus = async (data: AuctDateGroups, date_group_id: strin
             resolve({ status_code: 200, body: { ...updatedGroup } });
 
         } catch (error: any) {
-            console.log("Erro na função ChangeGroupDatesStatus:", error);
             reject({ status_code: 500, body: error.message });
         }
     });

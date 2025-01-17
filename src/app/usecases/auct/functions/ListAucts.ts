@@ -17,7 +17,6 @@ interface params {
 
 export const listAuct = (params:params): Promise<AuctResponse> => {
 
-    console.log("listagem... -> ", params)
 
     return new Promise(async (resolve, reject) => {
         try {

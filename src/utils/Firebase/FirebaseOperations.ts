@@ -61,14 +61,29 @@ export async function uploadMultipleImages(folderType: string, files: Array<File
 
 
 export async function deleteSingleImage(url: string) {
+    
     try {
-        const currentUrlFile = bucket.file(url.replace(`https://storage.googleapis.com/${bucket.name}/`, ''));
-        const currentUrl = await currentUrlFile.delete();
-        return { msg: 'imagem excluída', currentUrl }
+        // Remove a parte inicial da URL até o nome do bucket
+        const urlParts = url.split('auk-plataform.appspot.com/');
+        if (urlParts.length < 2) {
+            console.log('URL inválida:', url);
+            return;
+        }
+
+        const filePath = urlParts[1]; // Pega apenas o caminho do arquivo
+        const currentUrlFile = bucket.file(filePath);
+        
+        await currentUrlFile.delete();
+        return { msg: 'imagem excluída' };
     } catch (error: any) {
+        // Se o arquivo não existir, apenas retorna silenciosamente
+        if (error.code === 404 || error.message.includes('No such object')) {
+            return;
+        }
+        // Para outros tipos de erro, loga e continua
         console.error('Erro ao excluir a imagem:', error.message);
-        throw error;
     }
+    
 }
 
 

@@ -41,7 +41,6 @@ const createCartela = async (data: ICartela): Promise<CartelaResponse> => {
             })
 
         } catch (error: any) {
-            console.log(error)
             reject({
                 status_code: 500,
                 body: {

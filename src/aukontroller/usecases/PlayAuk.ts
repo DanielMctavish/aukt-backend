@@ -79,12 +79,6 @@ async function playAuk(
         });
 
         EngineMaster(currentAuct, group, socket_message, resume_count, resume_product_id)
-            .then(() => {
-                console.log("Leilão finalizado");
-            })
-            .catch((error) => {
-                console.error("Erro durante a execução do leilão:", error);
-            });
 
         resolve({
             response: {

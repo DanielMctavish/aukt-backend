@@ -13,7 +13,6 @@ async function pauseAuk(auct_id: string): Promise<Partial<IEngineFloorStatus>> {
         const currentAuction = await prismaAukt.find(auct_id);
 
         const currentAukSocket = getAukSocket()
-        console.log("dentro do PAUSE -> ", currentAukSocket)
 
         if (currentAuction?.status === "paused" || currentAuction?.status === "cataloged") {
             return resolve({

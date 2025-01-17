@@ -5,6 +5,8 @@ import { ICartela } from "./ICartela"
 interface ITransaction {
     id: string
     amount: number
+    advertiser_earnings?: number
+    admin_earnings?: number
     advertiser: IAdvertiser
     advertiser_id: string
     auction_cartela?: ICartela

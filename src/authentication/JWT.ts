@@ -17,12 +17,9 @@ export const generatedToken = async (email:string) => {
                 expiresIn: '48h',
             });
 
-            //console.log('função que gera token', email, token);
-
         return token
 
     } catch (error: any) {
-        //console.log('observando erro --> ', error);
         
         return error
     }

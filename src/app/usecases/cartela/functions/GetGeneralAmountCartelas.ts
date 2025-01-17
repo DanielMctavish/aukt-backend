@@ -13,7 +13,6 @@ const getGeneralAmountCartelas = async (): Promise<CartelaResponse> => {
                 body: { totalAmount }
             })
         } catch (error: any) {
-            console.log(error)
             reject({
                 status_code: 500,
                 body: {

@@ -9,9 +9,7 @@ import { setAukSocket, getAukSocket } from "./EngineSocket";
 const websocketUrl = process.env.WS_WEBSOCKET_CONNECTION;
 const socket = io(websocketUrl);
 
-socket.on('connect', () => {
-    console.log('Conectado ao servidor Socket.IO');
-});
+socket.on('connect', () => {});
 
 export const EngineInterval = async (
     resolve: any,
@@ -74,12 +72,11 @@ export const EngineInterval = async (
                 }
 
                 await WinnerEngine(currentAuct.id, filterResponse.id);
-                console.log("Antes de atualizar o índice:", currentSocketAuk.nextProductIndex);
+              
                 const nextIndex = (currentSocketAuk.nextProductIndex ?? 0) + 1;
                 await setAukSocket({
                     nextProductIndex: nextIndex
                 });
-                console.log("Após atualizar o índice:", nextIndex);
                 
                 return intervalResolve({ auct_id: currentAuct.id, nextProductIndex: nextIndex });
             }
@@ -90,7 +87,6 @@ export const EngineInterval = async (
         intervalId = setInterval(runInterval, 1000);
 
         socket.on(`${currentAuct.id}-bid`, async (data) => {
-            console.log("Lance recebido no intervalEngine: ", data);
 
             const timerRemainings = currentAuct.product_timer_seconds - localCount;
             if (timerRemainings <= 6) {

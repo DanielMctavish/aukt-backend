@@ -22,7 +22,7 @@ const firebaseDeleteAuctCover = (params: params): Promise<AuctResponse> => {
             resolve({ status_code: 200, body: { currentImage } })
 
         } catch (error: any) {
-            reject({ status_code: 500, body: error.message })
+            reject({ status_code: 500, body: error })
         }
 
     })

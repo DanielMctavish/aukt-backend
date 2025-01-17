@@ -37,7 +37,6 @@ const firebaseUploadProductsImgs = async (product_id: string, files: Array<FileP
 
         // Upload das imagens
         const images = await uploadMultipleImages('aukt-product-imgs', files);
-        console.log("Imagens enviadas:", images);
 
         // Atualiza o produto com as novas URLs
         await prismaProduct.update({ group_imgs_url: images }, product_id);

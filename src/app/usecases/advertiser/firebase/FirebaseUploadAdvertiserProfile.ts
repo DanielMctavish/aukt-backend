@@ -6,7 +6,6 @@ const prismaAdvertiser = new PrismaAdvertiserRepositorie()
 
 
 const firebaseUploadAdvertiserProfile = (advertiserId: string, File: FilePhoto): Promise<AdvertiserResponse> => {
-    //console.log('dentro da função de upload --> ', File);
 
     return new Promise(async (resolve, reject) => {
         try {

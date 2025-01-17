@@ -10,7 +10,6 @@ function WinnerEngine(auct_id: string, product_id: string) {
     const currentSocketAukt = getAukSocket();
 
     return new Promise(async (resolve) => {
-        console.log("Winner started");
 
         try {
             const currentProduct = await prismaProduct.find({ product_id });
@@ -43,7 +42,7 @@ function WinnerEngine(auct_id: string, product_id: string) {
         }
 
         setTimeout(async () => {
-            console.log("Winner time out!", currentSocketAukt);
+    
             const socket_message = `${auct_id}-playing-auction`;
             const currentAuct = await prismaAuk.find(auct_id);
 

@@ -12,7 +12,6 @@ const resetAukSockets = () => {
 const setAukSocket = (data: Partial<IEngineFloorStatus>): Promise<Partial<IEngineFloorStatus>> => {
     return new Promise((resolve) => {
         if (data.nextProductIndex !== undefined) {
-            console.log("DENTRO DO setAukSocket (nextIndex): ", data.nextProductIndex);
             auk_sockets.nextProductIndex = data.nextProductIndex;
         }
 

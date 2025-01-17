@@ -66,10 +66,8 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                 }
             });
 
-            console.log("Leilão criado com sucesso:", createdAuct);
             return createdAuct as IAuct;
         } catch (error) {
-            console.log("Erro ao criar leilão:", error);
             return null;
         }
     }
@@ -272,7 +270,6 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                     id,
                 },
             }).then(deletedAuct => {
-                console.log('Leilão deletado com sucesso:', deletedAuct);
                 resolve(deletedAuct as IAuct);
             }).catch(error => {
                 reject(`erro ao tentar deletar leilão: ${error.message}`);

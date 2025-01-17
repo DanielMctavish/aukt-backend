@@ -8,7 +8,6 @@ const prismaAuct = new PrismaAuctRepositorie();
 const prismaAuctDate = new PrismaAuctDateRepositorie();
 
 export const EngineFinished = async (resolve: any, currentAuct: IAuct, group: string) => {
-    console.log("Fim do leilão!");
 
     // Atualizando o status do grupo específico
     const groupToUpdate = await prismaAuct.find(currentAuct.id);
