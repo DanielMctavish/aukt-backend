@@ -391,10 +391,12 @@ model ConfigSection {
 }
 
 enum SectionType {
-  GALLERY
-  TEXT
+  PRODUCT_CAROUSEL
   FORM
+  GALLERY
   AUCT_LIST
+  TEXT
+  TESTIMONIALS
 }
 
 enum SizeType {
