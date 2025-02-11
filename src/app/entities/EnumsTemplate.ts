@@ -6,7 +6,16 @@ export const HeaderModel = {
     MODEL_5: 'MODEL_5',
     MODEL_6: 'MODEL_6',
     MODEL_7: 'MODEL_7',
-    MODEL_8: 'MODEL_8'
+    MODEL_8: 'MODEL_8',
+    MODEL_9: 'MODEL_9',
+    MODEL_10: 'MODEL_10',
+    MODEL_11: 'MODEL_11',
+    MODEL_12: 'MODEL_12',
+    MODEL_13: 'MODEL_13',
+    MODEL_14: 'MODEL_14',
+    MODEL_15: 'MODEL_15',
+    MODEL_16: 'MODEL_16',
+    MODEL_17: 'MODEL_17',
 } as const;
 
 export const SectionType = {

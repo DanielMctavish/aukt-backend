@@ -1,8 +1,6 @@
 import { ColorPalette, LayoutType, AlignmentType, DestinationType, SectionType, SizeType, HeaderModel } from "./EnumsTemplate";
 import { IAdvertiser } from "./IAdvertiser";
 
-
-
 interface ISiteTemplate {
     id: string;
     Advertiser?: IAdvertiser;
@@ -114,8 +112,8 @@ interface ITemplateFooter {
     textColor: string;
     borderColor: string;
     elementsOpacity: number;
-    sections: IFooterSection[];  // Mudando para array ao invés de Record
-    socialMedia: ISocialMedia[]; // Adicionando array de redes sociais
+    sections: IFooterSection[];  
+    socialMedia: ISocialMedia[];
 }
 
 export {

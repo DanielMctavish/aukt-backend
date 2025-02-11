@@ -134,7 +134,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
                 categorie,
                 group,
                 auct_id,
-                advertiser_id,
+                advertiserId,
                 bid_count_order,
                 lote_order,
                 initial_value_order,
@@ -159,8 +159,8 @@ class PrismaProductRepositorie implements IProductRepositorie {
 
             // Filtros existentes
             
-            if (advertiser_id) {
-                whereFiltered.advertiser_id = advertiser_id;
+            if (advertiserId) {
+                whereFiltered.advertiser_id = advertiserId;
             }
             if (categorie) {
                 whereFiltered.categorie = categorie;

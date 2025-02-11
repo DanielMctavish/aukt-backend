@@ -2,13 +2,13 @@ import PrismaProductRepositorie from "../../../repositorie/database/PrismaProduc
 import { ProductResponse } from "../../IMainProduct"
 const prismaProducts = new PrismaProductRepositorie()
 
-export const listProductByAdvertiser = (advertiser_id: string): Promise<ProductResponse> => {
+export const listProductByAdvertiser = (advertiserId: string): Promise<ProductResponse> => {
 
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            const currentProduct = await prismaProducts.listByAdvertiserId(advertiser_id)
+            const currentProduct = await prismaProducts.listByAdvertiserId(advertiserId)
             if (!currentProduct) {
                 return reject({ status_code: 404, body: 'not product founded' })
             }

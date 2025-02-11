@@ -29,7 +29,7 @@ class MainProductUsecases implements IMainProduct {
         return ListProductsByFilters(params)
     }
     listByAdvertiserId(data: any, params: IParams): Promise<ProductResponse> {
-        return listProductByAdvertiser(params.advertiser_id)
+        return listProductByAdvertiser(params.advertiserId)
     }
     listByCategorie(data: any, params: IParams): Promise<ProductResponse> {
         return listallproductsByCategorie(params.categorie)
