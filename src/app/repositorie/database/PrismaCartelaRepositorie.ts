@@ -47,6 +47,12 @@ class PrismaCartelaRepositorie implements ICartelaRepositorie {
 
         const result = await prisma.cartela.create({
             data: cartelaData,
+            include:{
+                Client:true,
+                Auct:true,
+                Advertiser:true,
+                products:true
+            }
         });
 
         return result as ICartela;

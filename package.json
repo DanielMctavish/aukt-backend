@@ -2,13 +2,15 @@
   "scripts": {
     "watch": "tsc -w",
     "start:http:dev": "nodemon dist/http/http.js",
-    "build": "tsc",
-    "start:http": "node dist/http/http.js"
+    "build": "tsc && npm run copy-email-template",
+    "start:http": "node dist/http/http.js",
+    "copy-email-template": "mkdir -p dist/email && cp src/email/emailAuk.html dist/email/"
   },
   "keywords": [],
   "author": "Daniel Arruda Developer",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.750.0",
     "@prisma/client": "^5.19.1",
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.13",

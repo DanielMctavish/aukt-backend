@@ -75,6 +75,7 @@ model Client {
   Product            Product[]
   Cartela            Cartela[]
   Advertiser         Advertiser[]
+  verifiedEmail      Boolean?     @default(false)
   created_at         DateTime     @default(now())
   updated_at         DateTime     @updatedAt
 }

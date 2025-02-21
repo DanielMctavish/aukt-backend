@@ -16,6 +16,7 @@ export interface IClient {
     subscribed_auct?: IAuct[] | any
     Bid?: IBid[] | any
     client_url_profile?: string
+    verifiedEmail?: boolean
     created_at: Date
     updated_at: Date
 }

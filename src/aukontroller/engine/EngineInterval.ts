@@ -5,11 +5,11 @@ import { IAuct } from "../../app/entities/IAuct";
 import { FLOOR_STATUS } from "../IMainAukController";
 import { WinnerEngine } from "../winner-engine/WinnerEngine";
 import { setAukSocket, getAukSocket } from "./EngineSocket";
-
+import AuctionInspector from "../../app/usecases/inspector/AuctionInspector"
 const websocketUrl = process.env.WS_WEBSOCKET_CONNECTION;
 const socket = io(websocketUrl);
 
-socket.on('connect', () => {});
+socket.on('connect', () => { });
 
 export const EngineInterval = async (
     resolve: any,
@@ -63,6 +63,10 @@ export const EngineInterval = async (
                 status: FLOOR_STATUS.PLAYING
             });
 
+            if (currentAuct.Bid && currentAuct.Bid.length > 0) {
+                AuctionInspector(currentAuct.Bid)
+            }
+
             if (localCount >= currentAuct.product_timer_seconds + 1) {
                 if (intervalId) clearInterval(intervalId);
                 clearAllListeners();
@@ -72,12 +76,12 @@ export const EngineInterval = async (
                 }
 
                 await WinnerEngine(currentAuct.id, filterResponse.id);
-              
+
                 const nextIndex = (currentSocketAuk.nextProductIndex ?? 0) + 1;
                 await setAukSocket({
                     nextProductIndex: nextIndex
                 });
-                
+
                 return intervalResolve({ auct_id: currentAuct.id, nextProductIndex: nextIndex });
             }
 

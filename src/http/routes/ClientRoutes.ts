@@ -3,11 +3,13 @@ import { ApplyUseCase } from '../middlewares/ApllyUseCases'
 import MainClientUsecases from '../../app/usecases/client/MainClientUsecases'
 import multer from 'multer'
 import { verifyToken } from '../../authentication/JWT'
+import MainMessenger from '../../app/usecases/messenger/MainMessenger'
 
 const router = Router()
 const upload = multer()
 
 const mainClient = new MainClientUsecases()
+const mainMessenger = new MainMessenger()
 
 router.post('/create-client', ApplyUseCase(mainClient.CreateClient))//testado
 router.get('/find-client', ApplyUseCase(mainClient.FindClient))//testado
@@ -38,5 +40,9 @@ router.patch("/update-bid", verifyToken, ApplyUseCase(mainClient.UpdateBid))
 router.get("/verify-token", verifyToken, (req, res) => {
     res.status(200).json({ message: "Token is valid" });
 });
+
+//confirmar email...
+router.post("/confirm-email", ApplyUseCase(mainMessenger.SendConfirmationEmail))
+router.post("/create-email-template", ApplyUseCase(mainMessenger.CreateEmailTemplate))
 
 export default router;

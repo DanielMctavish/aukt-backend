@@ -101,6 +101,12 @@ class PrismaBidRepositorie implements IBidRepositorie {
 
         return updatedBid as IBid;
     }
+
+    async DeleteBid(id: string): Promise<void> {
+        await prisma.bid.delete({
+            where: { id }
+        })
+    }
 }
 
 export default PrismaBidRepositorie
