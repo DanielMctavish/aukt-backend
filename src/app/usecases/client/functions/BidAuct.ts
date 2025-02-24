@@ -5,6 +5,7 @@ import PrismaBidRepositorie from "../../../repositorie/database/PrismaBidReposit
 import PrismaProductRepositorie from "../../../repositorie/database/PrismaProductRepositorie";
 import PrismaAdvertiserRepositorie from "../../../repositorie/database/PrismaAdvertiserRepositorie";
 import PrismaAuctRepositorie from "../../../repositorie/database/PrismaAuctRepositorie";
+import AuctionInspector from "../../inspector/AuctionInspector";
 
 const prismaBid = new PrismaBidRepositorie();
 const prismaAdvertiser = new PrismaAdvertiserRepositorie();
@@ -147,9 +148,17 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
                     );
                 }
 
-                // Envio do lance original para WebSocket
-                let finalWebsocketEndpoint = `${data.auct_id}-bid`;
+                // AQUI: Após todos os lances serem processados, chamamos o inspetor
+                // Buscamos todos os lances atualizados do produto
+                const updatedProduct = await prismaProduct.find({ product_id: data.product_id });
+                if (updatedProduct && updatedProduct.Bid) {
+                    // O inspetor vai verificar e remover lances duplicados
+                    await AuctionInspector(updatedProduct.Bid);
+                }
 
+                // Envio do lance para WebSocket
+                let finalWebsocketEndpoint = `${data.auct_id}-bid`;
+                
                 axios.post(
                     `${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${finalWebsocketEndpoint}`,
                     { body: currentBid }
