@@ -6,6 +6,7 @@ import { createAuct } from "./functions/CreateAuct";
 import { deleteAuct } from "./functions/DeleteAuct";
 import { findAuct } from "./functions/FindAuct";
 import findAuctByNanoId from "./functions/FindAuctByNanoId";
+import getAllAuctions from "./functions/GetAllAuctions";
 import { listAuct } from "./functions/ListAucts";
 import { listAuctByStatus } from "./functions/ListAuctsByStatus";
 import { updateAuct } from "./functions/UpdateAuct";
@@ -36,6 +37,9 @@ class MainAuctUsecases implements IMainAuct {
     }
     ListAuctByStatus(data: any, params: params): Promise<AuctResponse> {
         return listAuctByStatus(params.status)
+    }
+    GetAllAuctions(data: any, params: params): Promise<AuctResponse> {
+        return getAllAuctions()
     }
     UpdateAuct(data: IAuct, params: params): Promise<AuctResponse> {
         return updateAuct(data, params.auct_id)

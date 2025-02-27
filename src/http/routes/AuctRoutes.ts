@@ -22,6 +22,8 @@ router.delete('/delete-auct', verifyToken, ApplyUseCase(mainAuct.DeleteAuct))//t
 router.post('/upload-cover-auct', upload.single("cover-auct-image"), ApplyUseCase(mainAuct.FirebaseUploadCoverAuct))
 router.delete('/delete-cover-auct', ApplyUseCase(mainAuct.FirebaseDeleteCoverAuct))
 
+router.get('/get-all-auctions/2-products', ApplyUseCase(mainAuct.GetAllAuctions))
+
 //ControllerAuct............................................................................................................
 router.get('/start-auct', verifyToken, ApplyControllerUsecases(controllerInstance.PlayAuk))//testado
 router.get('/pause-product-time', verifyToken, ApplyControllerUsecases(controllerInstance.PauseAuk))//testado

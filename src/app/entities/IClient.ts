@@ -19,4 +19,5 @@ export interface IClient {
     verifiedEmail?: boolean
     created_at: Date
     updated_at: Date
+    phone?: string
 }

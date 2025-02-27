@@ -155,7 +155,7 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
                             categorie: true,
                             created_at: true,
                             description: true,
-                            real_value:true,
+                            real_value: true,
                             initial_value: true,
                             reserve_value: true,
                             cover_img_url: true,
@@ -176,6 +176,22 @@ class PrismaAuctRepositorie implements IAuctRepositorie {
         } catch (error) {
             console.error("Erro ao listar leilões:", error);
             return [];
+        }
+    }
+
+
+    async listAllAuctions(): Promise<IAuct[]> {
+        try {
+            const aucts = await prisma.auct.findMany({
+                include: {
+                    product_list: {
+                        take: 2
+                    }
+                }
+            })
+            return aucts as IAuct[]
+        } catch (error) {
+            return []
         }
     }
 

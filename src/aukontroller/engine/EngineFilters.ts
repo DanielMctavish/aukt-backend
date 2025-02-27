@@ -16,7 +16,11 @@ export const EngineFilters = async (
     // Filtrando produtos pelo grupo
     if (!currentAuct) return resolve(null);
     const allProducts: IProduct[] | undefined = currentAuct.product_list;
-    const filteredProducts: IProduct[] | undefined = allProducts?.filter((product: any) => product.group === group);
+    
+    // Filtra produtos pelo grupo E que não têm vencedor
+    const filteredProducts: IProduct[] | undefined = allProducts?.filter((product: any) => 
+        product.group === group && !product.winner_id && !product.Winner
+    );
 
     await prismaAuct.update({ status: "live" }, currentAuct.id);
 
@@ -45,6 +49,16 @@ export const EngineFilters = async (
 
         await setAukSocket({
             nextProductIndex: index
+        });
+    }
+
+    // Verifica se o produto atual tem vencedor
+    if (filteredProducts[currentProductIndex]?.winner_id || 
+        filteredProducts[currentProductIndex]?.Winner) {
+        // Se tiver vencedor, incrementa o índice para pegar o próximo produto
+        currentProductIndex++;
+        await setAukSocket({
+            nextProductIndex: currentProductIndex
         });
     }
 

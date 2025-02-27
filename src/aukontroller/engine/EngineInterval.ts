@@ -1,5 +1,6 @@
 import { io } from "socket.io-client";
 import axios from "axios";
+import PrismaProductRepositorie from "../../app/repositorie/database/PrismaProductRepositorie";
 import { IProduct } from "../../app/entities/IProduct";
 import { IAuct } from "../../app/entities/IAuct";
 import { FLOOR_STATUS } from "../IMainAukController";
