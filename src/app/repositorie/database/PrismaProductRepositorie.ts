@@ -158,7 +158,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
             let whereFiltered: any = {};
 
             // Filtros existentes
-            
+
             if (advertiserId) {
                 whereFiltered.advertiser_id = advertiserId;
             }
@@ -243,7 +243,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
             let orderBy: any = { created_at: 'desc' };
 
             if (initial_value_order) {
-                orderBy = { 
+                orderBy = {
                     initial_value: initial_value_order.toLowerCase()
                 };
             } else if (bid_count_order) {
@@ -253,12 +253,12 @@ class PrismaProductRepositorie implements IProductRepositorie {
                     }
                 };
             } else if (lote_order) {
-                orderBy = { 
-                    lote: lote_order.toLowerCase() 
+                orderBy = {
+                    lote: lote_order.toLowerCase()
                 };
             } else if (created_at_order) {
-                orderBy = { 
-                    created_at: created_at_order.toLowerCase() 
+                orderBy = {
+                    created_at: created_at_order.toLowerCase()
                 };
             }
 
@@ -368,6 +368,75 @@ class PrismaProductRepositorie implements IProductRepositorie {
         return count;
     }
 
+    //Development Methods: ----------------------------------------------------------
+
+    async clearAllCartelas(): Promise<void> {
+        try {
+            await prisma.cartela.deleteMany({});
+            console.log('✅ Todas as cartelas foram excluídas com sucesso');
+        } catch (error) {
+            console.error('❌ Erro ao excluir cartelas:', error);
+            throw error;
+        }
+    }
+
+    async clearAllBids(): Promise<void> {
+        try {
+            await prisma.bid.deleteMany({});
+            console.log('✅ Todos os lances foram excluídos com sucesso');
+        } catch (error) {
+            console.error('❌ Erro ao excluir lances:', error);
+            throw error;
+        }
+    }
+
+    async resetAllRealValues(): Promise<void> {
+        try {
+            await prisma.product.updateMany({
+                data: {
+                    real_value: 0
+                }
+            });
+            console.log('✅ Valores reais zerados com sucesso');
+        } catch (error) {
+            console.error('❌ Erro ao zerar valores reais:', error);
+            throw error;
+        }
+    }
+
+    async clearAllWinners(): Promise<void> {
+        try {
+            await prisma.product.updateMany({
+                data: {
+                    winner_id: null
+                }
+            });
+            console.log('✅ Winners removidos com sucesso');
+        } catch (error) {
+            console.error('❌ Erro ao remover winners:', error);
+            throw error;
+        }
+    }
+
+    async resetAllAuctionData(): Promise<void> {
+        try {
+            console.log('🔄 Iniciando reset completo dos dados do leilão...');
+
+            await this.clearAllCartelas();
+            await this.clearAllBids();
+            await this.resetAllRealValues();
+            await this.clearAllWinners();
+
+            console.log('✅ Reset completo realizado com sucesso!');
+        } catch (error) {
+            console.error('❌ Erro durante o reset completo:', error);
+            throw error;
+        }
+    }
 }
+//--------------------------------------------------------------------------------
+
+// const prismaProduct = new PrismaProductRepositorie()
+// prismaProduct.resetAllAuctionData()
 
 export default PrismaProductRepositorie

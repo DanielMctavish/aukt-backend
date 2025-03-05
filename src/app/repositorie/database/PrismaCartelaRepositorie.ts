@@ -95,7 +95,9 @@ class PrismaCartelaRepositorie implements ICartelaRepositorie {
             include: {
                 Client: true,
                 Transaction: true,
-                products: true
+                products: true,
+                Auct:true,
+                Advertiser:true
             }
         })
         return result as unknown as ICartela[];

@@ -6,6 +6,7 @@ import PrismaProductRepositorie from "../../../repositorie/database/PrismaProduc
 import PrismaAdvertiserRepositorie from "../../../repositorie/database/PrismaAdvertiserRepositorie";
 import PrismaAuctRepositorie from "../../../repositorie/database/PrismaAuctRepositorie";
 import AuctionInspector from "../../inspector/AuctionInspector";
+import { processAutoBids } from "./ProcessAutoBids";
 
 const prismaBid = new PrismaBidRepositorie();
 const prismaAdvertiser = new PrismaAdvertiserRepositorie();
@@ -28,8 +29,6 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
             if (!currentAuct) {
                 return resolve({ status_code: 404, body: "Leilão não encontrado" });
             }
-
-            // Buscar o último lance para ter o valor mais atualizado
 
             const dataValue = data.value;
             const initialValue = currentProduct.initial_value;
@@ -66,7 +65,6 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
             // Criação do lance
             const currentBid = await prismaBid.CreateBid(data);
             let highestBid = currentBid;
-            const tempRegisterClientsBid = new Set<string>();
 
             try {
                 // Atualização do anunciante se necessário
@@ -83,92 +81,45 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
                     }
                 }
 
-                // Processamento dos lances automáticos
-                const allBids = currentProduct.Bid || [];
+                // Atualizar o real_value do produto com o valor do lance atual
+                await prismaProduct.update(
+                    { real_value: dataValue },
+                    data.product_id
+                );
 
-                if (data.cover_auto) {
-                    for (const bid of allBids) {
-                        if (tempRegisterClientsBid.has(bid.client_id)) continue;
-
-                        if (bid.cover_auto && bid.value < highestBid.value) {
-                            // Calcula o incremento baseado no valor atual
-                            let increment = 20; // valor padrão
-                            
-                            // Se o leilão tem um valor mínimo definido, usa ele como base
-                            if (currentAuct && currentAuct.value) {
-                                const minIncrement = parseFloat(currentAuct.value);
-                                increment = minIncrement > 0 ? minIncrement : increment;
-                            }
-
-                            const autoBidValue = highestBid.value + increment;
-
-                            // Verifica se o lance automático é maior que o valor atual
-                            if (autoBidValue > currentValue) {
-                                const autoBidData: IBid = {
-                                    ...bid,
-                                    value: autoBidValue,
-                                    product_id: data.product_id,
-                                };
-
-                                const newAutoBid = await prismaBid.CreateBid(autoBidData);
-
-                                if (newAutoBid.value > highestBid.value) {
-                                    highestBid = newAutoBid;
-                                }
-
-                                tempRegisterClientsBid.add(newAutoBid.client_id);
-
-                                // Atualiza o real_value do produto
-                                await prismaProduct.update(
-                                    {
-                                        real_value: autoBidValue
-                                    },
-                                    data.product_id
-                                );
-
-                                // Definindo o endpoint do WebSocket
-                                let websocketEndpoint = isBidInCataloge 
-                                    ? `${data.auct_id}-bid-cataloged` 
-                                    : `${data.auct_id}-bid`;
-
-                                // Envio do lance automático para WebSocket
-                                axios.post(
-                                    `${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${websocketEndpoint}`,
-                                    { body: newAutoBid }
-                                ).catch(() => { });
-                            }
-                        }
-                    }
-                } else {
-
-                    let websocketEndpoint;
-                    if (isBidInCataloge) {
-                        websocketEndpoint = `${data.auct_id}-bid-cataloged`;
-                    } else {
-                        websocketEndpoint = `${data.auct_id}-bid`;
-                    }
-
-                    // Envio do lance para WebSocket
-                    axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${websocketEndpoint}`,
-                        {
-                            body: currentBid
-                        }
-                    ).catch(() => { });
+                // Calcular o incremento mínimo para lances automáticos
+                let minIncrement = 20; // valor padrão
+                if (currentAuct && currentAuct.value) {
+                    const auctIncrement = parseFloat(currentAuct.value);
+                    minIncrement = auctIncrement > 0 ? auctIncrement : minIncrement;
                 }
 
-                // AQUI: Após todos os lances serem processados, chamamos o inspetor
+                // Processar lances automáticos independentemente do lance atual ter cover_auto
+                const result = await processAutoBids(
+                    currentProduct,
+                    currentBid,
+                    isBidInCataloge,
+                    minIncrement
+                );
+
+                // Atualiza o lance mais alto
+                highestBid = result.highestBid;
+
+                // Envio do lance para WebSocket
+                const websocketEndpoint = isBidInCataloge 
+                    ? `${data.auct_id}-bid-cataloged` 
+                    : `${data.auct_id}-bid`;
+                
+                axios.post(
+                    `${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${websocketEndpoint}`,
+                    { body: currentBid }
+                ).catch(() => { });
+
+                // Após todos os lances serem processados, chamamos o inspetor
                 const updatedProduct = await prismaProduct.find({ product_id: data.product_id });
                 if (updatedProduct && updatedProduct.Bid) {
                     await AuctionInspector(updatedProduct.Bid);
                 }
-
-                // Envio do lance para WebSocket
-                let finalWebsocketEndpoint = `${data.auct_id}-bid`;
-                
-                axios.post(
-                    `${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${finalWebsocketEndpoint}`,
-                    { body: currentBid }
-                ).catch(() => { });
 
                 return resolve({ status_code: 200, body: highestBid });
             } catch (error: any) {
@@ -179,4 +130,3 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
         }
     });
 };
-
