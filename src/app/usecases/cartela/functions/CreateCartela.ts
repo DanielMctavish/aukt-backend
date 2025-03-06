@@ -8,7 +8,7 @@ import PrismaClientRepositorie from "../../../repositorie/database/PrismaClientR
 
 const prismaCartela = new PrismaCartelaRepositorie()
 const prismaAdmin = new PrismaAdminRepositorie()
-const prismaClient = new PrismaClientRepositorie()
+
 
 const createCartela = async (data: ICartela): Promise<CartelaResponse> => {
     return new Promise(async (resolve, reject) => {
@@ -38,21 +38,12 @@ const createCartela = async (data: ICartela): Promise<CartelaResponse> => {
                 balance: (currentAdmin.balance ? currentAdmin.balance : 0) + commission
             }, currentAdmin?.id);
 
-
-            //ENVIO DE EMAIL...............................................................
-            const currentClient = await prismaClient.find(data.client_id)
+            // Envio de email simplificado
             const mainMessenger = new MainMessenger()
-            const clientEmail = currentClient?.email
-
-            if (clientEmail) {
-                try {
-                    const emailResult = await mainMessenger.SendEmail(newCartela, clientEmail);
-                    if (emailResult.status_code === 202) {
-                        console.log('Email de verificação enviado para o cliente');
-                    }
-                } catch (emailError: any) {
-                    console.log('Aviso: Não foi possível enviar o email:', emailError.body);
-                }
+            try {
+                await mainMessenger.SendEmail(newCartela, data.Client.email);
+            } catch (emailError: any) {
+                console.log('Erro ao enviar email de confirmação:', emailError.body);
             }
 
             resolve({
