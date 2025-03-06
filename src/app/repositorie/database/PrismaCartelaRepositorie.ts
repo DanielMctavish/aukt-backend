@@ -64,6 +64,12 @@ class PrismaCartelaRepositorie implements ICartelaRepositorie {
         const result = await prisma.cartela.findFirst({
             where: {
                 id: cartela_id
+            },
+            include:{
+                Client:true,
+                Auct:true,
+                Advertiser:true,
+                products:true
             }
         })
         return result as ICartela;

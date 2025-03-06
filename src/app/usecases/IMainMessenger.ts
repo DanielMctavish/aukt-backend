@@ -17,8 +17,13 @@ interface EmailTemplateData {
     textPart: string;
 }
 
+interface DataSendEmailCartela {
+    cartelaId: string
+    emailTo: string
+}
+
 interface IMainMessenger {
-    SendEmail(cartela: ICartela, emailTo: string): Promise<MessengerResponse>
+    SendEmail(data: DataSendEmailCartela): Promise<MessengerResponse>
     SendConfirmationEmail(data: DataConfirmEmail): Promise<MessengerResponse>
     CreateEmailTemplate(data: EmailTemplateData): Promise<MessengerResponse>
 }

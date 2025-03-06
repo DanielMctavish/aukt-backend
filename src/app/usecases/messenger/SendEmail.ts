@@ -1,10 +1,14 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-import { ICartela } from "../../entities/ICartela";
 import { MessengerResponse } from "../IMainMessenger";
+import { DataSendEmailCartela } from "./MainMessenger";
+import PrismaCartelaRepositorie from "../../../app/repositorie/database/PrismaCartelaRepositorie";
+import PrismaClientRepositorie from "../../../app/repositorie/database/PrismaClientRepositorie";
+import axios from 'axios';
 
-// vamos pegar a lista de produtos da cartela e enviar um email para o cliente com os valores e formas de pagamento
-
+// Vamos pegar a lista de produtos da cartela e enviar um email para o cliente com os valores e formas de pagamento
 const SENDER_EMAIL = 'daniel@aukt.com.br';
+const prismaCartela = new PrismaCartelaRepositorie();
+const prismaClient = new PrismaClientRepositorie();
 
 // Função auxiliar para formatar o endereço
 const formatAddress = (address: any): string => {
@@ -16,17 +20,62 @@ CEP: ${addressObj.cep}`.trim();
     } catch (e) {
         return address || 'Endereço não informado';
     }
-}
+};
 
-const sendEmail = async (cartela: ICartela, emailTo: string): Promise<MessengerResponse> => {
+// Função auxiliar para limpar e codificar URL da imagem
+const cleanImageUrl = (url: string): string => {
+    if (!url) return ''; // Retorna vazio se não houver URL
+
+    // Remove parâmetros indesejados (como os do Gmail ou outros)
+    let cleanUrl = url.split('=s0-d-e1-ft#')[1] || url;
+
+    // Garante que a URL tenha protocolo HTTPS
+    if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+        cleanUrl = `https://${cleanUrl}`;
+    }
+
+    // Codifica a URL para substituir espaços e caracteres especiais
+    cleanUrl = encodeURI(cleanUrl);
+
+    // Se for uma URL do Google Storage ou AWS S3, garante que seja HTTPS
+    if (cleanUrl.includes('storage.googleapis.com') || cleanUrl.includes('s3.amazonaws.com')) {
+        return cleanUrl.replace(/^http:\/\//, 'https://'); // Força HTTPS
+    }
+
+    return cleanUrl;
+};
+
+const sendEmail = async (data: DataSendEmailCartela): Promise<MessengerResponse> => {
+    const cartela = await prismaCartela.find(data.cartelaId);
+    const currentClient = await prismaClient.findByEmail(data.emailTo);
+
     return new Promise(async (resolve, reject) => {
         try {
+            if (!currentClient) {
+                return reject({
+                    status_code: 404,
+                    body: 'Cliente não encontrado'
+                });
+            }
+
+            if (!cartela) {
+                return reject({
+                    status_code: 404,
+                    body: 'Cartela não encontrada'
+                });
+            }
+
             const sesClient = new SESClient({
                 region: 'sa-east-1',
                 credentials: {
                     accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
                     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || ''
                 }
+            });
+
+           
+            cartela.products.forEach(product => {
+                console.log(`URL da imagem do produto ${product.title}:`, cleanImageUrl(product.cover_img_url));
             });
 
             let htmlTemplate = `
@@ -36,16 +85,30 @@ const sendEmail = async (cartela: ICartela, emailTo: string): Promise<MessengerR
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>Confirmação de Cartela - Aukt Leilões</title>
+                    <style>
+                        @media screen and (max-width: 600px) {
+                            .product-container {
+                                flex-direction: column !important;
+                            }
+                            .product-image {
+                                width: 100% !important;
+                                margin-bottom: 15px !important;
+                            }
+                            .product-info {
+                                width: 100% !important;
+                            }
+                        }
+                    </style>
                 </head>
                 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0;">
-                    <div style="max-width: 600px; margin: 0 auto; padding: 10px;">
+                    <div style="max-width: 800px; margin: 0 auto; padding: 10px;">
                         <div style="background-color: #143d64; color: white; padding: 15px; text-align: center; border-radius: 5px 5px 0 0;">
                             <h1 style="margin: 0; font-size: 24px;">Confirmação de Cartela</h1>
-                            <p style="margin: 10px 0 0 0;">Cartela ${cartela.id} - ${cartela.Client.name}</p>
+                            <p style="margin: 10px 0 0 0;">Cartela ${cartela.id} - ${currentClient.name}</p>
                         </div>
 
                         <div style="padding: 15px; background-color: #f9f9f9; border: 1px solid #ddd;">
-                            <p style="margin-top: 0;">Prezado(a) ${cartela.Client.name},</p>
+                            <p style="margin-top: 0;">Prezado(a) ${currentClient.name},</p>
                             <p>Agradecemos sua participação em nosso leilão Nº ${cartela.Auct.nano_id}.</p>
 
                             <div style="background-color: white; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #143d64;">
@@ -71,15 +134,21 @@ const sendEmail = async (cartela: ICartela, emailTo: string): Promise<MessengerR
                             <div style="background-color: white; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #143d64;">
                                 <h3 style="color: #143d64; margin-top: 0;">Itens Arrematados</h3>
                                 ${cartela.products.map(product => `
-                                    <div style="border: 1px solid #eee; padding: 10px; margin: 10px 0; border-radius: 5px;">
-                                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                                            ${product.cover_img_url ? `
-                                                <img src="${product.cover_img_url}" 
-                                                    alt="${product.title}" 
-                                                    style="width: 100%; max-width: 200px; height: auto; border-radius: 5px; object-fit: cover; margin: 0 auto;"
-                                                />
-                                            ` : ''}
-                                            <div style="flex: 1;">
+                                    <div style="border: 1px solid #eee; padding: 15px; margin: 10px 0; border-radius: 5px;">
+                                        <div class="product-container" style="display: flex; gap: 20px;">
+                                            <div class="product-image" style="width: 200px; min-height: 200px; background-color: #f5f5f5; border-radius: 5px;">
+                                                ${product.cover_img_url ? `
+                                                    <img src="${cleanImageUrl(product.cover_img_url)}" 
+                                                         alt="${product.title}" 
+                                                         style="width: 100%; height: 200px; border-radius: 5px; object-fit: cover;"
+                                                    />
+                                                ` : `
+                                                    <div style="width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                                        <span>Imagem não disponível</span>
+                                                    </div>
+                                                `}
+                                            </div>
+                                            <div class="product-info" style="flex: 1;">
                                                 <p style="margin: 0 0 5px 0;">
                                                     <strong style="color: #143d64; font-size: 16px;">Lote: ${product.lote}</strong><br>
                                                     <strong>${product.title}</strong>
@@ -109,6 +178,26 @@ const sendEmail = async (cartela: ICartela, emailTo: string): Promise<MessengerR
                                 <p style="margin: 5px 0;">Em caso de dúvidas, entre em contato com o anunciante:</p>
                                 <p style="margin: 5px 0;">Email: ${cartela.Advertiser.email}</p>
                             </div>
+
+                            <footer style="background-color: #143d64; color: white; padding: 20px; margin-top: 30px; border-radius: 5px;">
+                                <div style="text-align: center;">
+                                    ${cartela.Advertiser.url_profile_company_logo_cover ? `
+                                        <img src="${cleanImageUrl(cartela.Advertiser.url_profile_company_logo_cover)}" 
+                                             alt="${cartela.Advertiser.company_name}" 
+                                             style="max-width: 150px; height: 100px; margin-bottom: 15px; object-fit: contain;"
+                                        />
+                                    ` : ''}
+                                    <h3 style="margin: 0 0 10px 0;">${cartela.Advertiser.company_name}</h3>
+                                    <p style="margin: 5px 0;">
+                                        ${cartela.Advertiser.CNPJ ? `CNPJ: ${cartela.Advertiser.CNPJ}<br>` : ''}
+                                        ${formatAddress(cartela.Advertiser.company_adress)}
+                                    </p>
+                                    <p style="margin: 10px 0;">
+                                        <strong>Contato:</strong><br>
+                                        Email: ${cartela.Advertiser.email}
+                                    </p>
+                                </div>
+                            </footer>
                         </div>
                     </div>
                 </body>
@@ -118,7 +207,7 @@ const sendEmail = async (cartela: ICartela, emailTo: string): Promise<MessengerR
             const command = new SendEmailCommand({
                 Source: SENDER_EMAIL,
                 Destination: {
-                    ToAddresses: [emailTo],
+                    ToAddresses: [data.emailTo],
                 },
                 ReplyToAddresses: [cartela.Advertiser.email],
                 Message: {

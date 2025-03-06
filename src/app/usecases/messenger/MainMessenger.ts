@@ -1,4 +1,3 @@
-import { ICartela } from "../../entities/ICartela";
 import { IMainMessenger, MessengerResponse, EmailTemplateData } from "../IMainMessenger";
 import { CreateEmailTemplate } from "./CreateEmailTemplate";
 import SendConfirmationEmail from "./SendConfirmationEmail";
@@ -10,9 +9,14 @@ interface DataConfirmEmail {
     clientId: string
 }
 
+interface DataSendEmailCartela {
+    cartelaId: string
+    emailTo: string
+}
+
 class MainMessenger implements IMainMessenger {
-    SendEmail(cartela: ICartela, emailTo: string): Promise<MessengerResponse> {
-        return sendEmail(cartela, emailTo)
+    SendEmail(data:DataSendEmailCartela ): Promise<MessengerResponse> {
+        return sendEmail(data)
     }
     SendConfirmationEmail(data: DataConfirmEmail): Promise<MessengerResponse> {
         return SendConfirmationEmail(data.emailTo, data.clientId)
@@ -23,4 +27,4 @@ class MainMessenger implements IMainMessenger {
     }
 }
 
-export default MainMessenger;
+export  {MainMessenger, DataSendEmailCartela};

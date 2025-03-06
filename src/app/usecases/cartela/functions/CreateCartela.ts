@@ -3,7 +3,7 @@ import PrismaAdminRepositorie from "../../../repositorie/database/PrismaAdminRep
 import { ICartela } from "../../../entities/ICartela"
 import { CartelaResponse } from "../../IMainCartela"
 import { createTransaction } from "../../transactions/functions/CreateTransaction"
-import MainMessenger from "../../messenger/MainMessenger"
+import {MainMessenger} from "../../messenger/MainMessenger"
 import PrismaClientRepositorie from "../../../repositorie/database/PrismaClientRepositorie"
 
 const prismaCartela = new PrismaCartelaRepositorie()
@@ -41,7 +41,7 @@ const createCartela = async (data: ICartela): Promise<CartelaResponse> => {
             // Envio de email simplificado
             const mainMessenger = new MainMessenger()
             try {
-                await mainMessenger.SendEmail(newCartela, data.Client.email);
+                await mainMessenger.SendEmail({cartelaId: newCartela.id, emailTo: data.Client.email});
             } catch (emailError: any) {
                 console.log('Erro ao enviar email de confirmação:', emailError.body);
             }

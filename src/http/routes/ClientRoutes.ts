@@ -3,7 +3,7 @@ import { ApplyUseCase } from '../middlewares/ApllyUseCases'
 import MainClientUsecases from '../../app/usecases/client/MainClientUsecases'
 import multer from 'multer'
 import { verifyToken } from '../../authentication/JWT'
-import MainMessenger from '../../app/usecases/messenger/MainMessenger'
+import {MainMessenger} from '../../app/usecases/messenger/MainMessenger'
 
 const router = Router()
 const upload = multer()
