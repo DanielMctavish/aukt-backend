@@ -135,31 +135,44 @@ const sendEmail = async (data: DataSendEmailCartela): Promise<MessengerResponse>
                                 <h3 style="color: #143d64; margin-top: 0;">Itens Arrematados</h3>
                                 ${cartela.products.map(product => `
                                     <div style="border: 1px solid #eee; padding: 15px; margin: 10px 0; border-radius: 5px;">
-                                        <div class="product-container" style="display: flex; gap: 20px;">
-                                            <div class="product-image" style="width: 200px; min-height: 200px; background-color: #f5f5f5; border-radius: 5px;">
+                                        <div style="display: flex; flex-direction: column;">
+                                            <!-- Imagem do Produto -->
+                                            <div style="width: 100%; max-width: 300px; margin: 0 auto 15px auto;">
                                                 ${product.cover_img_url ? `
                                                     <img src="${cleanImageUrl(product.cover_img_url)}" 
                                                          alt="${product.title}" 
-                                                         style="width: 100%; height: 200px; border-radius: 5px; object-fit: cover;"
+                                                         style="width: 100%; height: 300px; border-radius: 5px; object-fit: cover;"
                                                     />
                                                 ` : `
-                                                    <div style="width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: #666;">
+                                                    <div style="width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; background-color: #f5f5f5; border-radius: 5px; color: #666;">
                                                         <span>Imagem não disponível</span>
                                                     </div>
                                                 `}
                                             </div>
-                                            <div class="product-info" style="flex: 1;">
-                                                <p style="margin: 0 0 5px 0;">
-                                                    <strong style="color: #143d64; font-size: 16px;">Lote: ${product.lote}</strong><br>
-                                                    <strong>${product.title}</strong>
-                                                </p>
-                                                <p style="margin: 5px 0; font-size: 14px;">${product.description}</p>
-                                                <p style="margin: 5px 0;"><strong style="color: #143d64;">Valor: R$ ${product.real_value.toFixed(2)}</strong></p>
-                                                ${product.group ? `<p style="margin: 5px 0; color: #666; font-size: 14px;">Grupo: ${product.group}</p>` : ''}
-                                                <p style="margin: 5px 0; color: #666; font-size: 13px;">
-                                                    Dimensões: ${product.width}x${product.height}cm | 
-                                                    Peso: ${product.weight}kg
-                                                </p>
+                                            
+                                            <!-- Informações do Produto -->
+                                            <div style="width: 100%;">
+                                                <div style="border-top: 1px solid #eee; padding-top: 15px;">
+                                                    <p style="margin: 0 0 5px 0;">
+                                                        <strong style="color: #143d64; font-size: 18px;">Lote: ${product.lote}</strong><br>
+                                                        <strong style="font-size: 16px;">${product.title}</strong>
+                                                    </p>
+                                                    <p style="margin: 10px 0; font-size: 14px; color: #666;">
+                                                        ${product.description}
+                                                    </p>
+                                                    <p style="margin: 15px 0; font-size: 16px;">
+                                                        <strong style="color: #143d64;">Valor: R$ ${product.real_value.toFixed(2)}</strong>
+                                                    </p>
+                                                    ${product.group ? `
+                                                        <p style="margin: 5px 0; color: #666; font-size: 14px;">
+                                                            Grupo: ${product.group}
+                                                        </p>
+                                                    ` : ''}
+                                                    <p style="margin: 5px 0; color: #666; font-size: 13px;">
+                                                        Dimensões: ${product.width}x${product.height}cm | 
+                                                        Peso: ${product.weight}kg
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -418,6 +418,30 @@ class PrismaProductRepositorie implements IProductRepositorie {
         }
     }
 
+    async clearAllAdvertisersAmounts(): Promise<void> {
+        try {
+            await prisma.advertiser.updateMany({
+                data: {
+                    amount: 0
+                }
+            });
+            console.log('✅ Amounts zerados com sucesso');
+        } catch (error) {
+            console.error('❌ Erro ao zerar amounts:', error);
+            throw error;
+        }
+    }
+
+    async clearAllTransactions():Promise<void>{
+        try {
+            await prisma.transaction.deleteMany({});
+            console.log('✅ Todas as transações foram excluídas com sucesso');
+        } catch (error) {
+            console.error('❌ Erro ao excluir transações:', error);
+            throw error;
+        }
+    }
+
     async resetAllAuctionData(): Promise<void> {
         try {
             console.log('🔄 Iniciando reset completo dos dados do leilão...');
@@ -426,6 +450,8 @@ class PrismaProductRepositorie implements IProductRepositorie {
             await this.clearAllBids();
             await this.resetAllRealValues();
             await this.clearAllWinners();
+            await this.clearAllAdvertisersAmounts();
+            await this.clearAllTransactions();
 
             console.log('✅ Reset completo realizado com sucesso!');
         } catch (error) {
