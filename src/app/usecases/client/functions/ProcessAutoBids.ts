@@ -60,29 +60,77 @@ export const processAutoBids = async (
                 continue;
             }
 
-            if (autoBid.cover_auto_limit && autoBid.value >= autoBid.cover_auto_limit) {
-                await prismaBid.UpdateBid(autoBid.id, {
-                    cover_auto: false
-                })
-                return { highestBid, processedClientIds };
-            }
-
-            // Calcula o valor do novo lance automático (5% acima do lance atual)
+            // Calcula o valor do novo lance automático (incremento mínimo ou 2% acima do lance atual)
             const incrementValue = Math.max(minIncrement, highestBid.value * 0.02);
             const newBidValue = Math.ceil(highestBid.value + incrementValue);
 
-            // Verifica se o novo valor excederia o limite do lance automático
-            if (autoBid.cover_auto_limit && newBidValue > autoBid.cover_auto_limit) {
-                console.log(`Lance automático excederia o limite: ${autoBid.cover_auto_limit} para cliente ${autoBid.client_id}`);
+            // Verifica se o lance automático já atingiu ou excederia o limite
+            if (autoBid.cover_auto_limit) {
+                // Se o valor atual já atingiu o limite
+                if (autoBid.value >= autoBid.cover_auto_limit) {
+                    console.log(`Lance automático já atingiu o limite: ${autoBid.cover_auto_limit} para cliente ${autoBid.client_id}`);
+                    
+                    // Desativa o lance automático
+                    await prismaBid.UpdateBid(autoBid.id, {
+                        cover_auto: false
+                    });
+                    
+                    // Adiciona o cliente à lista de processados
+                    processedClientIds.add(autoBid.client_id);
+                    continue;
+                }
                 
-                // Desativa o lance automático
-                await prismaBid.UpdateBid(autoBid.id, {
-                    cover_auto: false
-                });
-                
-                // Adiciona o cliente à lista de processados para evitar processamento adicional
-                processedClientIds.add(autoBid.client_id);
-                continue;
+                // Se o novo valor excederia o limite
+                if (newBidValue > autoBid.cover_auto_limit) {
+                    console.log(`Lance automático excederia o limite: ${autoBid.cover_auto_limit} para cliente ${autoBid.client_id}`);
+                    
+                    // Usa o valor limite como último lance automático
+                    if (autoBid.cover_auto_limit > highestBid.value) {
+                        const limitBidData: IBid = {
+                            ...autoBid,
+                            value: autoBid.cover_auto_limit,
+                            product_id: product.id,
+                            created_at: new Date(),
+                            updated_at: new Date()
+                        };
+                        
+                        // Registra o cliente como processado
+                        processedClientIds.add(autoBid.client_id);
+                        
+                        // Salva o lance no banco de dados
+                        const limitBid = await prismaBid.CreateBid(limitBidData);
+                        
+                        // Atualiza o real_value do produto
+                        await prismaProduct.update(
+                            { real_value: autoBid.cover_auto_limit },
+                            product.id
+                        );
+                        
+                        // Atualiza o lance mais alto
+                        if (limitBid.value > highestBid.value) {
+                            highestBid = limitBid;
+                        }
+                        
+                        // Envia o lance para o WebSocket
+                        const websocketEndpoint = isBidInCataloge
+                            ? `${product.auct_id}-bid-cataloged`
+                            : `${product.auct_id}-bid`;
+                        
+                        await axios.post(
+                            `${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${websocketEndpoint}`,
+                            { body: limitBid }
+                        ).catch(error => {
+                            console.error("Erro ao enviar lance automático para WebSocket:", error);
+                        });
+                    }
+                    
+                    // Desativa o lance automático após usar o limite
+                    await prismaBid.UpdateBid(autoBid.id, {
+                        cover_auto: false
+                    });
+                    
+                    continue;
+                }
             }
 
             console.log(`Processando lance automático: Cliente ${autoBid.client_id}, Valor ${newBidValue}`);
