@@ -13,6 +13,7 @@ interface IBid {
     product_id?: string | any
     Product?: IProduct[] | any
     cover_auto?: boolean
+    cover_auto_limit?: number
     created_at: Date
     updated_at: Date
 }

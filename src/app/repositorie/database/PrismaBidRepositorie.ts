@@ -9,6 +9,7 @@ class PrismaBidRepositorie implements IBidRepositorie {
         const baseData = {
             value: data.value,
             cover_auto: data.cover_auto !== undefined ? data.cover_auto : undefined,
+            cover_auto_limit: data.cover_auto_limit !== undefined ? data.cover_auto_limit : undefined,
             Auct: {
                 connect: {
                     id: data.auct_id
@@ -30,7 +31,7 @@ class PrismaBidRepositorie implements IBidRepositorie {
             data: baseData,
             include: {
                 Product: {
-                    include:{
+                    include: {
                         Bid: {
                             orderBy: {
                                 created_at: "desc"

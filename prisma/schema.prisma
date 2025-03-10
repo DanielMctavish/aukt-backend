@@ -100,7 +100,7 @@ model Auct {
   client_id                 String?
   subscribed_clients        Client[]
   Bids                      Bid[]
-  Cartelas                  Cartela[] 
+  Cartelas                  Cartela[]
   title                     String
   tags                      String[]
   auct_cover_img            String
@@ -168,16 +168,17 @@ model Product {
 }
 
 model Bid {
-  id         String    @id @default(cuid())
-  value      Int
-  Client     Client?   @relation(fields: [client_id], references: [id])
-  client_id  String?
-  Auct       Auct?     @relation(fields: [auct_id], references: [id])
-  auct_id    String?
-  Product    Product[]
-  cover_auto Boolean?
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
+  id               String    @id @default(cuid())
+  value            Int
+  Client           Client?   @relation(fields: [client_id], references: [id])
+  client_id        String?
+  Auct             Auct?     @relation(fields: [auct_id], references: [id])
+  auct_id          String?
+  Product          Product[]
+  cover_auto       Boolean?
+  cover_auto_limit Float?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
 }
 
 model Cartela {
@@ -290,7 +291,6 @@ enum HeaderModel {
   MODEL_16
   MODEL_17
 }
-
 
 model TemplateHeader {
   id                        String          @id @default(uuid())

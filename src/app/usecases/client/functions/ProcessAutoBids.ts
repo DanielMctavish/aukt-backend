@@ -28,10 +28,10 @@ export const processAutoBids = async (
 ): Promise<ProcessAutoBidsResult> => {
     // Inicializa o lance mais alto com o lance atual
     let highestBid = currentBid;
-    
+
     // Conjunto para rastrear clientes que já deram lances automáticos
     const processedClientIds = new Set<string>();
-    
+
     // Adiciona o cliente atual para evitar que ele dê lance automático contra si mesmo
     if (currentBid.client_id) {
         processedClientIds.add(currentBid.client_id);
@@ -45,8 +45,8 @@ export const processAutoBids = async (
         }
 
         // Filtra apenas lances com cover_auto=true e que não sejam do cliente atual
-        const autoBids = updatedProduct.Bid.filter((bid: IBid) => 
-            bid.cover_auto === true && 
+        const autoBids: IBid[] = updatedProduct.Bid.filter((bid: IBid) =>
+            bid.cover_auto === true &&
             bid.client_id !== currentBid.client_id &&
             !processedClientIds.has(bid.client_id)
         );
@@ -60,9 +60,30 @@ export const processAutoBids = async (
                 continue;
             }
 
+            if (autoBid.cover_auto_limit && autoBid.value >= autoBid.cover_auto_limit) {
+                await prismaBid.UpdateBid(autoBid.id, {
+                    cover_auto: false
+                })
+                return { highestBid, processedClientIds };
+            }
+
             // Calcula o valor do novo lance automático (5% acima do lance atual)
             const incrementValue = Math.max(minIncrement, highestBid.value * 0.02);
             const newBidValue = Math.ceil(highestBid.value + incrementValue);
+
+            // Verifica se o novo valor excederia o limite do lance automático
+            if (autoBid.cover_auto_limit && newBidValue > autoBid.cover_auto_limit) {
+                console.log(`Lance automático excederia o limite: ${autoBid.cover_auto_limit} para cliente ${autoBid.client_id}`);
+                
+                // Desativa o lance automático
+                await prismaBid.UpdateBid(autoBid.id, {
+                    cover_auto: false
+                });
+                
+                // Adiciona o cliente à lista de processados para evitar processamento adicional
+                processedClientIds.add(autoBid.client_id);
+                continue;
+            }
 
             console.log(`Processando lance automático: Cliente ${autoBid.client_id}, Valor ${newBidValue}`);
 
@@ -93,8 +114,8 @@ export const processAutoBids = async (
             }
 
             // Envia o lance para o WebSocket
-            const websocketEndpoint = isBidInCataloge 
-                ? `${product.auct_id}-bid-cataloged` 
+            const websocketEndpoint = isBidInCataloge
+                ? `${product.auct_id}-bid-cataloged`
                 : `${product.auct_id}-bid`;
 
             await axios.post(
