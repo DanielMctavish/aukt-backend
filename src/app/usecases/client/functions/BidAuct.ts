@@ -6,7 +6,8 @@ import PrismaProductRepositorie from "../../../repositorie/database/PrismaProduc
 import PrismaAdvertiserRepositorie from "../../../repositorie/database/PrismaAdvertiserRepositorie";
 import PrismaAuctRepositorie from "../../../repositorie/database/PrismaAuctRepositorie";
 import AuctionInspector from "../../inspector/AuctionInspector";
-import { processAutoBids } from "./ProcessAutoBids";
+import ProcessAutoBids from "./ProcessAutoBids";
+
 
 const prismaBid = new PrismaBidRepositorie();
 const prismaAdvertiser = new PrismaAdvertiserRepositorie();
@@ -32,7 +33,6 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
 
             const dataValue = data.value;
             const initialValue = currentProduct.initial_value;
-            const currentValue = currentProduct.real_value || initialValue;
 
             // Verificação do valor inicial primeiro (esse valor nunca muda)
             if (!currentProduct.real_value && dataValue < initialValue) {
@@ -50,7 +50,7 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
                 });
             }
 
-            if(currentProduct.winner_id){
+            if (currentProduct.winner_id) {
                 return resolve({
                     status_code: 400,
                     body: `Product already has a winner`
@@ -64,7 +64,7 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
 
             // Criação do lance
             const currentBid = await prismaBid.CreateBid(data);
-            let highestBid = currentBid;
+            let highestBid: any = currentBid;
 
             try {
                 // Atualização do anunciante se necessário
@@ -87,33 +87,21 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
                     data.product_id
                 );
 
-                // Calcular o incremento mínimo para lances automáticos
-                let minIncrement = 20; // valor padrão
-                if (currentAuct && currentAuct.value) {
-                    const auctIncrement = parseFloat(currentAuct.value);
-                    minIncrement = auctIncrement > 0 ? auctIncrement : minIncrement;
-                }
+                await prismaBid.CreateBid(data).then(async () => {
+                    const websocketEndpoint = isBidInCataloge
+                        ? `${data.auct_id}-bid-cataloged`
+                        : `${data.auct_id}-bid`;
 
-                // Processar lances automáticos independentemente do lance atual ter cover_auto
-                const result = await processAutoBids(
-                    currentProduct,
-                    currentBid,
-                    isBidInCataloge,
-                    minIncrement
-                );
+                    await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${websocketEndpoint}`,
+                        { body: currentBid }
+                    ).catch(() => {
+                        console.log("Erro ao enviar mensagem para WebSocket");
+                    });
 
-                // Atualiza o lance mais alto
-                highestBid = result.highestBid;
+                    //verificando lances automáticos:
+                    await ProcessAutoBids(data, currentProduct.id)
 
-                // Envio do lance para WebSocket
-                const websocketEndpoint = isBidInCataloge 
-                    ? `${data.auct_id}-bid-cataloged` 
-                    : `${data.auct_id}-bid`;
-                
-                axios.post(
-                    `${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${websocketEndpoint}`,
-                    { body: currentBid }
-                ).catch(() => { });
+                })
 
                 // Após todos os lances serem processados, chamamos o inspetor
                 const updatedProduct = await prismaProduct.find({ product_id: data.product_id });

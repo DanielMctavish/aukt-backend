@@ -3,6 +3,8 @@ import { ApplyUseCase } from '../middlewares/ApllyUseCases'
 import MainProductUsecases from '../../app/usecases/product/MainProductUsecases'
 import multer from "multer"
 import { verifyToken } from '../../authentication/JWT'
+import DisableAutoBid from '../../app/usecases/client/functions/DisableAutoBid'
+
 const router = Router()
 const upload = multer()
 
@@ -24,5 +26,8 @@ router.delete('/delete-product-img', ApplyUseCase(mainProducts.FirebaseDeletePro
 // New routes for product counters
 router.get('/count-products', ApplyUseCase(mainProducts.CounterProducts))
 router.get('/count-products-with-bids', ApplyUseCase(mainProducts.CounterProductsWithBids))
+
+// Rota para desativar lance automático
+router.post('/disable-auto-bid', verifyToken, ApplyUseCase(DisableAutoBid))
 
 export default router;

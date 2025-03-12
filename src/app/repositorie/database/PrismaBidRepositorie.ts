@@ -96,6 +96,7 @@ class PrismaBidRepositorie implements IBidRepositorie {
             data: {
                 value: data.value,
                 cover_auto: data.cover_auto !== undefined ? data.cover_auto : undefined,
+                cover_auto_limit: data.cover_auto_limit
                 // Adicione outros campos que você deseja permitir atualizar
             },
         });
