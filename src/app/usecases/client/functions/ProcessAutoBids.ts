@@ -83,18 +83,22 @@ function ProcessAutoBids(dataBid: IBid, product_id: string): Promise<T> {
                 });
 
                 // Encontrar o maior lance atual
-                const maiorLance = Math.max(...allBids.map((bid: IBid) => bid.value));
-                console.log(`Maior lance atual: ${maiorLance}`);
+                let maiorLance = Math.max(...allBids.map((bid: IBid) => bid.value));
+                console.log(`Maior lance atual no início da rodada: ${maiorLance}`);
 
-                // Processar lances desta rodada
-                const promisesRodada = disputantes.map(disputante => 
-                    processarLance(disputante, maiorLance)
-                );
-
-                const resultadosRodada = await Promise.all(promisesRodada);
+                // Processar lances desta rodada em sequência
+                let algumLanceDado = false;
+                for (const disputante of disputantes) {
+                    const deuLance = await processarLance(disputante, maiorLance);
+                    if (deuLance) {
+                        // Atualizar o maior lance para o próximo disputante
+                        maiorLance = disputante.value!; // Sabemos que value existe pois deuLance é true
+                        algumLanceDado = true;
+                    }
+                }
                 
                 // Se nenhum robô deu lance nesta rodada, terminamos
-                continuarDisputando = resultadosRodada.some(deuLance => deuLance);
+                continuarDisputando = algumLanceDado;
                 
                 if (!continuarDisputando) {
                     console.log("Nenhum robô deu lance nesta rodada, finalizando disputa");
