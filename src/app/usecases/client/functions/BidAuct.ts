@@ -63,12 +63,15 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
                 : null;
 
             // Criação do lance
+            console.log("1. Iniciando criação do lance")
             const currentBid = await prismaBid.CreateBid(data);
+            console.log("2. Lance criado com sucesso")
             let highestBid: any = currentBid;
 
             try {
                 // Atualização do anunciante se necessário
                 if (currentAdvertiser && data.Client) {
+                    console.log("3. Atualizando anunciante")
                     const isClientExisted = currentAdvertiser.Clients?.some(
                         client => client.id === data.client_id
                     ) ?? false;
@@ -79,36 +82,51 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
                             Clients: currentClients
                         });
                     }
+                    console.log("4. Anunciante atualizado")
                 }
 
                 // Atualizar o real_value do produto com o valor do lance atual
+                console.log("5. Atualizando real_value do produto")
                 await prismaProduct.update(
                     { real_value: dataValue },
                     data.product_id
                 );
+                console.log("6. real_value atualizado")
 
-                await prismaBid.CreateBid(data).then(async () => {
-                    const websocketEndpoint = isBidInCataloge
-                        ? `${data.auct_id}-bid-cataloged`
-                        : `${data.auct_id}-bid`;
+                // Enviar mensagem WebSocket
+                console.log("7. Enviando mensagem WebSocket")
+                const websocketEndpoint = isBidInCataloge
+                    ? `${data.auct_id}-bid-cataloged`
+                    : `${data.auct_id}-bid`;
 
-                    await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${websocketEndpoint}`,
-                        { body: currentBid }
-                    ).catch(() => {
-                        console.log("Erro ao enviar mensagem para WebSocket");
-                    });
-
-                    //verificando lances automáticos:
-                    await ProcessAutoBids(data, currentProduct.id)
-
-                })
-
-                // Após todos os lances serem processados, chamamos o inspetor
-                const updatedProduct = await prismaProduct.find({ product_id: data.product_id });
-                if (updatedProduct && updatedProduct.Bid) {
-                    await AuctionInspector(updatedProduct.Bid);
+                try {
+                    await axios.post(
+                        `${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${websocketEndpoint}`,
+                        { body: currentBid },
+                        { timeout: 2000 } 
+                    );
+                    console.log("8. Mensagem WebSocket enviada")
+                } catch (error: any) {
+                    // Log do erro mas continua o fluxo
+                    console.log("Erro ao enviar mensagem para WebSocket:", error.message);
+                    console.log("8. Continuando processo mesmo com erro no WebSocket")
                 }
 
+                // Processar lances automáticos
+                console.log("9. Iniciando processamento de lances automáticos")
+                await ProcessAutoBids(data, currentProduct.id);
+                console.log("10. Lances automáticos processados")
+
+                // Após todos os lances serem processados, chamamos o inspetor
+                console.log("11. Buscando produto atualizado para inspeção")
+                const updatedProduct = await prismaProduct.find({ product_id: data.product_id });
+                if (updatedProduct && updatedProduct.Bid) {
+                    console.log("12. Iniciando inspeção")
+                    await AuctionInspector(updatedProduct.Bid);
+                    console.log("13. Inspeção finalizada")
+                }
+                
+                console.log("14. Finalizando processo de lance")
                 return resolve({ status_code: 200, body: highestBid });
             } catch (error: any) {
                 return reject({ status_code: 500, body: error.message });
