@@ -462,7 +462,7 @@ class PrismaProductRepositorie implements IProductRepositorie {
 }
 //--------------------------------------------------------------------------------
 
-const prismaProduct = new PrismaProductRepositorie()
-prismaProduct.resetAllAuctionData()
+// const prismaProduct = new PrismaProductRepositorie()
+// prismaProduct.resetAllAuctionData()
 
 export default PrismaProductRepositorie
