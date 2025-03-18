@@ -100,12 +100,17 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
                     : `${data.auct_id}-bid`;
 
                 try {
-                    await axios.post(
-                        `${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${websocketEndpoint}`,
-                        { body: currentBid },
-                        { timeout: 2000 } 
-                    );
-                    console.log("8. Mensagem WebSocket enviada")
+                    // Apenas envie websocket para lances manuais (não automáticos)
+                    if (!data.cover_auto) {
+                        await axios.post(
+                            `${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${websocketEndpoint}`,
+                            { body: currentBid },
+                            { timeout: 2000 }
+                        );
+                        console.log("8. Mensagem WebSocket enviada")
+                    } else {
+                        console.log("8. Lance automático, websocket será enviado pelo ProcessAutoBids")
+                    }
                 } catch (error: any) {
                     // Log do erro mas continua o fluxo
                     console.log("Erro ao enviar mensagem para WebSocket:", error.message);
@@ -113,8 +118,9 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
                 }
 
                 // Processar lances automáticos
-                console.log("9. Iniciando processamento de lances automáticos")
-                await ProcessAutoBids(data, currentProduct.id);
+                console.log("9. Iniciando processamento de lances automáticos >> ", currentAuct.status, isBidInCataloge)
+                !isBidInCataloge && currentAuct.status !== 'live' &&
+                    await ProcessAutoBids(data, currentProduct.id);
                 console.log("10. Lances automáticos processados")
 
                 // Após todos os lances serem processados, chamamos o inspetor
@@ -125,7 +131,7 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
                     await AuctionInspector(updatedProduct.Bid);
                     console.log("13. Inspeção finalizada")
                 }
-                
+
                 console.log("14. Finalizando processo de lance")
                 return resolve({ status_code: 200, body: highestBid });
             } catch (error: any) {

@@ -23,8 +23,8 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(json());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '60mb' }));
+app.use(express.urlencoded({ limit: '70mb', extended: true }));
 
 // Configuração do Helmet para segurança
 app.use(
@@ -36,7 +36,7 @@ app.use(
         scriptSrc: ["'self'"], 
         styleSrc: ["'self'"], 
         imgSrc: ["'self'", 'data:'], 
-        connectSrc: ["'self'", 'https://aukt.com.br'], 
+        connectSrc: ["'self'", '*'], 
       },
     },
   })
@@ -45,7 +45,7 @@ app.use(
 // Configuração do CORS restrita ao frontend
 app.use(
   cors({
-    origin: 'https://aukt.com.br', 
+    origin: '*', 
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     preflightContinue: false,
     optionsSuccessStatus: 204,

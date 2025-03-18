@@ -43,7 +43,7 @@ function ProcessAutoBids(dataBid: IBid, product_id: string): Promise<T> {
                     // Enviar websocket para notificar outros robôs
                     try {
                         await axios.post(
-                            `${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${dataBid.auct_id}-bid-cataloged`,
+                            `${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${dataBid.auct_id}-auto-bid`,
                             { body: newBidData },
                             { timeout: 5000 }
                         );
