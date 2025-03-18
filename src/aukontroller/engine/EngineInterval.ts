@@ -41,15 +41,45 @@ export const EngineInterval = async (
             }
 
             try {
-                await axios.post(`${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${sokect_message}`, {
+                console.log(`EngineInterval: Enviando mensagem tipo ${sokect_message} para leilão ${currentAuct.id}`);
+                
+                if (!process.env.API_WEBSOCKET_AUK) {
+                    console.error("ERRO: API_WEBSOCKET_AUK não está definido no ambiente!");
+                }
+                
+                const websocketUrl = process.env.API_WEBSOCKET_AUK;
+                console.log(`EngineInterval: URL do WebSocket: ${websocketUrl}/main/sent-message?message_type=${sokect_message}`);
+                
+                const messageData = {
                     body: {
                         product: filterResponse,
                         auct_id: currentAuct.id
                     },
                     cronTimer: localCount
-                });
+                };
+                
+                const response = await axios.post(
+                    `${websocketUrl}/main/sent-message?message_type=${sokect_message}`,
+                    messageData,
+                    {
+                        timeout: 5000,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                
+                console.log(`EngineInterval: Mensagem WebSocket enviada com sucesso. Status: ${response.status}`);
             } catch (error: any) {
-                console.error("Error at try send message: ", error.response);
+                console.error("Error at try send message: ");
+                if (error.response) {
+                    console.error(`Status: ${error.response.status}`);
+                    console.error(`Dados: ${JSON.stringify(error.response.data)}`);
+                } else if (error.request) {
+                    console.error("Sem resposta do servidor. Verifique se o servidor WebSocket está rodando.");
+                } else {
+                    console.error(`Mensagem: ${error.message}`);
+                }
             }
 
             localCount++;
