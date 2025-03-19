@@ -51,7 +51,6 @@ const DisableAutoBid = (params: DisableAutoBidParams): Promise<ClientResponse> =
             // Desativa todos os lances automáticos do cliente neste produto
             for (const bid of autoBids) {
                 await prismaBid.UpdateBid(bid.id, {
-                    cover_auto: false,
                     cover_auto_limit: 0
                 });
                 console.log(`Lance automático ${bid.id} desativado`);

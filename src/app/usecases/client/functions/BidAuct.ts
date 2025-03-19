@@ -119,13 +119,7 @@ export const bidAuct = async (data: IBid, bidInCataloge?: string | boolean): Pro
 
                 // Processar lances automáticos
                 console.log("9. Iniciando processamento de lances automáticos >> ", currentAuct.status, isBidInCataloge)
-                if (!isBidInCataloge && currentAuct.status !== 'live') {
-                    await ProcessAutoBids(data, currentProduct.id);
-                    console.log("10. Lances automáticos processados")
-                } else {
-                    console.log("10. Lances automáticos ignorados - " + 
-                                (isBidInCataloge ? "lance em catálogo" : "leilão ao vivo"));
-                }
+                await ProcessAutoBids(data, currentProduct.id);
 
                 // Após todos os lances serem processados, chamamos o inspetor
                 console.log("11. Buscando produto atualizado para inspeção")

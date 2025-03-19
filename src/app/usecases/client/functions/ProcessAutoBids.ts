@@ -2,11 +2,13 @@ import axios from "axios";
 import IBid from "../../../entities/IBid";
 import PrismaBidRepositorie from "../../../repositorie/database/PrismaBidRepositorie";
 import PrismaProductRepositorie from "../../../repositorie/database/PrismaProductRepositorie";
+import PrismaClientRepositorie from "../../../repositorie/database/PrismaClientRepositorie";
 
 
 interface T { }
 const prismaBid = new PrismaBidRepositorie()
 const prismaProduct = new PrismaProductRepositorie()
+const prismaClient = new PrismaClientRepositorie()
 
 function ProcessAutoBids(dataBid: IBid, product_id: string): Promise<T> {
     return new Promise(async (resolve, reject) => {
@@ -46,13 +48,106 @@ function ProcessAutoBids(dataBid: IBid, product_id: string): Promise<T> {
                     const newBid = await prismaBid.CreateBid(newBidData as IBid);
                     console.log(`Novo lance criado por ${disputante.client_id}: ${newBidData.value}`)
 
+                    // Atualizar o real_value do produto para garantir que o frontend seja atualizado corretamente
+                    try {
+                        await prismaProduct.update(
+                            { real_value: newBidData.value },
+                            product_id
+                        );
+                        console.log(`Real_value do produto atualizado para ${newBidData.value}`);
+                    } catch (error) {
+                        console.log("Erro ao atualizar real_value do produto:", error);
+                    }
+
+                    // Buscar informações completas do lance para enviar ao WebSocket
+                    let bidToSend = newBid;
+                    
+                    // Adicionar o Client ao objeto de lance, se disponível
+                    if (disputante.Client) {
+                        bidToSend = {
+                            ...bidToSend,
+                            Client: disputante.Client
+                        };
+                    } else if (disputante.client_id) {
+                        // Buscar dados do cliente se não estiverem disponíveis
+                        try {
+                            const clientData = await prismaClient.find(disputante.client_id);
+                            if (clientData) {
+                                bidToSend = {
+                                    ...bidToSend,
+                                    Client: clientData
+                                };
+                            }
+                        } catch (error) {
+                            console.log(`Erro ao buscar cliente ${disputante.client_id}:`, error);
+                        }
+                    }
+                    
+                    // Adicionar o Product ao objeto de lance, se necessário
+                    if (!bidToSend.Product) {
+                        try {
+                            const product = await prismaProduct.find({ product_id });
+                            if (product) {
+                                bidToSend = {
+                                    ...bidToSend,
+                                    Product: [product]
+                                };
+                            }
+                        } catch (error) {
+                            console.log("Erro ao buscar detalhes do produto:", error);
+                        }
+                    }
+
                     // Enviar websocket para notificar outros robôs
                     try {
+                        // Usar o mesmo canal dos lances manuais para garantir que o frontend receba as atualizações
+                        // Se o leilão é catalogado, usamos bid-cataloged, caso contrário, bid
+                        const websocketEndpoint = isCatalogued(dataBid) 
+                            ? `${dataBid.auct_id}-bid-cataloged`
+                            : `${dataBid.auct_id}-bid`;
+
+                        console.log(`Enviando lance automático para websocket endpoint: ${websocketEndpoint}`);
+                        
+                        // Atualizar o produto com o novo valor antes de enviá-lo
+                        const updatedProduct = await prismaProduct.find({ product_id });
+                        
+                        // Importante: Verificar se temos o produto atualizado
+                        if (updatedProduct) {
+                            console.log(`Produto atualizado com real_value: ${updatedProduct.real_value}`);
+                        }
+
+                        // Criar estrutura exatamente igual ao que o frontend espera receber
+                        // para garantir a compatibilidade com os handlers existentes
+                        const messageBody = {
+                            body: {
+                                id: bidToSend.id,
+                                client_id: disputante.client_id,
+                                product_id: product_id,
+                                auct_id: dataBid.auct_id,
+                                value: newBidData.value,
+                                created_at: new Date().toISOString(),
+                                updated_at: new Date().toISOString(),
+                                cover_auto: true,
+                                Client: bidToSend.Client || null,
+                                // Incluir o campo Product para o frontend verificar
+                                Product: updatedProduct ? [updatedProduct] : undefined
+                            }
+                        };
+                        
+                        // Log detalhado para depuração
+                        console.log(`Enviando lance com value=${newBidData.value} para produto=${product_id}`);
+                        
                         await axios.post(
-                            `${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${dataBid.auct_id}-auto-bid`,
-                            { body: newBidData },
-                            { timeout: 5000 }
+                            `${process.env.API_WEBSOCKET_AUK}/main/sent-message?message_type=${websocketEndpoint}`,
+                            messageBody,
+                            {
+                                timeout: 5000,
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                }
+                            }
                         );
+                        console.log(`Lance automático de ${disputante.client_id}: ${newBidData.value} enviado ao websocket com sucesso`);
                     } catch (error: any) {
                         console.log("Erro ao enviar mensagem para WebSocket:", error.message);
                     }
@@ -63,6 +158,31 @@ function ProcessAutoBids(dataBid: IBid, product_id: string): Promise<T> {
                 }
 
                 return false;
+            }
+
+            // Função auxiliar para verificar se o leilão é catalogado
+            function isCatalogued(bid: IBid): boolean {
+                // No BidAuct, temos uma variável bidInCataloge, que é usada para determinar o endpoint
+                // A estratégia mais confiável é verificar o status do leilão no contexto atual
+                try {
+                    // Se o leilão tem status 'cataloged', está em catálogo
+                    if (bid.Auct && bid.Auct.status === 'cataloged') {
+                        return true;
+                    }
+                    
+                    // Verifica se o produto pertence a leilão com status cataloged
+                    if (bid.Product && bid.Product.length > 0 && 
+                        bid.Product[0].Auct && bid.Product[0].Auct.status === 'cataloged') {
+                        return true;
+                    }
+                    
+                    // Em último caso, verificamos se o websocketEndpoint já foi determinado em BidAuct
+                    // Se o lance original foi enviado como cataloged, os lances automáticos também devem ser
+                    return false;
+                } catch (error) {
+                    console.error("Erro ao determinar se o leilão é catalogado:", error);
+                    return false; // Em caso de erro, assumimos que não é catalogado
+                }
             }
 
             let continuarDisputando = true;
